@@ -53,15 +53,22 @@
 </div>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&display=swap');
+
   .announcement-bar {
-    background-color: #E8DED1;
-    color: #2B1810;
-    padding: 10px 0;
-    font-size: 13px;
+    background-color: #C1673A;
+    color: #ffffff;
+    padding: 11px 0;
+    font-size: 12px;
     text-align: center;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.6px;
     position: relative;
     z-index: 101;
+    font-family: 'Lato', 'Myriad Pro', -apple-system, sans-serif;
+    min-height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .announcement-bar__wrapper {
@@ -76,7 +83,7 @@
   .announcement-bar__button {
     background: none;
     border: none;
-    color: #2B1810;
+    color: #ffffff;
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -92,12 +99,12 @@
   .announcement-bar__content {
     flex: 1;
     min-width: 0;
-    min-height: 24px;
+    min-height: 17px;
   }
 
   .announcement-bar__messages {
     position: relative;
-    height: 24px;
+    height: 17px;
   }
 
   .announcement-bar__message {
@@ -117,8 +124,11 @@
 
   .announcement-bar__message p {
     margin: 0;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 17px;
   }
 
   @media (max-width: 640px) {
