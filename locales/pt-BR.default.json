@@ -1,0 +1,72 @@
+{
+  "general": {
+    "search": "Buscar",
+    "cart": "Sacola",
+    "account": "Minha conta",
+    "wishlist": "Favoritos",
+    "close": "Fechar",
+    "menu": "Menu",
+    "loading": "Carregando...",
+    "continue_shopping": "Continuar comprando",
+    "view_all": "Ver tudo"
+  },
+  "products": {
+    "add_to_cart": "Adicionar à sacola",
+    "sold_out": "Esgotado",
+    "unavailable": "Indisponível",
+    "size_guide": "Tabela de medidas",
+    "store_pickup": "Lojas disponíveis para retirada",
+    "about": "Sobre a peça",
+    "composition": "Composição",
+    "need_help": "Precisa de ajuda?",
+    "personal_shopper": "Personal Shopper",
+    "recommendations": "Recomendados para você",
+    "select_size": "Selecione o tamanho",
+    "color": "Cor"
+  },
+  "collections": {
+    "filter_and_sort": "Filtrar e ordenar",
+    "clear_filters": "Limpar filtros",
+    "apply": "Aplicar",
+    "no_products": "Nenhum produto encontrado"
+  },
+  "cart": {
+    "title": "Sacola",
+    "empty": "Sua sacola está vazia",
+    "subtotal": "Subtotal",
+    "shipping_note": "Frete calculado no checkout",
+    "checkout": "Finalizar compra",
+    "remove": "Remover",
+    "quantity": "Quantidade"
+  },
+  "customer": {
+    "login": "Entrar",
+    "register": "Criar conta",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "first_name": "Nome",
+    "last_name": "Sobrenome",
+    "orders": "Meus pedidos",
+    "addresses": "Endereços",
+    "forgot_password": "Esqueci minha senha",
+    "reset_password": "Redefinir senha"
+  },
+  "newsletter": {
+    "title": "Newsletter",
+    "description": "Inscreva-se para receber conteúdo exclusivo, atualizações em primeira mão e ofertas especiais.",
+    "placeholder": "E-mail",
+    "submit": "Inscrever-se",
+    "success": "Obrigado por se inscrever!"
+  },
+  "footer": {
+    "institutional": "Institucional",
+    "legal": "Legal",
+    "useful_links": "Links úteis"
+  },
+  "404": {
+    "title": "Página não encontrada",
+    "text": "A página que você está procurando não existe ou foi removida.",
+    "back_home": "Voltar para a home"
+  }
+}

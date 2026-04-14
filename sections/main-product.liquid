@@ -1,0 +1,827 @@
+{% comment %}
+  Product page (PDP) - main-product.liquid
+  Product details with gallery, variants, and recommendations
+{% endcomment %}
+
+<div class="product-page">
+  {% comment %} Breadcrumb {% endcomment %}
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <ul class="breadcrumb__list">
+      <li><a href="/">Inicio</a></li>
+      {% if collection %}
+        <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+      {% endif %}
+      <li><span aria-current="page">{{ product.title }}</span></li>
+    </ul>
+  </nav>
+
+  <div class="product__container">
+    {% comment %} Product Gallery (Left - 60%) {% endcomment %}
+    <div class="product__gallery">
+      <div class="gallery__main">
+        <div class="gallery__image-container">
+          {% if product.featured_image %}
+            <img
+              src="{{ product.featured_image | image_url: width: 800 }}"
+              alt="{{ product.featured_image.alt }}"
+              class="gallery__image"
+              id="main-image"
+            />
+          {% endif %}
+
+          {% comment %} Gallery Navigation Arrows {% endcomment %}
+          {% if product.images.size > 1 %}
+            <button class="gallery__arrow gallery__arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+            <button class="gallery__arrow gallery__arrow--next" id="gallery-next" aria-label="Próxima imagem">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+
+        {% comment %} Wishlist and Share Buttons {% endcomment %}
+        <div class="gallery__actions">
+          <button class="btn--icon" id="wishlist-btn" aria-label="Adicionar aos favoritos">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 18L1.5 9C0 7.5 0 5 2 3C3.5 1.5 5 1 6.5 3L10 6.5L13.5 3C15 1.5 16.5 1.5 18 3C20 5 20 7.5 18.5 9L10 18Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+          </button>
+          <button class="btn--icon" id="share-btn" aria-label="Compartilhar produto">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M15 9C16.1 9 17 8.1 17 7C17 5.9 16.1 5 15 5C13.9 5 13 5.9 13 7M5 13C6.1 13 7 12.1 7 11C7 9.9 6.1 9 5 9C3.9 9 3 9.9 3 11M15 15C16.1 15 17 14.1 17 13C17 11.9 16.1 11 15 11M7 12L13 8" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+          </button>
+        </div>
+
+        {% comment %} Image Dots/Thumbnails {% endcomment %}
+        {% if product.images.size > 1 %}
+          <div class="gallery__dots">
+            {% for image in product.images %}
+              <button
+                class="gallery__dot {% if forloop.first %}active{% endif %}"
+                data-image="{{ image | image_url: width: 800 }}"
+                data-index="{{ forloop.index0 }}"
+                aria-label="Foto {{ forloop.index }}"
+              ></button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% comment %} Thumbnail Carousel {% endcomment %}
+      {% if product.images.size > 1 %}
+        <div class="gallery__thumbnails">
+          {% for image in product.images %}
+            <button
+              class="gallery__thumbnail {% if forloop.first %}active{% endif %}"
+              data-image="{{ image | image_url: width: 800 }}"
+              data-index="{{ forloop.index0 }}"
+            >
+              <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt }}" />
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Product Info (Right - 40%) {% endcomment %}
+    <div class="product__info">
+      {% comment %} Brand and Collection {% endcomment %}
+      {% if product.vendor %}
+        <div class="product__vendor">{{ product.vendor }}</div>
+      {% endif %}
+
+      {% comment %} Product Title {% endcomment %}
+      <h1 class="product__title">{{ product.title }}</h1>
+
+      {% comment %} Reference Code {% endcomment %}
+      {% if product.barcode %}
+        <div class="product__ref">REF: {{ product.barcode }}</div>
+      {% endif %}
+
+      {% comment %} Price {% endcomment %}
+      <div class="product__price">
+        {% if product.selected_or_first_available_variant %}
+          {% assign variant = product.selected_or_first_available_variant %}
+          <span class="product__price-amount">{{ variant.price | money_with_currency }}</span>
+          {% if variant.compared_at_price %}
+            <span class="product__price-original">{{ variant.compared_at_price | money_with_currency }}</span>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <form class="product__form" id="product-form">
+        {% comment %} Color Swatches {% endcomment %}
+        {% if product.available %}
+          {% assign color_option_index = 0 %}
+          {% for option in product.options_with_values %}
+            {% if option.name == 'Color' or option.name == 'Cor' %}
+              {% assign color_option_index = forloop.index0 %}
+              <fieldset class="product__option">
+                <legend class="product__option-label">{{ option.name }}</legend>
+                <div class="product__swatches">
+                  {% for value in option.values %}
+                    <label class="swatch">
+                      <input
+                        type="radio"
+                        name="options[{{ option.name }}]"
+                        value="{{ value }}"
+                        class="swatch__input"
+                        {% if forloop.first %}checked{% endif %}
+                      />
+                      <span class="swatch__color" style="background-color: {{ value | downcase }};" title="{{ value }}"></span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+            {% endif %}
+          {% endfor %}
+
+          {% comment %} Size Selector (Numeric Grid) {% endcomment %}
+          {% assign size_option_index = 0 %}
+          {% for option in product.options_with_values %}
+            {% if option.name == 'Size' or option.name == 'Tamanho' %}
+              {% assign size_option_index = forloop.index0 %}
+              <fieldset class="product__option">
+                <legend class="product__option-label">{{ option.name }}</legend>
+                <div class="product__sizes">
+                  {% for value in option.values %}
+                    <label class="size-option">
+                      <input
+                        type="radio"
+                        name="options[{{ option.name }}]"
+                        value="{{ value }}"
+                        class="size-option__input"
+                        {% if forloop.first %}checked{% endif %}
+                      />
+                      <span class="size-option__label">{{ value }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+            {% endif %}
+          {% endfor %}
+
+          {% comment %} Other Options {% endcomment %}
+          {% for option in product.options_with_values %}
+            {% unless option.name == 'Color' or option.name == 'Cor' or option.name == 'Size' or option.name == 'Tamanho' %}
+              <fieldset class="product__option">
+                <legend class="product__option-label">{{ option.name }}</legend>
+                <select name="options[{{ option.name }}]" class="product__select">
+                  {% for value in option.values %}
+                    <option value="{{ value }}" {% if forloop.first %}selected{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </fieldset>
+            {% endunless %}
+          {% endfor %}
+        {% endif %}
+
+        {% comment %} Add to Cart Button {% endcomment %}
+        <button
+          type="submit"
+          class="btn btn--primary btn--add-to-cart"
+          id="add-to-cart-btn"
+          {% unless product.available %}disabled{% endunless %}
+        >
+          {% if product.available %}
+            ADICIONAR À SACOLA
+          {% else %}
+            FORA DE ESTOQUE
+          {% endif %}
+        </button>
+      </form>
+
+      {% comment %} Additional Links {% endcomment %}
+      <div class="product__links">
+        <a href="#" class="link-text">Lojas disponíveis para retirada</a>
+        <a href="#" class="link-text">Tabela de Medidas</a>
+      </div>
+
+      {% comment %} Accordions {% endcomment %}
+      <div class="product__accordions">
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">SOBRE A PEÇA</button>
+          <div class="accordion-content" hidden>
+            <div class="accordion-text">
+              {{ product.description }}
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">COMPOSIÇÃO</button>
+          <div class="accordion-content" hidden>
+            <div class="accordion-text">
+              {% if product.metafields.custom.composition %}
+                {{ product.metafields.custom.composition }}
+              {% else %}
+                100% Algodão
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} WhatsApp Personal Shopper Button {% endcomment %}
+      <div class="product__whatsapp">
+        <a href="https://wa.me/551133334444?text=Preciso de ajuda com o produto: {{ product.title }}" class="btn btn--whatsapp" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.6915026,13.4744748 C17.4702128,13.3535721 16.2563168,12.7905979 16.0274522,12.6997056 C15.7985875,12.6088134 15.6191645,12.5633495 15.4397416,12.784509 C15.2603187,13.0056685 14.8881191,13.4744748 14.7229899,13.6538967 C14.5578607,13.8333186 14.3927314,13.8787825 14.1714416,13.7578798 C13.9501518,13.636977 13.3150899,13.4314651 12.5468385,12.7631841 C11.9565769,12.2372506 11.5745495,11.5903641 11.4094203,11.3691505 C11.2442911,11.148037 11.3939969,11.0010821 11.5145615,10.8801793 C11.6274171,10.7718976 11.7631019,10.6039262 11.8837665,10.4393699 C12.0044311,10.2748136 12.053895,10.0956205 12.1447873,10.0956205 C12.2356796,10.0956205 12.3810914,10.0956205 12.4719832,10.0956205 C12.6468766,10.0903051 12.8177356,10.0370858 13.2949903,10.0370858 C13.4340304,10.0370858 13.5885926,10.0101816 13.7695166,10.3516659 C14.0152525,10.8318018 14.6547969,12.1107454 14.7795221,12.3318625 C14.9042473,12.55298 14.9042473,12.7264747 14.7795221,12.9473975 C14.6547969,13.1683204 14.2181255,13.5968725 13.9994237,13.8213083 C13.9102443,13.917161 13.8314898,14.0138598 13.8314898,14.1308604 C13.8314898,14.2478611 14.0152525,14.5130104 14.3121358,15.0375623 C14.7619903,15.8080969 15.4421659,16.6685848 16.4032191,17.3105535 C16.8055266,17.6289697 17.1372624,17.8189227 17.439833,17.953844 C17.9215505,18.1974832 18.2887742,18.1630957 18.5345101,17.9445618 C18.8314098,17.6557156 19.4043577,16.8765206 19.5897504,16.5386005 C19.7751431,16.2006804 19.9605358,16.2461443 20.2063716,16.3670471 C20.4522074,16.48795 21.6669387,17.0994919 21.8958033,17.1962531 C22.124668,17.2930144 22.2835344,17.3433929 22.3744267,17.4576614 C22.4653189,17.5881237 22.4653189,18.0563053 22.2893504,18.4338638 C22.1133819,18.8114224 21.3498599,19.5408675 20.5946275,19.9757099 C20.0193387,20.2917527 19.4546154,20.4559025 18.8896934,20.4559025 C18.1260717,20.4559025 17.3624498,20.2321159 15.5384689,19.5625243 C12.1039316,18.2068311 9.82644186,15.2735599 8.91275982,13.1816954 C8.33068477,11.8549652 8.06309602,10.5489987 8.06309602,9.18872475 C8.06309602,5.33202597 11.1436316,2.21511151 15.0461635,2.21511151 C16.9876936,2.21511151 18.8339312,2.99911178 20.1313979,4.32046848 C21.4288646,5.64182519 22.1837449,7.53406375 22.1837449,9.5185384 C22.1837449,11.4688234 21.3498599,13.2702494 19.9605358,14.5031752 C19.5897504,14.8509769 19.1131179,15.073138 18.6364854,15.073138"/>
+          </svg>
+          Precisa de ajuda? PERSONAL SHOPPER
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Product Recommendations {% endcomment %}
+  {% if product.metafields.custom.recommendations %}
+    <section class="product__recommendations">
+      <h2 class="section__title">RECOMENDADOS PARA VOCÊ</h2>
+      <div class="recommendations__grid">
+        {% for recommended in product.metafields.custom.recommendations %}
+          {% render 'product-card', product: recommended %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+
+<style>
+  .product-page {
+    padding: 40px 20px;
+  }
+
+  .breadcrumb {
+    margin-bottom: 40px;
+  }
+
+  .product__container {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 60px;
+    margin-bottom: 80px;
+  }
+
+  .product__gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .gallery__main {
+    position: relative;
+  }
+
+  .gallery__image-container {
+    position: relative;
+    overflow: hidden;
+    background: #f5f5f5;
+    aspect-ratio: 1;
+  }
+
+  .gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .gallery__arrow--prev {
+    left: 10px;
+  }
+
+  .gallery__arrow--next {
+    right: 10px;
+  }
+
+  .gallery__arrow:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .gallery__actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+  }
+
+  .btn--icon {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .btn--icon:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+
+  .gallery__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .gallery__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .gallery__dot.active {
+    background: #000;
+  }
+
+  .gallery__thumbnails {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+  }
+
+  .gallery__thumbnail {
+    aspect-ratio: 1;
+    border: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .gallery__thumbnail:hover,
+  .gallery__thumbnail.active {
+    border-color: #000;
+  }
+
+  .gallery__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product__info {
+    padding-top: 20px;
+  }
+
+  .product__vendor {
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .product__title {
+    font-family: 'Arial', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 15px 0;
+  }
+
+  .product__ref {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+
+  .product__price {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .product__price-original {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 14px;
+  }
+
+  .product__form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .product__option {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .product__option-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .product__swatches {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    cursor: pointer;
+    display: block;
+  }
+
+  .swatch__input {
+    display: none;
+  }
+
+  .swatch__color {
+    display: block;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .swatch__input:checked + .swatch__color {
+    border-color: #000;
+  }
+
+  .product__sizes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .size-option {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .size-option__input {
+    display: none;
+  }
+
+  .size-option__label {
+    display: block;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .size-option__input:checked + .size-option__label {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+
+  .product__select {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: #fff;
+  }
+
+  .btn--primary {
+    background: #c9a961;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn--primary:hover:not(:disabled) {
+    background: #b8944f;
+  }
+
+  .btn--primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .product__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .link-text {
+    font-size: 12px;
+    color: #000;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .product__accordions {
+    display: flex;
+    flex-direction: column;
+    margin: 30px 0;
+  }
+
+  .accordion-item {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .accordion-trigger {
+    width: 100%;
+    padding: 20px 0;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .accordion-trigger::after {
+    content: '+';
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-trigger[aria-expanded="true"]::after {
+    transform: rotate(45deg);
+  }
+
+  .accordion-content {
+    padding: 15px 0 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+
+  .accordion-content:not([hidden]) {
+    max-height: 500px;
+  }
+
+  .accordion-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  .product__whatsapp {
+    margin-top: 30px;
+  }
+
+  .btn--whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .btn--whatsapp:hover {
+    background: #1fb958;
+  }
+
+  .product__recommendations {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .section__title {
+    font-family: 'Noto Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0 0 40px 0;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .recommendations__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  @media (max-width: 1024px) {
+    .product__container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .product__sizes {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gallery__thumbnails {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .recommendations__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .product__sizes {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery__thumbnails {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .product__title {
+      font-size: 20px;
+    }
+
+    .recommendations__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const gallery = {
+      currentIndex: 0,
+      images: {% if product.images %}{{ product.images | json }}{% else %}[]{% endif %},
+
+      init: function() {
+        this.bindEvents();
+      },
+
+      bindEvents: function() {
+        document.getElementById('gallery-prev')?.addEventListener('click', () => this.prev());
+        document.getElementById('gallery-next')?.addEventListener('click', () => this.next());
+
+        document.querySelectorAll('.gallery__dot').forEach((dot, index) => {
+          dot.addEventListener('click', () => this.goToImage(index));
+        });
+
+        document.querySelectorAll('.gallery__thumbnail').forEach((thumb, index) => {
+          thumb.addEventListener('click', () => this.goToImage(index));
+        });
+      },
+
+      next: function() {
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+        this.updateImage();
+      },
+
+      prev: function() {
+        this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+        this.updateImage();
+      },
+
+      goToImage: function(index) {
+        this.currentIndex = index;
+        this.updateImage();
+      },
+
+      updateImage: function() {
+        const mainImage = document.getElementById('main-image');
+        if (mainImage && this.images[this.currentIndex]) {
+          mainImage.src = this.images[this.currentIndex].src.replace('.jpg', '_800x.jpg');
+        }
+
+        document.querySelectorAll('.gallery__dot, .gallery__thumbnail').forEach((el, index) => {
+          el.classList.toggle('active', index === this.currentIndex);
+        });
+      }
+    };
+
+    gallery.init();
+
+    {% comment %} Accordion functionality {% endcomment %}
+    document.querySelectorAll('.accordion-trigger').forEach(trigger => {
+      trigger.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+        this.nextElementSibling.toggleAttribute('hidden');
+      });
+    });
+
+    {% comment %} Wishlist functionality {% endcomment %}
+    document.getElementById('wishlist-btn')?.addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
+
+    {% comment %} Form submission {% endcomment %}
+    document.getElementById('product-form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+      addToCartBtn.textContent = 'ADICIONANDO...';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+      },
+        body: JSON.stringify({
+          items: [{
+            id: {{ product.selected_or_first_available_variant.id }},
+            quantity: 1
+          }]
+        })
+      })
+      .then(() => {
+        addToCartBtn.textContent = 'ADICIONADO!';
+        setTimeout(() => {
+          window.location.href = '/cart';
+        }, 1000);
+      })
+      .catch(() => {
+        addToCartBtn.textContent = 'ADICIONAR À SACOLA';
+        alert('Erro ao adicionar ao carrinho');
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Mostrar breadcrumb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recommendations",
+      "label": "Mostrar recomendações",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "Número WhatsApp (com código país)",
+      "default": "551133334444"
+    }
+  ]
+}
+{% endschema %}

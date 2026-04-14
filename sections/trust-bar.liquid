@@ -1,0 +1,258 @@
+<!-- Trust Bar Section -->
+<section class="trust-bar">
+  <div class="trust-bar__container">
+    {% if section.blocks.size > 0 %}
+      {% for block in section.blocks %}
+        <div class="trust-bar__item" data-block-id="{{ block.id }}">
+          <div class="trust-bar__icon">
+            {% case block.settings.icon %}
+              {% when 'discount' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                  <line x1="1" y1="3" x2="23" y2="3"></line>
+                  <path d="M10 12h4"></path>
+                </svg>
+              {% when 'truck' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="1" y="6" width="15" height="12"></rect>
+                  <path d="M16 6h3a2 2 0 0 1 2 2v8"></path>
+                  <circle cx="5.5" cy="20.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="20.5" r="2.5"></circle>
+                </svg>
+              {% when 'chat' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              {% when 'credit-card' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+              {% when 'store' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M9 3L5 7H3v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7h-2l-4-4z"></path>
+                  <line x1="9" y1="12" x2="15" y2="12"></line>
+                </svg>
+              {% when 'rocket' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M4.745 19.231m0 0a4 4 0 0 0 6.192 2.04l10.262-10.262a2 2 0 0 0-2.828-2.828l-10.262 10.262a4 4 0 0 0-3.364 .788Z"></path>
+                  <path d="M7.4 14.978L2.23 9.805a2 2 0 0 1 0-2.828l2.828-2.829a2 2 0 0 1 2.828 0l5.172 5.172"></path>
+                  <circle cx="18" cy="6" r="3"></circle>
+                </svg>
+              {% else %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            {% endcase %}
+          </div>
+          <p class="trust-bar__text">{{ block.settings.text }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <!-- Default benefits if no blocks are added -->
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+            <line x1="1" y1="3" x2="23" y2="3"></line>
+            <path d="M10 12h4"></path>
+          </svg>
+        </div>
+        <p class="trust-bar__text">10% OFF na 1ª compra</p>
+      </div>
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="6" width="15" height="12"></rect>
+            <path d="M16 6h3a2 2 0 0 1 2 2v8"></path>
+            <circle cx="5.5" cy="20.5" r="2.5"></circle>
+            <circle cx="18.5" cy="20.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <p class="trust-bar__text">Frete grátis no final de semana</p>
+      </div>
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <p class="trust-bar__text">Compre pelo WhatsApp</p>
+      </div>
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
+        <p class="trust-bar__text">Até 6x sem juros</p>
+      </div>
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 3L5 7H3v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7h-2l-4-4z"></path>
+            <line x1="9" y1="12" x2="15" y2="12"></line>
+          </svg>
+        </div>
+        <p class="trust-bar__text">Retira em loja</p>
+      </div>
+      <div class="trust-bar__item">
+        <div class="trust-bar__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4.745 19.231m0 0a4 4 0 0 0 6.192 2.04l10.262-10.262a2 2 0 0 0-2.828-2.828l-10.262 10.262a4 4 0 0 0-3.364 .788Z"></path>
+            <path d="M7.4 14.978L2.23 9.805a2 2 0 0 1 0-2.828l2.828-2.829a2 2 0 0 1 2.828 0l5.172 5.172"></path>
+            <circle cx="18" cy="6" r="3"></circle>
+          </svg>
+        </div>
+        <p class="trust-bar__text">Entrega Expressa</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .trust-bar {
+    background-color: #f9f9f9;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 2rem;
+  }
+
+  .trust-bar__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+  }
+
+  .trust-bar__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .trust-bar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border-radius: 50%;
+    color: #000;
+  }
+
+  .trust-bar__text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 1024px) {
+    .trust-bar__container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trust-bar {
+      padding: 1.5rem;
+    }
+
+    .trust-bar__container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .trust-bar__text {
+      font-size: 0.7rem;
+    }
+
+    .trust-bar__icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .trust-bar__icon svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trust-bar__container {
+      grid-template-columns: 1fr;
+    }
+
+    .trust-bar__text {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Trust Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "discount",
+              "label": "Discount"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "chat",
+              "label": "Chat"
+            },
+            {
+              "value": "credit-card",
+              "label": "Credit Card"
+            },
+            {
+              "value": "store",
+              "label": "Store"
+            },
+            {
+              "value": "rocket",
+              "label": "Rocket"
+            }
+          ],
+          "default": "discount"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto do Benefício",
+          "default": "Texto do Benefício"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Bar"
+    }
+  ]
+}
+{% endschema %}

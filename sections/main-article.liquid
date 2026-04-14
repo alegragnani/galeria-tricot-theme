@@ -1,0 +1,379 @@
+{% comment %}
+  Article detail section - main-article.liquid
+{% endcomment %}
+
+<div class="article-page">
+  <article class="article-content">
+    {% comment %} Breadcrumb {% endcomment %}
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <ul class="breadcrumb__list">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="{{ blog.url }}">{{ blog.title }}</a></li>
+        <li><span aria-current="page">{{ article.title }}</span></li>
+      </ul>
+    </nav>
+
+    {% comment %} Featured Image {% endcomment %}
+    {% if article.featured_image %}
+      <div class="article__featured-image">
+        <img src="{{ article.featured_image | image_url: width: 1000 }}" alt="{{ article.featured_image.alt }}" />
+      </div>
+    {% endif %}
+
+    {% comment %} Article Meta {% endcomment %}
+    <div class="article__meta">
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: '%d de %B de %Y' }}
+      </time>
+      <span>Por {{ article.author }}</span>
+    </div>
+
+    {% comment %} Article Title {% endcomment %}
+    <h1 class="article__title">{{ article.title }}</h1>
+
+    {% comment %} Article Content {% endcomment %}
+    <div class="article__body">
+      {{ article.content }}
+    </div>
+
+    {% comment %} Article Tags {% endcomment %}
+    {% if article.tags.size > 0 %}
+      <div class="article__tags">
+        <span class="tags__label">Tags:</span>
+        <ul class="tags__list">
+          {% for tag in article.tags %}
+            <li><a href="{{ blog.url }}/tagged/{{ tag | handle }}">#{{ tag }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </article>
+
+  {% comment %} Comments Section {% endcomment %}
+  <section class="article__comments">
+    <h2>Comentários</h2>
+    {% if article.comments_count > 0 %}
+      <ul class="comments__list">
+        {% for comment in article.comments %}
+          <li class="comment">
+            <div class="comment__author">{{ comment.author }}</div>
+            <div class="comment__date">{{ comment.created_at | date: '%d de %B de %Y' }}</div>
+            <div class="comment__content">{{ comment.content }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if article.comments_enabled? %}
+      <form class="comment-form" id="comment-form">
+        <h3>Deixe um comentário</h3>
+        <div class="form-group">
+          <label for="comment-author">Nome *</label>
+          <input type="text" id="comment-author" name="comment[author]" required />
+        </div>
+        <div class="form-group">
+          <label for="comment-email">E-mail *</label>
+          <input type="email" id="comment-email" name="comment[email]" required />
+        </div>
+        <div class="form-group">
+          <label for="comment-body">Comentário *</label>
+          <textarea id="comment-body" name="comment[body]" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary">POSTAR COMENTÁRIO</button>
+      </form>
+    {% endif %}
+  </section>
+
+  {% comment %} Related Articles {% endcomment %}
+  <section class="article__related">
+    <h2 class="section__title">ARTIGOS RELACIONADOS</h2>
+    <div class="related-articles">
+      {% assign related = blog.articles | where: "tags", article.tags.first | limit: 3 %}
+      {% for post in related %}
+        {% unless post.id == article.id %}
+          <article class="article-card">
+            {% if post.featured_image %}
+              <div class="article-card__image">
+                <img src="{{ post.featured_image | image_url: width: 300 }}" alt="{{ post.title }}" />
+              </div>
+            {% endif %}
+            <div class="article-card__content">
+              <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+              <time datetime="{{ post.published_at | date: '%Y-%m-%d' }}">
+                {{ post.published_at | date: '%d de %B de %Y' }}
+              </time>
+            </div>
+          </article>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<style>
+  .article-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .article-content {
+    margin-bottom: 60px;
+  }
+
+  .breadcrumb {
+    margin-bottom: 40px;
+  }
+
+  .article__featured-image {
+    margin-bottom: 40px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  .article__featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .article__meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+
+  .article__title {
+    font-family: 'Noto Serif', serif;
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0 0 30px 0;
+    line-height: 1.2;
+  }
+
+  .article__body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 30px;
+  }
+
+  .article__body h2 {
+    font-size: 24px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  .article__body p {
+    margin-bottom: 20px;
+  }
+
+  .article__body a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  .article__body img {
+    max-width: 100%;
+    height: auto;
+    margin: 30px 0;
+  }
+
+  .article__tags {
+    display: flex;
+    gap: 15px;
+    padding: 20px 0;
+    margin: 40px 0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .tags__label {
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .tags__list {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tags__list a {
+    color: #000;
+    text-decoration: none;
+    font-size: 12px;
+  }
+
+  .tags__list a:hover {
+    text-decoration: underline;
+  }
+
+  .article__comments {
+    margin: 60px 0;
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .article__comments h2 {
+    font-size: 24px;
+    margin: 0 0 30px 0;
+  }
+
+  .comments__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+  }
+
+  .comment {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+  }
+
+  .comment__author {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .comment__date {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  .comment__content {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .comment-form {
+    background: #f9f9f9;
+    padding: 30px;
+    margin-top: 40px;
+  }
+
+  .comment-form h3 {
+    font-size: 18px;
+    margin: 0 0 20px 0;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  .article__related {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .section__title {
+    font-family: 'Noto Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0 0 40px 0;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .related-articles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .article-card {
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .article-card:hover {
+    border-color: #000;
+  }
+
+  .article-card__image {
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  .article-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .article-card__content {
+    padding: 20px;
+  }
+
+  .article-card__content h3 {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+  }
+
+  .article-card__content a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  .article-card__content a:hover {
+    text-decoration: underline;
+  }
+
+  .article-card__content time {
+    font-size: 12px;
+    color: #999;
+  }
+
+  @media (max-width: 768px) {
+    .article-page {
+      padding: 20px;
+    }
+
+    .article__title {
+      font-size: 28px;
+    }
+
+    .article__body {
+      font-size: 14px;
+    }
+
+    .related-articles {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Article"
+}
+{% endschema %}

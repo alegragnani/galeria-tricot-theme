@@ -1,0 +1,183 @@
+<!-- Featured Collection Section -->
+<section class="featured-collection">
+  <div class="featured-collection__header">
+    {% if section.settings.title %}
+      <h2 class="featured-collection__title">{{ section.settings.title }}</h2>
+    {% endif %}
+  </div>
+
+  <div class="featured-collection__carousel" data-carousel>
+    <div class="featured-collection__track">
+      {% if section.settings.collection != blank %}
+        {% for product in section.settings.collection.products limit: 12 %}
+          <div class="featured-collection__item">
+            {% render 'product-card', product: product %}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Scroll Indicators -->
+  <div class="featured-collection__nav">
+    <button class="featured-collection__scroll-btn featured-collection__scroll-btn--prev" aria-label="Scroll left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <button class="featured-collection__scroll-btn featured-collection__scroll-btn--next" aria-label="Scroll right">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<style>
+  .featured-collection {
+    padding: 4rem 2rem;
+    position: relative;
+  }
+
+  .featured-collection__header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .featured-collection__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #000;
+  }
+
+  .featured-collection__carousel {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .featured-collection__track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .featured-collection__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured-collection__item {
+    flex: 0 0 calc(25% - 1.125rem);
+    min-width: 200px;
+  }
+
+  /* Scroll Navigation */
+  .featured-collection__nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .featured-collection__scroll-btn {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .featured-collection__scroll-btn:hover {
+    background-color: #333;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 1024px) {
+    .featured-collection__item {
+      flex: 0 0 calc(33.333% - 1rem);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .featured-collection {
+      padding: 3rem 1rem;
+    }
+
+    .featured-collection__item {
+      flex: 0 0 calc(50% - 0.75rem);
+    }
+
+    .featured-collection__header {
+      margin-bottom: 2rem;
+    }
+
+    .featured-collection__nav {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .featured-collection__item {
+      flex: 0 0 calc(100% - 0rem);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('[data-carousel]');
+    if (!carousel) return;
+
+    const track = carousel.querySelector('.featured-collection__track');
+    const prevBtn = carousel.parentElement.querySelector('.featured-collection__scroll-btn--prev');
+    const nextBtn = carousel.parentElement.querySelector('.featured-collection__scroll-btn--next');
+
+    const scrollAmount = 300;
+
+    prevBtn.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "NOVIDADES"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,162 @@
+{% comment %}
+  404 page section - main-404.liquid
+{% endcomment %}
+
+<div class="page-404">
+  <div class="error-container">
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">Página não encontrada</h2>
+    <p class="error-message">Desculpe, a página que você está procurando não existe ou foi movida.</p>
+
+    <div class="error-actions">
+      <a href="/" class="btn btn--primary">VOLTAR À PÁGINA INICIAL</a>
+      <a href="/collections/all" class="btn btn--secondary">EXPLORAR COLEÇÕES</a>
+    </div>
+
+    {% comment %} Suggested Products {% endcomment %}
+    <div class="error-suggestions">
+      <h3>TALVEZ VOCÊ PROCURE POR:</h3>
+      <div class="suggestions-grid">
+        {% for product in collections.featured-products.products limit: 4 %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .page-404 {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #f9f9f9;
+  }
+
+  .error-container {
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .error-code {
+    font-size: 120px;
+    font-weight: 700;
+    margin: 0;
+    color: #000;
+    line-height: 1;
+  }
+
+  .error-title {
+    font-family: 'Noto Serif', serif;
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 20px 0 15px 0;
+    text-transform: uppercase;
+  }
+
+  .error-message {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 40px 0;
+    line-height: 1.6;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+  }
+
+  .btn--primary,
+  .btn--secondary {
+    padding: 12px 30px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn--primary {
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+  }
+
+  .btn--primary:hover {
+    background: #333;
+    border-color: #333;
+  }
+
+  .btn--secondary {
+    background: transparent;
+    color: #000;
+    border: 1px solid #000;
+  }
+
+  .btn--secondary:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  .error-suggestions {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 60px;
+    margin-top: 60px;
+  }
+
+  .error-suggestions h3 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0 0 30px 0;
+  }
+
+  .suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  @media (max-width: 1024px) {
+    .suggestions-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 80px;
+    }
+
+    .error-title {
+      font-size: 28px;
+    }
+
+    .error-actions {
+      flex-direction: column;
+    }
+
+    .btn--primary,
+    .btn--secondary {
+      width: 100%;
+    }
+
+    .suggestions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "404"
+}
+{% endschema %}

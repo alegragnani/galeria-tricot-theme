@@ -1,0 +1,194 @@
+<!-- Category Grid Section -->
+<section class="category-grid">
+  <div class="category-grid__container">
+    {% for block in section.blocks %}
+      <div class="category-grid__item" data-block-id="{{ block.id }}">
+        <a href="{{ block.settings.link }}" class="category-grid__link">
+          <div class="category-grid__image-wrapper">
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | image_url: width: 1000 }}"
+                alt="{{ block.settings.heading }}"
+                class="category-grid__image"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="category-grid__placeholder">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+
+            <div class="category-grid__overlay">
+              <div class="category-grid__content">
+                {% if block.settings.heading %}
+                  <h3 class="category-grid__heading">{{ block.settings.heading }}</h3>
+                {% endif %}
+                <span class="category-grid__cta">EXPLORE</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .category-grid {
+    padding: 4rem 2rem;
+    background-color: #fff;
+  }
+
+  .category-grid__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .category-grid__item {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .category-grid__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .category-grid__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: #f5f5f5;
+  }
+
+  .category-grid__image,
+  .category-grid__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .category-grid__link:hover .category-grid__image {
+    transform: scale(1.08);
+  }
+
+  .category-grid__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+    z-index: 2;
+    transition: background 0.3s ease;
+  }
+
+  .category-grid__link:hover .category-grid__overlay {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .category-grid__content {
+    width: 100%;
+    color: white;
+    text-align: center;
+  }
+
+  .category-grid__heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1rem 0;
+  }
+
+  .category-grid__cta {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #fff;
+    transition: all 0.3s ease;
+  }
+
+  .category-grid__link:hover .category-grid__cta {
+    background-color: #fff;
+    color: #000;
+  }
+
+  @media (max-width: 768px) {
+    .category-grid {
+      padding: 3rem 1rem;
+    }
+
+    .category-grid__container {
+      gap: 1.5rem;
+    }
+
+    .category-grid__image-wrapper {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .category-grid__container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Category Grid",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Categoria"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Grid",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Product Card Snippet — Galeria Tricot
+  Usage: {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card__image-wrapper">
+    {%- if product.featured_image -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 600 }}"
+        alt="{{ product.featured_image.alt | escape }}"
+        class="product-card__image product-card__image--primary"
+        loading="lazy"
+        width="600"
+        height="800"
+      >
+    {%- endif -%}
+
+    {%- if product.images.size > 1 -%}
+      <img
+        src="{{ product.images[1] | image_url: width: 600 }}"
+        alt="{{ product.images[1].alt | escape }}"
+        class="product-card__image product-card__image--hover"
+        loading="lazy"
+        width="600"
+        height="800"
+      >
+    {%- endif -%}
+
+    {%- if product.compare_at_price > product.price -%}
+      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+      <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
+    {%- endif -%}
+
+    <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+  </a>
+
+  <div class="product-card__info">
+    <a href="{{ product.url }}">
+      <h3 class="product-card__title">{{ product.title }}</h3>
+    </a>
+
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="product-card__price--compare">
+          {{ product.compare_at_price | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ product.price | money }}
+        </span>
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,498 @@
+{% comment %}
+  Collection page (PLP) - main-collection.liquid
+  Product listing page with filtering and pagination
+{% endcomment %}
+
+<div class="collection">
+  {% comment %} Breadcrumb {% endcomment %}
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <ul class="breadcrumb__list">
+      <li><a href="/">Inicio</a></li>
+      <li><span aria-current="page">{{ collection.title }}</span></li>
+    </ul>
+  </nav>
+
+  <div class="collection__header">
+    <h1 class="collection-header__title">{{ collection.title }}</h1>
+
+    {% comment %} Filter and Sort Button {% endcomment %}
+    <button class="btn btn--filter" id="filter-toggle" aria-label="Abrir filtros">
+      FILTRAR E ORDENAR
+    </button>
+  </div>
+
+  <div class="collection__content">
+    {% comment %} Filter Drawer (right slide-out) {% endcomment %}
+    <aside class="filter-drawer" id="filter-drawer" aria-label="Filtros de produtos">
+      <div class="filter-drawer__header">
+        <h2>FILTRAR</h2>
+        <button class="filter-drawer__close" id="filter-close" aria-label="Fechar filtros">
+          &times;
+        </button>
+      </div>
+
+      <form class="filter-form" id="filter-form">
+        {% comment %} Color Filter {% endcomment %}
+        <fieldset class="filter-group">
+          <legend class="filter-group__title">Cor</legend>
+          <div class="filter-group__options">
+            {% if collection.all_products_count > 0 %}
+              {% assign colors = collection.products | map: "options" | map: "color" | uniq %}
+              {% for option in collection.all_tags %}
+                {% if option contains "cor:" %}
+                  {% assign color = option | remove: "cor:" %}
+                  <label class="filter-option">
+                    <input type="checkbox" name="filter.p.tag" value="color:{{ color }}" />
+                    <span class="filter-option__label">{{ color }}</span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </fieldset>
+
+        {% comment %} Size Filter {% endcomment %}
+        <fieldset class="filter-group">
+          <legend class="filter-group__title">Tamanho</legend>
+          <div class="filter-group__options">
+            {% for option in collection.all_tags %}
+              {% if option contains "size:" %}
+                {% assign size = option | remove: "size:" %}
+                <label class="filter-option">
+                  <input type="checkbox" name="filter.p.tag" value="size:{{ size }}" />
+                  <span class="filter-option__label">{{ size }}</span>
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </fieldset>
+
+        {% comment %} Price Filter {% endcomment %}
+        <fieldset class="filter-group">
+          <legend class="filter-group__title">Preço</legend>
+          <div class="filter-group__price">
+            <div class="price-range">
+              <input type="number" name="filter.p.price.gte" placeholder="Mín" class="price-range__input" />
+              <span>-</span>
+              <input type="number" name="filter.p.price.lte" placeholder="Máx" class="price-range__input" />
+            </div>
+            <button type="submit" class="btn btn--secondary">Aplicar</button>
+          </div>
+        </fieldset>
+
+        <div class="filter-actions">
+          <button type="reset" class="btn btn--link">Limpar filtros</button>
+        </div>
+      </form>
+    </aside>
+
+    {% comment %} Product Grid {% endcomment %}
+    <main class="collection__products">
+      {% if collection.products_count > 0 %}
+        <div class="product-grid">
+          {% for product in collection.products %}
+            {% render 'product-card', product: product %}
+          {% endfor %}
+        </div>
+
+        {% comment %} Pagination {% endcomment %}
+        {% if paginate.pages > 1 %}
+          <nav class="pagination" aria-label="pagination">
+            <ul class="pagination__list">
+              {% if paginate.previous %}
+                <li>
+                  <a href="{{ paginate.previous.url }}" class="pagination__link">
+                    Anterior
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for page in (1..paginate.pages) %}
+                <li>
+                  {% if page == paginate.current_page %}
+                    <span class="pagination__item--current" aria-current="page">
+                      {{ page }}
+                    </span>
+                  {% else %}
+                    <a href="{{ collection.url }}?page={{ page }}" class="pagination__link">
+                      {{ page }}
+                    </a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+
+              {% if paginate.next %}
+                <li>
+                  <a href="{{ paginate.next.url }}" class="pagination__link">
+                    Próximo
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="collection__empty">
+          <p>Nenhum produto encontrado.</p>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+
+{% comment %} Sort Dropdown {% endcomment %}
+<div class="collection__sort" id="sort-dropdown">
+  <select id="sort-by" aria-label="Ordenar por">
+    <option value="best-selling">Mais vendidos</option>
+    <option value="title-ascending">A-Z</option>
+    <option value="title-descending">Z-A</option>
+    <option value="price-ascending">Menor preço</option>
+    <option value="price-descending">Maior preço</option>
+    <option value="created-descending">Mais recentes</option>
+  </select>
+</div>
+
+<style>
+  .collection {
+    padding: 40px 20px;
+  }
+
+  .breadcrumb {
+    margin-bottom: 40px;
+  }
+
+  .breadcrumb__list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .breadcrumb__list a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .breadcrumb__list a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb__list li:not(:last-child)::after {
+    content: ">";
+    margin-left: 8px;
+  }
+
+  .collection__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .collection-header__title {
+    font-family: 'Noto Serif', serif;
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .btn--filter {
+    background: transparent;
+    border: 1px solid #000;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn--filter:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  .collection__content {
+    display: flex;
+    gap: 40px;
+  }
+
+  .filter-drawer {
+    position: fixed;
+    right: -300px;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid #e0e0e0;
+    padding: 20px;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    z-index: 1000;
+  }
+
+  .filter-drawer.active {
+    right: 0;
+  }
+
+  .filter-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+  }
+
+  .filter-drawer__header h2 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .filter-drawer__close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .filter-group {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .filter-group__title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: block;
+  }
+
+  .filter-group__options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .filter-option input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .filter-option__label {
+    cursor: pointer;
+  }
+
+  .filter-group__price {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .price-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .price-range__input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn--secondary {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 12px;
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .btn--link {
+    background: none;
+    border: none;
+    color: #000;
+    padding: 0;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .collection__products {
+    flex: 1;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+  }
+
+  .pagination__list {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pagination__link,
+  .pagination__item--current {
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+    text-decoration: none;
+    color: #000;
+    font-size: 12px;
+    display: block;
+  }
+
+  .pagination__link:hover {
+    background: #f5f5f5;
+  }
+
+  .pagination__item--current {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+
+  @media (max-width: 768px) {
+    .collection-header__title {
+      font-size: 28px;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .collection__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .filter-drawer {
+      width: 100%;
+      right: -100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterClose = document.getElementById('filter-close');
+    const filterDrawer = document.getElementById('filter-drawer');
+
+    filterToggle.addEventListener('click', function() {
+      filterDrawer.classList.add('active');
+    });
+
+    filterClose.addEventListener('click', function() {
+      filterDrawer.classList.remove('active');
+    });
+
+    document.addEventListener('click', function(event) {
+      if (!filterDrawer.contains(event.target) && !filterToggle.contains(event.target)) {
+        filterDrawer.classList.remove('active');
+      }
+    });
+
+    const sortDropdown = document.getElementById('sort-by');
+    if (sortDropdown) {
+      sortDropdown.addEventListener('change', function() {
+        const sortValue = this.value;
+        const url = new URL(window.location);
+        url.searchParams.set('sort_by', sortValue);
+        window.location.href = url.toString();
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "products_per_page",
+      "label": "Produtos por página",
+      "default": "24"
+    },
+    {
+      "type": "select",
+      "id": "grid_columns",
+      "label": "Colunas do grid (desktop)",
+      "options": [
+        {
+          "value": "3",
+          "label": "3 colunas"
+        },
+        {
+          "value": "4",
+          "label": "4 colunas"
+        },
+        {
+          "value": "5",
+          "label": "5 colunas"
+        }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Mostrar filtros",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Mostrar ordenação",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

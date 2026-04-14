@@ -1,0 +1,40 @@
+{
+  "type": "footer",
+  "name": "Footer Group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "institucional": {
+          "type": "link_list",
+          "settings": {
+            "heading": "INSTITUCIONAL",
+            "menu": "footer"
+          }
+        },
+        "ajuda": {
+          "type": "text",
+          "settings": {
+            "heading": "AJUDA",
+            "text": "<p>Central de Atendimento<br>Trocas e Devoluções<br>Formas de Pagamento<br>Entrega</p>"
+          }
+        },
+        "atendimento": {
+          "type": "text",
+          "settings": {
+            "heading": "ATENDIMENTO",
+            "text": "<p>Seg a Sex, 9h às 18h<br>WhatsApp: (11) 99999-9999<br>contato@galeriatricot.com.br</p>"
+          }
+        }
+      },
+      "block_order": ["institucional", "ajuda", "atendimento"],
+      "settings": {
+        "show_newsletter": true,
+        "newsletter_heading": "ENTRE NA NOSSA LISTA",
+        "newsletter_text": "Novidades, ofertas exclusivas e inspiração direto no seu e-mail.",
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": ["footer"]
+}

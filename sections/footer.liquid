@@ -1,0 +1,224 @@
+<footer class="site-footer">
+  <div class="site-footer__container">
+    <div class="site-footer__grid">
+      {% if section.settings.show_newsletter %}
+        <div class="site-footer__col site-footer__col--newsletter">
+          <h3 class="site-footer__heading">{{ section.settings.newsletter_heading }}</h3>
+          <p class="site-footer__text">{{ section.settings.newsletter_text }}</p>
+          {% form 'customer', class: 'site-footer__form' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input type="email" name="contact[email]" placeholder="Seu e-mail" required class="site-footer__input">
+            <button type="submit" class="site-footer__submit">INSCREVER</button>
+          {% endform %}
+        </div>
+      {% endif %}
+
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'link_list' %}
+            <div class="site-footer__col" {{ block.shopify_attributes }}>
+              <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+              {% if block.settings.menu != blank %}
+                <ul class="site-footer__links">
+                  {% for link in linklists[block.settings.menu].links %}
+                    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% when 'text' %}
+            <div class="site-footer__col" {{ block.shopify_attributes }}>
+              <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+              <div class="site-footer__text">{{ block.settings.text }}</div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">© {{ 'now' | date: '%Y' }} {{ shop.name }}. Todos os direitos reservados.</p>
+      {% if section.settings.show_payment_icons %}
+        <div class="site-footer__payments">
+          {% for type in shop.enabled_payment_types %}
+            {{ type | payment_type_svg_tag: class: 'site-footer__payment-icon' }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: #2B1810;
+    color: #E8C4A8;
+    padding: 64px 0 24px;
+    margin-top: 80px;
+    font-family: 'Raleway', sans-serif;
+  }
+  .site-footer__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(232, 196, 168, 0.2);
+  }
+  .site-footer__heading {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #FAF6F1;
+    margin-bottom: 20px;
+  }
+  .site-footer__text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #E8C4A8;
+    margin-bottom: 16px;
+  }
+  .site-footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .site-footer__links li {
+    margin-bottom: 10px;
+  }
+  .site-footer__links a {
+    color: #E8C4A8;
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .site-footer__links a:hover {
+    color: #FAF6F1;
+  }
+  .site-footer__form {
+    display: flex;
+    gap: 0;
+    max-width: 360px;
+  }
+  .site-footer__input {
+    flex: 1;
+    padding: 12px 16px;
+    background: transparent;
+    border: 1px solid rgba(232, 196, 168, 0.4);
+    color: #FAF6F1;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  .site-footer__input::placeholder { color: rgba(232, 196, 168, 0.6); }
+  .site-footer__submit {
+    padding: 12px 20px;
+    background: #C1673A;
+    color: #FFFFFF;
+    border: none;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .site-footer__submit:hover { background: #7A3E28; }
+  .site-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .site-footer__copyright {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: rgba(232, 196, 168, 0.7);
+    margin: 0;
+  }
+  .site-footer__payments {
+    display: flex;
+    gap: 8px;
+  }
+  .site-footer__payment-icon {
+    height: 20px;
+    opacity: 0.8;
+  }
+  @media (max-width: 900px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+  }
+  @media (max-width: 600px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr;
+    }
+    .site-footer__bottom {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Mostrar newsletter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Título newsletter",
+      "default": "ENTRE NA NOSSA LISTA"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Texto newsletter",
+      "default": "Novidades, ofertas exclusivas e inspiração direto no seu e-mail."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Mostrar ícones de pagamento",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "INSTITUCIONAL" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "ATENDIMENTO" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Seg a Sex, 9h às 18h<br>WhatsApp: (11) 99999-9999<br>contato@galeriatricot.com.br</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ]
+}
+{% endschema %}

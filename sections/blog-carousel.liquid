@@ -1,0 +1,283 @@
+<!-- Blog Carousel Section -->
+<section class="blog-carousel">
+  <div class="blog-carousel__header">
+    {% if section.settings.title %}
+      <h2 class="blog-carousel__title">{{ section.settings.title }}</h2>
+    {% endif %}
+  </div>
+
+  <div class="blog-carousel__carousel" data-carousel>
+    <div class="blog-carousel__track">
+      {% if section.settings.blog != blank %}
+        {% for article in section.settings.blog.articles limit: 6 %}
+          <article class="blog-carousel__item">
+            <a href="{{ article.url }}" class="blog-carousel__card">
+              <div class="blog-carousel__image-wrapper">
+                {% if article.image %}
+                  <img
+                    src="{{ article.image | image_url: width: 600 }}"
+                    alt="{{ article.title }}"
+                    class="blog-carousel__image"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="blog-carousel__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+
+                <div class="blog-carousel__overlay">
+                  <div class="blog-carousel__content">
+                    {% if article.tags.size > 0 %}
+                      <span class="blog-carousel__tag">{{ article.tags | first }}</span>
+                    {% endif %}
+                    <h3 class="blog-carousel__post-title">{{ article.title }}</h3>
+                    <span class="blog-carousel__date">{{ article.published_at | date: "%b %d, %Y" }}</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Scroll Navigation -->
+  <div class="blog-carousel__nav">
+    <button class="blog-carousel__scroll-btn blog-carousel__scroll-btn--prev" aria-label="Scroll left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <button class="blog-carousel__scroll-btn blog-carousel__scroll-btn--next" aria-label="Scroll right">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<style>
+  .blog-carousel {
+    padding: 4rem 2rem;
+    background-color: #fff;
+  }
+
+  .blog-carousel__header {
+    max-width: 1400px;
+    margin: 0 auto 3rem;
+    text-align: center;
+  }
+
+  .blog-carousel__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #000;
+  }
+
+  .blog-carousel__carousel {
+    position: relative;
+    overflow: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .blog-carousel__track {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 1rem 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .blog-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .blog-carousel__item {
+    flex: 0 0 calc(33.333% - 1.35rem);
+    min-width: 280px;
+  }
+
+  .blog-carousel__card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .blog-carousel__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+
+  .blog-carousel__image,
+  .blog-carousel__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .blog-carousel__card:hover .blog-carousel__image {
+    transform: scale(1.05);
+  }
+
+  /* Gradient Overlay */
+  .blog-carousel__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+    z-index: 2;
+  }
+
+  .blog-carousel__content {
+    width: 100%;
+    color: white;
+  }
+
+  .blog-carousel__tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #000;
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-carousel__post-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .blog-carousel__date {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.95;
+  }
+
+  /* Scroll Navigation */
+  .blog-carousel__nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .blog-carousel__scroll-btn {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .blog-carousel__scroll-btn:hover {
+    background-color: #333;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 1024px) {
+    .blog-carousel__item {
+      flex: 0 0 calc(50% - 1rem);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-carousel {
+      padding: 3rem 1rem;
+    }
+
+    .blog-carousel__item {
+      flex: 0 0 calc(100%);
+    }
+
+    .blog-carousel__header {
+      margin-bottom: 2rem;
+    }
+
+    .blog-carousel__nav {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('[data-carousel]');
+    if (!carousel) return;
+
+    const track = carousel.querySelector('.blog-carousel__track');
+    const prevBtn = carousel.parentElement.querySelector('.blog-carousel__scroll-btn--prev');
+    const nextBtn = carousel.parentElement.querySelector('.blog-carousel__scroll-btn--next');
+
+    const scrollAmount = 400;
+
+    prevBtn.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Blog Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "DO NOSSO DIÁRIO"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Carousel"
+    }
+  ]
+}
+{% endschema %}

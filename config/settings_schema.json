@@ -1,0 +1,35 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Galeria Tricot",
+    "theme_version": "1.1.0",
+    "theme_author": "Galeria Tricot",
+    "theme_documentation_url": "https://galeriatricot.com.br",
+    "theme_support_url": "https://galeriatricot.com.br"
+  },
+  {
+    "name": "Cores",
+    "settings": [
+      { "type": "color", "id": "color_primary", "label": "Cor principal", "default": "#7A3E28" },
+      { "type": "color", "id": "color_background", "label": "Fundo", "default": "#FAF6F1" },
+      { "type": "color", "id": "color_text", "label": "Texto", "default": "#2B1810" },
+      { "type": "color", "id": "color_text_secondary", "label": "Texto secundário", "default": "#8A7264" },
+      { "type": "color", "id": "color_border", "label": "Bordas", "default": "#E8DED1" }
+    ]
+  },
+  {
+    "name": "Logo e ícones",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo da loja" },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon" }
+    ]
+  },
+  {
+    "name": "WhatsApp",
+    "settings": [
+      { "type": "checkbox", "id": "whatsapp_enabled", "label": "Ativar botão WhatsApp", "default": true },
+      { "type": "text", "id": "whatsapp_number", "label": "Número (com DDI, sem espaços)", "info": "Ex: 5511999999999" },
+      { "type": "text", "id": "whatsapp_message", "label": "Mensagem padrão", "default": "Olá! Gostaria de mais informações." }
+    ]
+  }
+]

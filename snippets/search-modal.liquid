@@ -1,0 +1,42 @@
+{%- comment -%}
+  Search Modal — Galeria Tricot
+{%- endcomment -%}
+
+<div class="search-modal" id="search-modal">
+  <button class="search-modal__close" onclick="closeSearch()" aria-label="Fechar busca">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+
+  <div class="search-modal__inner">
+    <form action="/search" method="get" role="search">
+      <input type="hidden" name="type" value="product">
+      <input
+        type="search"
+        name="q"
+        class="search-modal__input"
+        placeholder="Buscar..."
+        autocomplete="off"
+        id="search-input"
+      >
+    </form>
+
+    <div id="search-results" style="margin-top:30px;"></div>
+  </div>
+</div>
+
+<script>
+  function openSearch() {
+    document.getElementById('search-modal').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('search-input').focus(), 100);
+  }
+  function closeSearch() {
+    document.getElementById('search-modal').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSearch();
+  });
+</script>

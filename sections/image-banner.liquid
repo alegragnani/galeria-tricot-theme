@@ -1,0 +1,204 @@
+<!-- Image Banner Section -->
+<section class="image-banner">
+  <div class="image-banner__wrapper">
+    {% if section.settings.image %}
+      <img
+        src="{{ section.settings.image | image_url: width: 1920 }}"
+        alt="{{ section.settings.heading }}"
+        class="image-banner__image"
+        loading="lazy"
+      >
+    {% else %}
+      <div class="image-banner__placeholder">
+        {{ 'image' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+
+    {% if section.settings.heading or section.settings.link_text %}
+      <div class="image-banner__overlay image-banner__overlay--{{ section.settings.text_position }}">
+        <div class="image-banner__content">
+          {% if section.settings.heading %}
+            <h2 class="image-banner__heading" style="color: {{ section.settings.text_color }};">
+              {{ section.settings.heading }}
+            </h2>
+          {% endif %}
+
+          {% if section.settings.link_text and section.settings.link %}
+            <a href="{{ section.settings.link }}" class="image-banner__link" style="color: {{ section.settings.text_color }};">
+              {{ section.settings.link_text }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-left: 0.5rem; vertical-align: -2px;">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .image-banner {
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .image-banner__wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .image-banner__image,
+  .image-banner__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .image-banner__wrapper:hover .image-banner__image {
+    transform: scale(1.05);
+  }
+
+  .image-banner__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
+  }
+
+  .image-banner__overlay--left {
+    justify-content: flex-start;
+    padding-left: 5%;
+  }
+
+  .image-banner__overlay--center {
+    justify-content: center;
+  }
+
+  .image-banner__overlay--right {
+    justify-content: flex-end;
+    padding-right: 5%;
+  }
+
+  .image-banner__content {
+    max-width: 400px;
+  }
+
+  .image-banner__heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .image-banner__link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0.25rem;
+  }
+
+  .image-banner__link:hover {
+    border-bottom-color: currentColor;
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 768px) {
+    .image-banner__wrapper {
+      aspect-ratio: 4 / 5;
+    }
+
+    .image-banner__overlay--left {
+      padding-left: 2rem;
+    }
+
+    .image-banner__overlay--right {
+      padding-right: 2rem;
+    }
+
+    .image-banner__heading {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Image Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "TÍTULO DO BANNER"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link Text",
+      "default": "COMPRAR AGORA >"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Banner"
+    }
+  ]
+}
+{% endschema %}

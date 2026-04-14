@@ -1,0 +1,238 @@
+<!-- Shop The Look Section -->
+<section class="shop-the-look">
+  <div class="shop-the-look__container">
+    <!-- Left: Lifestyle Image -->
+    <div class="shop-the-look__image-column">
+      {% if section.settings.lifestyle_image %}
+        <img
+          src="{{ section.settings.lifestyle_image | image_url: width: 1000 }}"
+          alt="Shop the Look"
+          class="shop-the-look__lifestyle-image"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="shop-the-look__placeholder">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Product Section -->
+    <div class="shop-the-look__content-column">
+      <div class="shop-the-look__product">
+        {% if section.settings.product != blank %}
+          {% assign product = section.settings.product %}
+
+          <div class="shop-the-look__product-image-wrapper">
+            {% if product.featured_image %}
+              <img
+                src="{{ product.featured_image | image_url: width: 600 }}"
+                alt="{{ product.title }}"
+                class="shop-the-look__product-image"
+                loading="lazy"
+              >
+            {% endif %}
+          </div>
+
+          <div class="shop-the-look__product-info">
+            <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
+
+            <div class="shop-the-look__product-price">
+              {% if product.available %}
+                <span class="shop-the-look__price">
+                  {{ product.price | money }}
+                </span>
+                {% if product.compare_at_price %}
+                  <span class="shop-the-look__original-price">
+                    {{ product.compare_at_price | money }}
+                  </span>
+                {% endif %}
+              {% else %}
+                <span class="shop-the-look__sold-out">Sold Out</span>
+              {% endif %}
+            </div>
+
+            <p class="shop-the-look__description">
+              {{ product.description | strip_html | truncatewords: 15 }}
+            </p>
+
+            <a href="{{ product.url }}" class="button button--primary shop-the-look__button">
+              View Product
+            </a>
+          </div>
+        {% else %}
+          <div class="shop-the-look__empty">
+            <p>Please select a product</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .shop-the-look {
+    padding: 4rem 2rem;
+    background-color: #fafafa;
+  }
+
+  .shop-the-look__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .shop-the-look__image-column {
+    position: relative;
+  }
+
+  .shop-the-look__lifestyle-image,
+  .shop-the-look__placeholder {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+  }
+
+  .shop-the-look__product {
+    background-color: #fff;
+    padding: 3rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .shop-the-look__product-image-wrapper {
+    margin-bottom: 2rem;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .shop-the-look__product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .shop-the-look__product-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1rem 0;
+    color: #000;
+  }
+
+  .shop-the-look__product-price {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .shop-the-look__price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #000;
+  }
+
+  .shop-the-look__original-price {
+    font-size: 1rem;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .shop-the-look__sold-out {
+    font-size: 1rem;
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .shop-the-look__description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0 0 2rem 0;
+  }
+
+  .shop-the-look__button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .shop-the-look__button:hover {
+    background-color: #333;
+  }
+
+  .shop-the-look__empty {
+    padding: 3rem;
+    text-align: center;
+    color: #999;
+  }
+
+  @media (max-width: 1024px) {
+    .shop-the-look__container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .shop-the-look__product {
+      padding: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .shop-the-look {
+      padding: 3rem 1rem;
+    }
+
+    .shop-the-look__product {
+      padding: 1.5rem;
+    }
+
+    .shop-the-look__product-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Shop The Look",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "lifestyle_image",
+      "label": "Lifestyle Image"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop The Look"
+    }
+  ]
+}
+{% endschema %}

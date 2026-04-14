@@ -1,0 +1,245 @@
+<!-- Newsletter Section -->
+<section class="newsletter">
+  <div class="newsletter__container">
+    <!-- Left: Content -->
+    <div class="newsletter__content">
+      {% if section.settings.title %}
+        <h2 class="newsletter__title">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      {% if section.settings.description %}
+        <p class="newsletter__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Right: Form -->
+    <div class="newsletter__form-wrapper">
+      <form method="post" action="/contact#form" class="newsletter__form" id="contact-form">
+        <input type="hidden" name="form_type" value="customer">
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        <div class="newsletter__input-group">
+          <input
+            type="email"
+            name="contact[email]"
+            placeholder="Seu e-mail"
+            class="newsletter__input"
+            required
+            aria-label="Email address"
+          >
+          <button type="submit" class="newsletter__submit" aria-label="Subscribe to newsletter">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <p class="newsletter__consent">
+          By submitting, you agree to receive marketing emails from {{ shop.name }}.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .newsletter {
+    background-color: #fff;
+    padding: 4rem 2rem;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .newsletter__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .newsletter__content {
+    padding-right: 2rem;
+  }
+
+  .newsletter__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1.5rem 0;
+    color: #000;
+  }
+
+  .newsletter__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+  }
+
+  .newsletter__form {
+    width: 100%;
+  }
+
+  .newsletter__input-group {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .newsletter__input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+    border: 1px solid #d4d4d4;
+    background-color: #fafafa;
+    color: #000;
+    font-family: inherit;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .newsletter__input:focus {
+    outline: none;
+    border-color: #000;
+    background-color: #fff;
+  }
+
+  .newsletter__input::placeholder {
+    color: #999;
+  }
+
+  .newsletter__submit {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+    width: 60px;
+    height: auto;
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .newsletter__submit:hover {
+    background-color: #333;
+    border-color: #333;
+  }
+
+  .newsletter__submit svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .newsletter__consent {
+    font-size: 0.75rem;
+    color: #999;
+    margin: 0;
+    text-align: center;
+  }
+
+  @media (max-width: 1024px) {
+    .newsletter__container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .newsletter__content {
+      padding-right: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .newsletter {
+      padding: 3rem 1rem;
+    }
+
+    .newsletter__input {
+      padding: 0.875rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .newsletter__submit {
+      width: 50px;
+      padding: 0.875rem;
+    }
+
+    .newsletter__submit svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const email = form.querySelector('input[name="contact[email]"]').value;
+
+      if (!email) {
+        alert('Please enter a valid email');
+        return;
+      }
+
+      // Submit the form
+      fetch('/contact', {
+        method: 'POST',
+        body: new FormData(form)
+      })
+      .then(response => {
+        if (response.ok) {
+          // Show success message
+          const input = form.querySelector('input[name="contact[email]"]');
+          input.value = '';
+          const submitBtn = form.querySelector('.newsletter__submit');
+          const originalHtml = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+          setTimeout(() => {
+            submitBtn.innerHTML = originalHtml;
+          }, 2000);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "ENTRE NA NOSSA LISTA"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Novidades, ofertas exclusivas e inspiração direto no seu e-mail</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

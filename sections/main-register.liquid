@@ -1,0 +1,234 @@
+{% comment %}
+  Customer register section - main-register.liquid
+{% endcomment %}
+
+<div class="register-page">
+  <div class="register-container">
+    <div class="register-box">
+      <h1 class="register-title">CRIAR CONTA</h1>
+
+      {% if shop.customer_accounts_enabled %}
+        <form method="post" action="/account" class="register-form" novalidate>
+          <div class="form-group">
+            <label for="customer-first-name">Nome *</label>
+            <input
+              type="text"
+              name="customer[first_name]"
+              id="customer-first-name"
+              class="form-input"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="customer-last-name">Sobrenome *</label>
+            <input
+              type="text"
+              name="customer[last_name]"
+              id="customer-last-name"
+              class="form-input"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="customer-email">E-mail *</label>
+            <input
+              type="email"
+              name="customer[email]"
+              id="customer-email"
+              class="form-input"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="customer-password">Senha *</label>
+            <input
+              type="password"
+              name="customer[password]"
+              id="customer-password"
+              class="form-input"
+              autocomplete="new-password"
+              required
+            />
+            <small class="password-hint">Mínimo 5 caracteres</small>
+          </div>
+
+          <div class="form-group checkbox">
+            <input type="checkbox" name="customer[accepts_marketing]" id="marketing" />
+            <label for="marketing">Quero receber ofertas e novidades por e-mail</label>
+          </div>
+
+          <button type="submit" class="btn btn--primary">CRIAR CONTA</button>
+        </form>
+
+        <div class="login-prompt">
+          <p>Já tem uma conta?</p>
+          <a href="/account/login" class="btn btn--secondary">FAZER LOGIN</a>
+        </div>
+      {% else %}
+        <p>As contas de cliente estão desativadas neste momento.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .register-page {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #f9f9f9;
+  }
+
+  .register-container {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .register-box {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 50px 30px;
+  }
+
+  .register-title {
+    font-family: 'Noto Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0 0 30px 0;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #000;
+  }
+
+  .password-hint {
+    font-size: 11px;
+    color: #999;
+    margin-top: 5px;
+  }
+
+  .form-group.checkbox {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .form-group.checkbox input {
+    margin-top: 4px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .form-group.checkbox label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .btn--primary {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn--primary:hover {
+    background: #333;
+  }
+
+  .login-prompt {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 30px;
+  }
+
+  .login-prompt p {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 15px 0;
+  }
+
+  .btn--secondary {
+    display: block;
+    background: transparent;
+    border: 1px solid #000;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn--secondary:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .register-page {
+      padding: 30px 20px;
+    }
+
+    .register-box {
+      padding: 30px 20px;
+    }
+
+    .register-title {
+      font-size: 24px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Register"
+}
+{% endschema %}
