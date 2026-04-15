@@ -38,15 +38,17 @@
 </section>
 
 <style>
+  /* Category Grid - Estilo PatBO: full bleed, sem gap, sem margem lateral */
   .category-grid {
-    padding: 60px 40px 40px;
+    padding: 0;
     background-color: #ffffff;
   }
 
   .category-grid__header {
-    max-width: 1400px;
-    margin: 0 auto 25px;
+    width: 100%;
+    margin: 0 0 25px;
     text-align: center;
+    padding: 60px 0 0;
   }
 
   .category-grid__section-title {
@@ -61,14 +63,16 @@
   }
 
   .category-grid__container {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 0;
   }
 
   .category-grid__item {
+    position: relative;
     overflow: hidden;
   }
 
@@ -107,33 +111,24 @@
     text-transform: uppercase;
     color: #545454;
     text-align: center;
-    margin: 16px 0 0;
+    margin: 18px 0 32px;
     line-height: 1.4;
   }
 
-  @media (max-width: 1024px) {
-    .category-grid {
-      padding: 50px 24px 32px;
-    }
-    .category-grid__container {
-      gap: 12px;
-    }
-  }
-
   @media (max-width: 768px) {
-    .category-grid {
-      padding: 40px 16px 24px;
+    .category-grid__header {
+      padding: 40px 0 0;
+      margin-bottom: 18px;
     }
     .category-grid__container {
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
     }
     .category-grid__section-title {
       font-size: 24px;
     }
     .category-grid__heading {
       font-size: 13px;
-      margin-top: 12px;
+      margin: 14px 0 24px;
     }
   }
 </style>
