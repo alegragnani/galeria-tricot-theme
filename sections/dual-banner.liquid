@@ -39,16 +39,21 @@
 
 <style>
   .dual-banner {
-    padding: 40px 40px;
+    padding: 0;
+    margin: 0;
     background-color: #ffffff;
   }
 
   .dual-banner__container {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 8px 0 0;
+    margin-left: calc(50% - 50vw);
+    padding: 0;
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 0;
   }
 
   .dual-banner__item {
@@ -132,12 +137,10 @@
   }
 
   @media (max-width: 768px) {
-    .dual-banner {
-      padding: 24px 16px;
-    }
     .dual-banner__container {
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 8px;
+      margin-top: 8px;
     }
     .dual-banner__heading {
       font-size: 20px;
