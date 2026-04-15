@@ -1,11 +1,5 @@
 <!-- Category Grid Section - 4 mini banners de categoria (estilo PatBO) -->
 <section class="gt-cats">
-  {% if section.settings.title != blank %}
-    <div class="gt-cats__header">
-      <h2 class="gt-cats__section-title">{{ section.settings.title }}</h2>
-    </div>
-  {% endif %}
-
   <div class="gt-cats__container">
     {% for block in section.blocks %}
       <div class="gt-cats__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
@@ -15,7 +9,7 @@
               <img
                 src="{{ block.settings.image | image_url: width: 800 }}"
                 srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
-                sizes="(max-width: 768px) 50vw, 25vw"
+                sizes="(max-width: 768px) 50vw, 22vw"
                 alt="{{ block.settings.heading | escape }}"
                 class="gt-cats__image"
                 loading="lazy"
@@ -44,34 +38,16 @@
     display: block;
   }
 
-  .gt-cats__header {
-    width: 100%;
-    margin: 0 0 25px;
-    text-align: center;
-    padding: 60px 0 0;
-  }
-
-  .gt-cats__section-title {
-    font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 32px;
-    font-weight: 400;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: #9E885E;
-    margin: 0;
-    line-height: 1.2;
-  }
-
   .gt-cats__container {
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    padding: 0 16px;
+    padding: 116px 99px 60px;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 8px;
   }
 
   .gt-cats__item {
@@ -114,24 +90,19 @@
     text-transform: uppercase;
     color: #545454;
     text-align: center;
-    margin: 18px 0 32px;
+    margin: 18px 0 0;
     line-height: 1.4;
   }
 
   @media (max-width: 768px) {
-    .gt-cats__header {
-      padding: 40px 0 0;
-      margin-bottom: 18px;
-    }
     .gt-cats__container {
+      padding: 50px 16px 30px;
       grid-template-columns: repeat(2, 1fr);
-    }
-    .gt-cats__section-title {
-      font-size: 24px;
+      gap: 8px;
     }
     .gt-cats__heading {
       font-size: 13px;
-      margin: 14px 0 24px;
+      margin: 14px 0 0;
     }
   }
 </style>
@@ -141,14 +112,7 @@
   "name": "Category Grid",
   "tag": "section",
   "class": "section-category-grid",
-  "settings": [
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Título da seção",
-      "default": "CATEGORIAS"
-    }
-  ],
+  "settings": [],
   "blocks": [
     {
       "type": "category",
