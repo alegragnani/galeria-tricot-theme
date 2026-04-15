@@ -30,9 +30,13 @@
     <!-- Navigation -->
     <nav class="site-header__nav" data-site-nav>
       <div class="site-header__nav-inner">
-        {% assign menu_links = linklists[section.settings.menu].links %}
-        {% if section.settings.menu != blank and menu_links.size > 0 %}
-          {% assign menu = linklists[section.settings.menu] %}
+        {% assign menu_handle = section.settings.menu | default: 'main-menu' %}
+        {% assign menu = linklists[menu_handle] %}
+        {% if menu == blank or menu.links.size == 0 %}
+          {% assign menu = linklists['main-menu'] %}
+        {% endif %}
+        {% assign menu_links = menu.links %}
+        {% if menu_links.size > 0 %}
           <ul class="site-header__nav-list">
             {% for link in menu.links %}
               <li class="site-header__nav-item">
