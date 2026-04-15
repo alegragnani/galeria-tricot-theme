@@ -1,0 +1,100 @@
+{
+  "sections": {
+    "hero_slideshow": {
+      "type": "hero-slideshow",
+      "settings": {}
+    },
+    "category_grid": {
+      "type": "category-grid",
+      "blocks": {
+        "cat1": {
+          "type": "category",
+          "settings": {
+            "heading": "Conjuntos de Calça",
+            "link": "/collections/conjuntos-de-calca"
+          }
+        },
+        "cat2": {
+          "type": "category",
+          "settings": {
+            "heading": "Casacos e Blusas",
+            "link": "/collections/casacos-e-blusas"
+          }
+        },
+        "cat3": {
+          "type": "category",
+          "settings": {
+            "heading": "Vestidos",
+            "link": "/collections/vestidos"
+          }
+        },
+        "cat4": {
+          "type": "category",
+          "settings": {
+            "heading": "Macacão",
+            "link": "/collections/macacao"
+          }
+        }
+      },
+      "block_order": ["cat1", "cat2", "cat3", "cat4"],
+      "settings": {
+        "title": ""
+      }
+    },
+    "dual_banner": {
+      "type": "dual-banner",
+      "blocks": {
+        "b1": { "type": "banner", "settings": {} },
+        "b2": { "type": "banner", "settings": {} }
+      },
+      "block_order": ["b1", "b2"],
+      "settings": {}
+    },
+    "best_sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "BEST SELLERS"
+      }
+    },
+    "image_banner_lancamento": {
+      "type": "image-banner",
+      "settings": {
+        "heading": "TRAMAS & TEXTURAS",
+        "link_text": "SHOP NOW",
+        "text_position": "left",
+        "text_color": "#ffffff"
+      }
+    },
+    "escolhas_blogueiras": {
+      "type": "shop-the-look",
+      "settings": {
+        "title": "ESCOLHAS DAS BLOGUEIRAS"
+      }
+    },
+    "outlet_destaques": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "DESTAQUES DO OUTLET"
+      }
+    },
+    "trust_bar": {
+      "type": "trust-bar",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero_slideshow",
+    "category_grid",
+    "dual_banner",
+    "best_sellers",
+    "image_banner_lancamento",
+    "escolhas_blogueiras",
+    "outlet_destaques",
+    "trust_bar",
+    "newsletter"
+  ]
+}
