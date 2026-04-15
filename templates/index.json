@@ -37,7 +37,7 @@
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_cf3019ba-b21a-4a15-ab6f-8bd599f5842b.webp",
+            "image": "shopify://shop_images/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
             "heading": "Vestidos",
             "link": "/collections/vestidos"
           }
@@ -57,9 +57,7 @@
         "cat3",
         "cat4"
       ],
-      "settings": {
-        "title": ""
-      }
+      "settings": {}
     },
     "dual_banner": {
       "type": "dual-banner",
