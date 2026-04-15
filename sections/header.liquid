@@ -195,7 +195,7 @@
     position: fixed;
   }
 
-  /* Header transparente: texto e Ã­cones brancos sobre o hero */
+  /* Header transparente: texto e ícones brancos sobre o hero */
   .site-header .site-header__logo-text,
   .site-header .site-header__nav-link,
   .site-header .site-header__icon-btn {
@@ -207,7 +207,7 @@
     color: #2B1810;
   }
 
-  /* Ao rolar a pÃ¡gina vira sÃ³lido branco */
+  /* Ao rolar a página vira sólido branco */
   .site-header.is-scrolled {
     top: 0;
     background: #ffffff;
@@ -226,7 +226,7 @@
     color: #ffffff;
   }
 
-  /* PÃ¡ginas que nÃ£o sÃ£o home: header sÃ³lido desde o inÃ­cio */
+  /* Páginas que não são home: header sólido desde o início */
   body:not(.template-index) .site-header {
     position: sticky;
     background-color: #ffffff;
@@ -350,43 +350,49 @@
   .mega-menu {
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
+    left: 0;
+    right: 0;
+    transform: translateY(-10px);
     background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-top: 3px solid #7A3E28;
-    margin-top: 8px;
-    min-width: 600px;
+    border: none;
+    border-top: 1px solid rgba(84, 84, 84, 0.1);
+    margin-top: 0;
+    width: 100vw;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
     box-shadow: none;
-    padding: 24px;
+    padding: 30px 50px;
   }
 
   .mega-menu__content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px;
+    max-width: 1500px;
+    margin: 0 auto;
   }
 
   .mega-menu__column {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .mega-menu__link {
-    color: #666;
+    color: #545454;
     text-decoration: none;
-    font-size: 13px;
-    line-height: 1.5;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    line-height: 1.3;
     transition: color 0.2s;
   }
 
   .mega-menu__link:hover {
     color: #7A3E28;
-    font-weight: 500;
   }
 
   .site-header__icons {
@@ -482,7 +488,7 @@
     const header = document.querySelector('[data-site-header]');
     if (!header) return;
 
-    // Toggle is-scrolled conforme rola a pÃ¡gina
+    // Toggle is-scrolled conforme rola a página
     function updateScrollState() {
       if (window.scrollY > 60) {
         header.classList.add('is-scrolled');
