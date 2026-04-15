@@ -103,6 +103,22 @@
     max-height: 90vh;
   }
 
+  /* Tablet — banner proporcional (igual BP): escala com a largura, nao corta */
+  @media (max-width: 1349px) {
+    .hero-slideshow__slides {
+      height: auto;
+      max-height: none;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  /* Mobile — imagem vertical, proporcao retrato */
+  @media (max-width: 749px) {
+    .hero-slideshow__slides {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
   .hero-slideshow__slide {
     position: absolute;
     top: 0;
