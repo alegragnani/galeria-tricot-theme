@@ -34,9 +34,9 @@
         {% assign menu = linklists[menu_handle] %}
         {% if menu == blank or menu.links.size == 0 %}
           {% assign menu = linklists['main-menu'] %}
+          {% assign menu_handle = 'main-menu' %}
         {% endif %}
         {% assign menu_links = menu.links %}
-        <!-- GT-DEBUG handle={{ menu_handle }} size={{ menu.links.size }} t0={{ menu.links[0].title }} c0={{ menu.links[0].child_links.size }} tN={{ menu.links[0].links.size }} lists={{ linklists.size }} mm_size={{ linklists['main-menu'].links.size }} mm_c0={{ linklists['main-menu'].links[0].child_links.size }} -->
         {% if menu_links.size > 0 %}
           <ul class="site-header__nav-list">
             {% for link in menu.links %}
@@ -182,10 +182,9 @@
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
   .site-header {
-    background: linear-gradient(360deg, rgba(55, 44, 25, 0) 0%, rgba(15, 15, 14, 0.35) 100%);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-bottom: none;
+    background: #ffffff;
+    background-color: #ffffff;
+    border-bottom: 1px solid #E8DED1;
     position: absolute;
     top: 39px;
     left: 0;
@@ -199,19 +198,19 @@
     position: fixed;
   }
 
-  /* Header transparente: texto e ícones brancos sobre o hero */
+  /* Header sÃ³lido branco: texto e Ã­cones escuros */
   .site-header .site-header__logo-text,
   .site-header .site-header__nav-link,
   .site-header .site-header__icon-btn {
-    color: #ffffff;
+    color: #2B1810;
     text-shadow: none;
   }
   .site-header .site-header__cart-count {
-    background-color: #ffffff;
-    color: #2B1810;
+    background-color: #7A3E28;
+    color: #ffffff;
   }
 
-  /* Ao rolar a página vira sólido branco */
+  /* Ao rolar a pÃ¡gina vira sÃ³lido branco */
   .site-header.is-scrolled {
     top: 0;
     background: #ffffff;
@@ -230,7 +229,7 @@
     color: #ffffff;
   }
 
-  /* Páginas que não são home: header sólido desde o início */
+  /* PÃ¡ginas que nÃ£o sÃ£o home: header sÃ³lido desde o inÃ­cio */
   body:not(.template-index) .site-header {
     position: sticky;
     background-color: #ffffff;
@@ -288,9 +287,9 @@
     display: block;
     transition: filter 0.35s ease;
   }
-  /* Logo branca sobre hero transparente */
+  /* Logo sempre em cor natural (header branco) */
   .site-header:not(.is-scrolled) .site-header__logo-img {
-    filter: brightness(0) invert(1);
+    filter: none;
   }
   body:not(.template-index) .site-header .site-header__logo-img {
     filter: none;
@@ -315,7 +314,7 @@
   }
 
   .site-header__nav-item {
-    position: relative;
+    position: static;
   }
 
   .site-header__nav-link {
@@ -356,16 +355,16 @@
     top: 100%;
     left: 0;
     right: 0;
+    width: auto;
     transform: translateY(-10px);
-    background-color: #fff;
+    background-color: #ffffff;
     border: none;
     border-top: 1px solid rgba(84, 84, 84, 0.1);
     margin-top: 0;
-    width: 100vw;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    box-shadow: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     padding: 30px 50px;
   }
 
@@ -492,7 +491,7 @@
     const header = document.querySelector('[data-site-header]');
     if (!header) return;
 
-    // Toggle is-scrolled conforme rola a página
+    // Toggle is-scrolled conforme rola a pÃ¡gina
     function updateScrollState() {
       if (window.scrollY > 60) {
         header.classList.add('is-scrolled');
