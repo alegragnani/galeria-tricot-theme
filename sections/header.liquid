@@ -178,6 +178,49 @@
   </div>
 </header>
 
+<!-- Mobile Drawer (estilo PatBO) -->
+<div class="mobile-drawer" data-mobile-drawer aria-hidden="true">
+  <div class="mobile-drawer__overlay" data-drawer-close></div>
+  <aside class="mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="mobile-drawer__header">
+      <button class="mobile-drawer__close" data-drawer-close aria-label="Fechar menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 17" fill="none" width="18" height="17">
+          <path fill="currentColor" d="M.865 15.978a.5.5 0 0 0 .707.707l7.433-7.431 7.579 7.282a.501.501 0 0 0 .846-.37.5.5 0 0 0-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 1 0-.707-.708L8.991 7.853 1.413.573a.5.5 0 1 0-.693.72l7.563 7.272z"/>
+        </svg>
+      </button>
+    </div>
+    <nav class="mobile-drawer__nav">
+      <ul class="mobile-drawer__menu">
+        {% if menu_links and menu_links.size > 0 %}
+          {% for link in menu_links %}
+            <li class="mobile-drawer__item">
+              <a href="{{ link.url }}" class="mobile-drawer__link">{{ link.title }}</a>
+              {% if link.links.size > 0 %}
+                <ul class="mobile-drawer__submenu">
+                  {% for child in link.links %}
+                    <li><a href="{{ child.url }}" class="mobile-drawer__sublink">{{ child.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="mobile-drawer__item"><a href="/collections/novidades" class="mobile-drawer__link">NOVIDADES</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/mom-edit" class="mobile-drawer__link">MOM EDIT</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/snow-trip-collab" class="mobile-drawer__link">SNOW TRIP COLLAB</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/roupas" class="mobile-drawer__link">ROUPAS</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/aerolooks" class="mobile-drawer__link">AEROLOOKS</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/sale-ver26" class="mobile-drawer__link">SALE VER26</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/outlet" class="mobile-drawer__link">OUTLET</a></li>
+        {% endif %}
+      </ul>
+      <div class="mobile-drawer__footer">
+        <a href="{{ routes.account_url }}" class="mobile-drawer__footer-link">Minha conta</a>
+      </div>
+    </nav>
+  </aside>
+</div>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
@@ -200,7 +243,7 @@
     position: fixed;
   }
 
-  /* Estado translÃºcido (sem hover, sem scroll): texto e Ã­cones brancos */
+  /* Estado translúcido (sem hover, sem scroll): texto e ícones brancos */
   .site-header .site-header__logo-text,
   .site-header .site-header__nav-link,
   .site-header .site-header__icon-btn {
@@ -212,7 +255,7 @@
     color: #2B1810;
   }
 
-  /* Hover no header: vira branco sÃ³lido com texto escuro (igual PatBO) */
+  /* Hover no header: vira branco sólido com texto escuro (igual PatBO) */
   .site-header:hover {
     background: #ffffff;
     background-color: #ffffff;
@@ -233,7 +276,7 @@
     filter: none;
   }
 
-  /* Ao rolar a pÃ¡gina vira sÃ³lido branco */
+  /* Ao rolar a página vira sólido branco */
   .site-header.is-scrolled {
     top: 0;
     background: #ffffff;
@@ -252,7 +295,7 @@
     color: #ffffff;
   }
 
-  /* PÃ¡ginas que nÃ£o sÃ£o home: header sÃ³lido desde o inÃ­cio */
+  /* Páginas que não são home: header sólido desde o início */
   body:not(.template-index) .site-header {
     position: sticky;
     background-color: #ffffff;
@@ -310,7 +353,7 @@
     display: block;
     transition: filter 0.35s ease;
   }
-  /* Logo branco no estado translÃºcido (home, sem hover, sem scroll) */
+  /* Logo branco no estado translúcido (home, sem hover, sem scroll) */
   .site-header:not(.is-scrolled) .site-header__logo-img {
     filter: brightness(0) invert(1);
   }
@@ -507,6 +550,131 @@
       gap: 16px;
     }
   }
+
+  /* ───── Mobile Drawer (estilo PatBO) ───── */
+  .mobile-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .mobile-drawer.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .mobile-drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .mobile-drawer.is-open .mobile-drawer__overlay {
+    opacity: 1;
+  }
+  .mobile-drawer__panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 400px;
+    max-width: 85vw;
+    background: #ffffff;
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+  }
+  .mobile-drawer.is-open .mobile-drawer__panel {
+    transform: translateX(0);
+  }
+  .mobile-drawer__header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    border-bottom: 1px solid #E8DED1;
+  }
+  .mobile-drawer__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2B1810;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobile-drawer__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-drawer__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+  }
+  .mobile-drawer__item {
+    border-bottom: 1px solid #F0EDE8;
+  }
+  .mobile-drawer__link {
+    display: block;
+    padding: 20px 24px;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    text-decoration: none;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+  .mobile-drawer__link:hover,
+  .mobile-drawer__link:active {
+    color: #2B1810;
+    background: #FAF6F1;
+  }
+  .mobile-drawer__submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 12px 0;
+    background: #FAF6F1;
+  }
+  .mobile-drawer__sublink {
+    display: block;
+    padding: 12px 24px 12px 40px;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    color: #7A7A7A;
+    text-decoration: none;
+  }
+  .mobile-drawer__sublink:hover {
+    color: #2B1810;
+  }
+  .mobile-drawer__footer {
+    padding: 24px;
+    border-top: 1px solid #E8DED1;
+  }
+  .mobile-drawer__footer-link {
+    display: block;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    text-decoration: none;
+  }
+  /* Quando drawer abre, travar scroll do body */
+  body.drawer-open {
+    overflow: hidden;
+  }
 </style>
 
 <script>
@@ -514,7 +682,7 @@
     const header = document.querySelector('[data-site-header]');
     if (!header) return;
 
-    // Toggle is-scrolled conforme rola a pÃ¡gina
+    // Toggle is-scrolled conforme rola a página
     function updateScrollState() {
       if (window.scrollY > 60) {
         header.classList.add('is-scrolled');
@@ -550,6 +718,30 @@
           }
         }
       });
+    });
+
+    // ===== Mobile Drawer (abre/fecha) =====
+    const drawer = document.querySelector('[data-mobile-drawer]');
+    const toggleBtn = document.querySelector('[data-menu-toggle]');
+    const closeBtns = document.querySelectorAll('[data-drawer-close]');
+
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('drawer-open');
+    }
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('drawer-open');
+    }
+    if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+    closeBtns.forEach(btn => btn.addEventListener('click', closeDrawer));
+    // Fechar com ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
     });
   });
 </script>

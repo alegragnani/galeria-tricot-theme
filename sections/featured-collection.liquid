@@ -35,13 +35,13 @@
 
   .featured-collection__title {
     font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
-    font-size: 44px;
+    font-size: 32px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 0.6px;
     margin: 0;
     color: #9E885E;
-    line-height: 1.1;
+    line-height: 1.3;
   }
 
   .featured-collection__carousel {
@@ -77,13 +77,13 @@
 
   @media (max-width: 1024px) {
     .featured-collection__item {
-      flex: 0 0 calc(33.333% - 1rem);
+      flex: 0 0 calc(50% - 0.75rem);
     }
   }
 
   @media (max-width: 768px) {
     .featured-collection {
-      padding: 3rem 1rem;
+      padding: 1rem 1rem 3rem;
     }
 
     .featured-collection__item {
@@ -91,7 +91,11 @@
     }
 
     .featured-collection__header {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .featured-collection__title {
+      font-size: 26px;
     }
   }
 
