@@ -42,6 +42,14 @@
   .category-grid {
     padding: 0;
     background-color: #ffffff;
+    /* Escapa do container central do tema para ocupar 100vw */
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
   }
 
   .category-grid__header {
@@ -66,9 +74,11 @@
     width: 100%;
     max-width: none;
     margin: 0;
+    padding: 0 16px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0;
+    gap: 16px;
+    box-sizing: border-box;
   }
 
   .category-grid__item {
