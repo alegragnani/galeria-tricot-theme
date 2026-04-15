@@ -1,92 +1,72 @@
-<!-- Category Grid Section - 4 mini banners de categoria (estilo PatBO) -->
-<section class="category-grid">
-  {% if section.settings.title != blank %}
-    <div class="category-grid__header">
-      <h2 class="category-grid__section-title">{{ section.settings.title }}</h2>
-    </div>
-  {% endif %}
-
-  <div class="category-grid__container">
+<!-- Category Grid - 4 mini banners de categoria (estilo PatBO) -->
+<section class="gt-cats">
+  <ul class="gt-cats__grid">
     {% for block in section.blocks %}
-      <div class="category-grid__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
-        <a href="{{ block.settings.link }}" class="category-grid__link">
-          <div class="category-grid__image-wrapper">
+      <li class="gt-cats__item" {{ block.shopify_attributes }}>
+        <a href="{{ block.settings.link }}" class="gt-cats__link">
+          <div class="gt-cats__image-wrapper">
             {% if block.settings.image %}
               <img
                 src="{{ block.settings.image | image_url: width: 800 }}"
                 srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
                 sizes="(max-width: 768px) 50vw, 25vw"
                 alt="{{ block.settings.heading | escape }}"
-                class="category-grid__image"
+                class="gt-cats__image"
                 loading="lazy"
                 width="800"
                 height="1067"
               >
             {% else %}
-              <div class="category-grid__placeholder">
+              <div class="gt-cats__placeholder">
                 {{ 'image' | placeholder_svg_tag }}
               </div>
             {% endif %}
           </div>
           {% if block.settings.heading != blank %}
-            <h3 class="category-grid__heading">{{ block.settings.heading }}</h3>
+            <h3 class="gt-cats__heading">{{ block.settings.heading }}</h3>
           {% endif %}
         </a>
-      </div>
+      </li>
     {% endfor %}
-  </div>
+  </ul>
 </section>
 
 <style>
-  /* Category Grid - Estilo PatBO: full bleed, gap pequeno entre imagens */
-  .category-grid {
+  .gt-cats {
     padding: 0;
-    background-color: #ffffff;
-  }
-
-  .category-grid__header {
-    width: 100%;
-    margin: 0 0 25px;
-    text-align: center;
-    padding: 60px 0 0;
-  }
-
-  .category-grid__section-title {
-    font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 32px;
-    font-weight: 400;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: #9E885E;
     margin: 0;
-    line-height: 1.2;
+    background-color: #ffffff;
+    display: block;
   }
 
-  .category-grid__container {
-    /* Escapa do container central do tema e ocupa 100vw */
+  .gt-cats__grid {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-    padding: 0 16px;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 8px;
   }
 
-  .category-grid__item {
+  .gt-cats__item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     position: relative;
     overflow: hidden;
   }
 
-  .category-grid__link {
+  .gt-cats__link {
     display: block;
     text-decoration: none;
     color: inherit;
   }
 
-  .category-grid__image-wrapper {
+  .gt-cats__image-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 3 / 4;
@@ -94,8 +74,8 @@
     background-color: #f5f5f5;
   }
 
-  .category-grid__image,
-  .category-grid__placeholder {
+  .gt-cats__image,
+  .gt-cats__placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -103,11 +83,11 @@
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .category-grid__link:hover .category-grid__image {
+  .gt-cats__link:hover .gt-cats__image {
     transform: scale(1.05);
   }
 
-  .category-grid__heading {
+  .gt-cats__heading {
     font-family: 'Raleway', -apple-system, sans-serif;
     font-size: 14px;
     font-weight: 400;
@@ -120,17 +100,10 @@
   }
 
   @media (max-width: 768px) {
-    .category-grid__header {
-      padding: 40px 0 0;
-      margin-bottom: 18px;
-    }
-    .category-grid__container {
+    .gt-cats__grid {
       grid-template-columns: repeat(2, 1fr);
     }
-    .category-grid__section-title {
-      font-size: 24px;
-    }
-    .category-grid__heading {
+    .gt-cats__heading {
       font-size: 13px;
       margin: 18px 0 0;
     }
@@ -142,14 +115,7 @@
   "name": "Category Grid",
   "tag": "section",
   "class": "section-category-grid",
-  "settings": [
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Título da seção",
-      "default": "CATEGORIAS"
-    }
-  ],
+  "settings": [],
   "blocks": [
     {
       "type": "category",
@@ -179,7 +145,7 @@
     {
       "name": "Category Grid",
       "blocks": [
-        { "type": "category", "settings": { "heading": "Conjuntos de Calça" } },
+        { "type": "category", "settings": { "heading": "Conjuntos" } },
         { "type": "category", "settings": { "heading": "Casacos e Blusas" } },
         { "type": "category", "settings": { "heading": "Vestidos" } },
         { "type": "category", "settings": { "heading": "Macacão" } }
