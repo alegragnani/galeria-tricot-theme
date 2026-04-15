@@ -175,35 +175,47 @@
 </header>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&display=swap');
+
   .site-header {
     background: linear-gradient(360deg, rgba(55, 44, 25, 0) 0%, rgba(15, 15, 14, 0.35) 100%);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-bottom: none;
     position: absolute;
-    top: 40px;
+    top: 39px;
     left: 0;
     right: 0;
     z-index: 100;
     transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, top 0.35s ease;
+    font-family: 'Lato', 'Myriad Pro', -apple-system, sans-serif;
   }
 
   .site-header[data-sticky-header] {
     position: fixed;
   }
 
+  /* Header transparente: texto e Ã­cones brancos sobre o hero */
+  .site-header .site-header__logo-text,
   .site-header .site-header__nav-link,
   .site-header .site-header__icon-btn {
     color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
+  }
+  .site-header .site-header__cart-count {
+    background-color: #ffffff;
+    color: #2B1810;
   }
 
+  /* Ao rolar a pÃ¡gina vira sÃ³lido branco */
   .site-header.is-scrolled {
     top: 0;
     background: #ffffff;
+    background-color: #ffffff;
     border-bottom-color: #E8DED1;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   }
+  .site-header.is-scrolled .site-header__logo-text,
   .site-header.is-scrolled .site-header__nav-link,
   .site-header.is-scrolled .site-header__icon-btn {
     color: #2B1810;
@@ -214,61 +226,254 @@
     color: #ffffff;
   }
 
+  /* PÃ¡ginas que nÃ£o sÃ£o home: header sÃ³lido desde o inÃ­cio */
   body:not(.template-index) .site-header {
     position: sticky;
     background-color: #ffffff;
     border-bottom-color: #E8DED1;
   }
+  body:not(.template-index) .site-header .site-header__logo-text,
   body:not(.template-index) .site-header .site-header__nav-link,
   body:not(.template-index) .site-header .site-header__icon-btn {
     color: #2B1810;
+  }
+  body:not(.template-index) .site-header .site-header__cart-count {
+    background-color: #7A3E28;
+    color: #ffffff;
   }
 
   .site-header__container {
     display: grid;
     grid-template-columns: 180px 1fr 180px;
     align-items: center;
-    padding: 18px 48px;
+    padding: 12px 50px;
     max-width: 1600px;
     margin: 0 auto;
     gap: 24px;
+    min-height: 86px;
+    box-sizing: border-box;
   }
 
-  .site-header__logo-link { display: flex; align-items: center; text-decoration: none; }
-  .site-header__logo-img { height: 36px; width: auto; display: block; transition: filter 0.35s ease; }
-  .site-header:not(.is-scrolled) .site-header__logo-img { filter: brightness(0) invert(1); }
+  @media (max-width: 1200px) {
+    .site-header__container {
+      padding: 12px 24px;
+      grid-template-columns: 150px 1fr 150px;
+    }
+  }
 
-  .site-header__nav { display: flex; justify-content: center; }
-  .site-header__nav-list { display: flex; list-style: none; margin: 0; padding: 0; gap: 32px; }
-  .site-header__nav-item { position: relative; }
-  .site-header__nav-link {
+  .site-header__logo {
+    flex-shrink: 0;
+  }
+
+  .site-header__logo-link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    color: #000;
+  }
+
+  .site-header__logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .site-header__logo-img {
+    height: 42px;
+    width: auto;
+    display: block;
+    transition: filter 0.35s ease;
+  }
+  /* Logo branca sobre hero transparente */
+  .site-header:not(.is-scrolled) .site-header__logo-img {
+    filter: brightness(0) invert(1);
+  }
+  body:not(.template-index) .site-header .site-header__logo-img {
+    filter: none;
+  }
+
+  .site-header__nav {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+  }
+
+  .site-header__icons {
+    justify-content: flex-end;
+  }
+
+  .site-header__nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 32px;
+  }
+
+  .site-header__nav-item {
+    position: relative;
+  }
+
+  .site-header__nav-link {
+    color: #000;
+    text-decoration: none;
+    font-family: 'Lato', 'Myriad Pro', -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
     display: flex;
     align-items: center;
     gap: 6px;
     transition: color 0.2s;
     text-transform: uppercase;
+    text-shadow: none;
   }
-  .site-header__nav-link:hover { color: #7A3E28; }
 
-  .site-header__icons { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
-  .site-header__icon-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 4px; position: relative; }
-  .site-header__icon-btn:hover { color: #7A3E28; }
-  .site-header__cart-count {
-    position: absolute; top: -8px; right: -8px;
-    background-color: #ffffff; color: #2B1810;
-    border-radius: 50%; width: 20px; height: 20px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
+  .site-header__nav-link:hover {
+    color: #7A3E28;
   }
-  .site-header__menu-toggle { display: none; background: none; border: none; cursor: pointer; }
+
+  .site-header__nav-icon {
+    transition: transform 0.2s;
+  }
+
+  .site-header__nav-item:hover .site-header__nav-icon {
+    transform: rotate(180deg);
+  }
+
+  .site-header__nav-item:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: 3px solid #7A3E28;
+    margin-top: 8px;
+    min-width: 600px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+  }
+
+  .mega-menu__content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+  }
+
+  .mega-menu__column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mega-menu__link {
+    color: #666;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .mega-menu__link:hover {
+    color: #7A3E28;
+    font-weight: 500;
+  }
+
+  .site-header__icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .site-header__icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .site-header__icon-btn:hover {
+    color: #7A3E28;
+  }
+
+  .site-header__cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #7A3E28;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .site-header__menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #000;
+  }
 
   @media (max-width: 992px) {
-    .site-header__nav { display: none; }
-    .site-header__menu-toggle { display: flex; }
+    .site-header__nav {
+      display: none;
+    }
+
+    .site-header__menu-toggle {
+      display: flex;
+    }
+
+    .mega-menu {
+      min-width: 400px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header__container {
+      padding: 12px 16px;
+      gap: 12px;
+    }
+
+    .site-header__icons {
+      gap: 12px;
+    }
+
+    .site-header__nav {
+      margin: 0;
+    }
+
+    .mega-menu {
+      min-width: 280px;
+      padding: 16px;
+    }
+
+    .mega-menu__content {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
   }
 </style>
 
@@ -276,12 +481,44 @@
   document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('[data-site-header]');
     if (!header) return;
+
+    // Toggle is-scrolled conforme rola a pÃ¡gina
     function updateScrollState() {
-      if (window.scrollY > 60) { header.classList.add('is-scrolled'); }
-      else { header.classList.remove('is-scrolled'); }
+      if (window.scrollY > 60) {
+        header.classList.add('is-scrolled');
+      } else {
+        header.classList.remove('is-scrolled');
+      }
     }
     updateScrollState();
     window.addEventListener('scroll', updateScrollState, { passive: true });
+
+    // Close mega menus when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[data-site-nav]')) {
+        const menus = document.querySelectorAll('[data-mega-menu]');
+        menus.forEach(menu => {
+          menu.parentElement?.classList.remove('is-open');
+        });
+      }
+    });
+
+    // Handle mega menu triggers on mobile
+    const triggers = document.querySelectorAll('[data-mega-menu-trigger]');
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth < 992;
+        if (isMobile) {
+          e.preventDefault();
+          const menu = this.parentElement.querySelector('[data-mega-menu]');
+          if (menu) {
+            this.parentElement.classList.toggle('is-open');
+            menu.style.opacity = menu.style.opacity === '1' ? '0' : '1';
+            menu.style.visibility = menu.style.visibility === 'visible' ? 'hidden' : 'visible';
+          }
+        }
+      });
+    });
   });
 </script>
 
@@ -289,9 +526,23 @@
 {
   "name": "Header",
   "settings": [
-    { "type": "image_picker", "id": "logo", "label": "Logo Image" },
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
-    { "type": "checkbox", "id": "sticky_header", "label": "Make header sticky", "default": true }
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Make header sticky",
+      "default": true
+    }
   ]
 }
 {% endschema %}
