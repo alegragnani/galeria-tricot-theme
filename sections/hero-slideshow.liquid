@@ -92,6 +92,8 @@
 <style>
   .hero-slideshow {
     position: relative;
+    width: 100%;
+    max-width: 100%;
     overflow: hidden;
     background-color: #f5f5f5;
   }
@@ -106,16 +108,16 @@
   /* Tablet — banner proporcional (igual BP): escala com a largura, nao corta */
   @media (max-width: 1349px) {
     .hero-slideshow__slides {
-      height: auto;
+      height: 0;
       max-height: none;
-      aspect-ratio: 16 / 9;
+      padding-bottom: 56.25%; /* 16:9 */
     }
   }
 
   /* Mobile — imagem vertical, proporcao retrato */
   @media (max-width: 749px) {
     .hero-slideshow__slides {
-      aspect-ratio: 3 / 4;
+      padding-bottom: 133.33%; /* 3:4 */
     }
   }
 
