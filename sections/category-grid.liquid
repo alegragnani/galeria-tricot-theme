@@ -9,7 +9,7 @@
               <img
                 src="{{ block.settings.image | image_url: width: 800 }}"
                 srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
-                sizes="(max-width: 768px) 50vw, 22vw"
+                sizes="(max-width: 768px) 50vw, 25vw"
                 alt="{{ block.settings.heading | escape }}"
                 class="gt-cats__image"
                 loading="lazy"
@@ -33,17 +33,20 @@
 
 <style>
   .gt-cats {
-    padding: 60px 0 30px;
+    padding: 0;
+    margin: 0;
     background-color: #ffffff;
     display: block;
   }
 
   .gt-cats__grid {
     list-style: none;
-    margin: 0 auto;
-    padding: 0 16px;
-    max-width: 1500px;
-    box-sizing: content-box;
+    margin: 8px 0 0;
+    padding: 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
@@ -54,6 +57,7 @@
     overflow: hidden;
     list-style: none;
     margin: 0;
+    padding: 0;
   }
 
   .gt-cats__link {
@@ -95,13 +99,11 @@
     line-height: 1.4;
   }
 
-  @media (max-width: 989px) {
-    .gt-cats {
-      padding: 40px 0 20px;
-    }
+  @media (max-width: 768px) {
     .gt-cats__grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
+      margin-top: 8px;
     }
     .gt-cats__heading {
       font-size: 13px;
