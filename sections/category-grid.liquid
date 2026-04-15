@@ -1,8 +1,8 @@
 <!-- Category Grid Section - 4 mini banners de categoria (estilo PatBO) -->
 <section class="gt-cats">
-  <div class="gt-cats__container">
+  <ul class="gt-cats__grid">
     {% for block in section.blocks %}
-      <div class="gt-cats__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+      <li class="gt-cats__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
         <a href="{{ block.settings.link }}" class="gt-cats__link">
           <div class="gt-cats__image-wrapper">
             {% if block.settings.image %}
@@ -26,25 +26,24 @@
             <h3 class="gt-cats__heading">{{ block.settings.heading }}</h3>
           {% endif %}
         </a>
-      </div>
+      </li>
     {% endfor %}
-  </div>
+  </ul>
 </section>
 
 <style>
   .gt-cats {
-    padding: 0;
+    padding: 60px 0 30px;
     background-color: #ffffff;
     display: block;
   }
 
-  .gt-cats__container {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-    padding: 3.5vw 3vw 2vw;
-    box-sizing: border-box;
+  .gt-cats__grid {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0 16px;
+    max-width: 1500px;
+    box-sizing: content-box;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
@@ -53,6 +52,8 @@
   .gt-cats__item {
     position: relative;
     overflow: hidden;
+    list-style: none;
+    margin: 0;
   }
 
   .gt-cats__link {
@@ -94,9 +95,11 @@
     line-height: 1.4;
   }
 
-  @media (max-width: 768px) {
-    .gt-cats__container {
-      padding: 40px 16px 20px;
+  @media (max-width: 989px) {
+    .gt-cats {
+      padding: 40px 0 20px;
+    }
+    .gt-cats__grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
     }
