@@ -537,11 +537,10 @@
     .site-header__container {
       grid-template-columns: 1fr auto 1fr;
       grid-template-areas: "toggle logo icons";
-      padding: 8px 32px;
+      padding: 12px 32px;
       gap: 16px;
-      min-height: 68px;
+      min-height: 86px;
     }
-    .site-header__logo-img { height: 36px; width: auto; }
     .site-header__menu-toggle { grid-area: toggle; justify-self: start; }
     .site-header__logo { grid-area: logo; justify-self: center; }
     .site-header__icons { grid-area: icons; justify-self: end; }
@@ -554,12 +553,11 @@
      ================================================================ */
   @media (max-width: 749px) {
     .site-header__container {
-      padding: 6px 16px;
+      padding: 12px 16px;
       gap: 12px;
-      min-height: 56px;
+      min-height: 86px;
     }
     .site-header__icons { gap: 12px; }
-    .site-header__logo-img { height: 30px; width: auto; }
     .mega-menu { min-width: 280px; padding: 16px; }
     .mega-menu__content { grid-template-columns: 1fr; gap: 16px; }
   }
