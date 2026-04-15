@@ -17,28 +17,15 @@
       {% endif %}
     </div>
   </div>
-
-  <!-- Scroll Indicators -->
-  <div class="featured-collection__nav">
-    <button class="featured-collection__scroll-btn featured-collection__scroll-btn--prev" aria-label="Scroll left">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    <button class="featured-collection__scroll-btn featured-collection__scroll-btn--next" aria-label="Scroll right">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-  </div>
 </section>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Italiana&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
   .featured-collection {
     padding: 4rem 2rem;
     position: relative;
+    background: transparent;
   }
 
   .featured-collection__header {
@@ -47,11 +34,11 @@
   }
 
   .featured-collection__title {
-    font-family: 'Italiana', 'Cormorant Garamond', serif;
-    font-size: 36px;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 32px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 0.6px;
     margin: 0;
     color: #9E885E;
     line-height: 1.2;
@@ -70,6 +57,13 @@
     padding-bottom: 1rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .featured-collection__track.is-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
   }
 
   .featured-collection__track::-webkit-scrollbar {
@@ -79,34 +73,6 @@
   .featured-collection__item {
     flex: 0 0 calc(25% - 1.125rem);
     min-width: 200px;
-  }
-
-  /* Scroll Navigation */
-  .featured-collection__nav {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .featured-collection__scroll-btn {
-    background-color: #000;
-    color: #fff;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 0;
-  }
-
-  .featured-collection__scroll-btn:hover {
-    background-color: #333;
-    transform: scale(1.05);
   }
 
   @media (max-width: 1024px) {
@@ -127,10 +93,6 @@
     .featured-collection__header {
       margin-bottom: 2rem;
     }
-
-    .featured-collection__nav {
-      display: none;
-    }
   }
 
   @media (max-width: 480px) {
@@ -142,21 +104,45 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.querySelector('[data-carousel]');
-    if (!carousel) return;
+    document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
+      const track = carousel.querySelector('.featured-collection__track');
+      if (!track) return;
 
-    const track = carousel.querySelector('.featured-collection__track');
-    const prevBtn = carousel.parentElement.querySelector('.featured-collection__scroll-btn--prev');
-    const nextBtn = carousel.parentElement.querySelector('.featured-collection__scroll-btn--next');
+      let isDown = false;
+      let startX = 0;
+      let startScroll = 0;
 
-    const scrollAmount = 300;
-
-    prevBtn.addEventListener('click', () => {
-      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    nextBtn.addEventListener('click', () => {
-      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      track.addEventListener('mousedown', function(e) {
+        isDown = true;
+        track.classList.add('is-dragging');
+        startX = e.pageX - track.offsetLeft;
+        startScroll = track.scrollLeft;
+      });
+      track.addEventListener('mouseleave', function() {
+        isDown = false;
+        track.classList.remove('is-dragging');
+      });
+      track.addEventListener('mouseup', function() {
+        isDown = false;
+        track.classList.remove('is-dragging');
+      });
+      track.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - track.offsetLeft;
+        track.scrollLeft = startScroll - (x - startX);
+      });
+      // Evitar clicar num produto logo após arrastar
+      track.addEventListener('click', function(e) {
+        if (track.classList.contains('was-dragged')) {
+          e.preventDefault();
+          e.stopPropagation();
+          track.classList.remove('was-dragged');
+        }
+      }, true);
+      track.addEventListener('mousemove', function() {
+        if (isDown) track.classList.add('was-dragged');
+      });
     });
   });
 </script>
