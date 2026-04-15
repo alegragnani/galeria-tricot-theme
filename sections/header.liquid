@@ -36,6 +36,7 @@
           {% assign menu = linklists['main-menu'] %}
         {% endif %}
         {% assign menu_links = menu.links %}
+        <!-- GT-DEBUG handle={{ menu_handle }} size={{ menu.links.size }} t0={{ menu.links[0].title }} c0={{ menu.links[0].child_links.size }} tN={{ menu.links[0].links.size }} lists={{ linklists.size }} mm_size={{ linklists['main-menu'].links.size }} mm_c0={{ linklists['main-menu'].links[0].child_links.size }} -->
         {% if menu_links.size > 0 %}
           <ul class="site-header__nav-list">
             {% for link in menu.links %}
