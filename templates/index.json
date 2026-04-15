@@ -93,7 +93,7 @@
       "type": "featured-collection",
       "settings": {
         "title": "BEST SELLERS",
-        "collection": ""
+        "collection": "best-sellers"
       }
     },
     "image_banner_lancamento": {
