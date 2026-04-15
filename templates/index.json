@@ -4,29 +4,78 @@
       "type": "hero-slideshow",
       "settings": {}
     },
-    "featured_collection": {
-      "type": "featured-collection",
-      "settings": {}
-    },
-    "image_banner": {
-      "type": "image-banner",
-      "settings": {}
-    },
     "category_grid": {
       "type": "category-grid",
+      "blocks": {
+        "cat1": {
+          "type": "category",
+          "settings": {
+            "heading": "Conjuntos de Calça",
+            "link": "/collections/conjuntos-de-calca"
+          }
+        },
+        "cat2": {
+          "type": "category",
+          "settings": {
+            "heading": "Casacos e Blusas",
+            "link": "/collections/casacos-e-blusas"
+          }
+        },
+        "cat3": {
+          "type": "category",
+          "settings": {
+            "heading": "Vestidos",
+            "link": "/collections/vestidos"
+          }
+        },
+        "cat4": {
+          "type": "category",
+          "settings": {
+            "heading": "Macacão",
+            "link": "/collections/macacao"
+          }
+        }
+      },
+      "block_order": ["cat1", "cat2", "cat3", "cat4"],
+      "settings": {
+        "title": ""
+      }
+    },
+    "dual_banner": {
+      "type": "dual-banner",
+      "blocks": {
+        "b1": { "type": "banner", "settings": {} },
+        "b2": { "type": "banner", "settings": {} }
+      },
+      "block_order": ["b1", "b2"],
       "settings": {}
     },
-    "image_banner_2": {
+    "best_sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "BEST SELLERS"
+      }
+    },
+    "image_banner_lancamento": {
       "type": "image-banner",
-      "settings": {}
+      "settings": {
+        "heading": "TRAMAS & TEXTURAS",
+        "link_text": "SHOP NOW",
+        "text_position": "left",
+        "text_color": "#ffffff"
+      }
     },
-    "shop_the_look": {
+    "escolhas_blogueiras": {
       "type": "shop-the-look",
-      "settings": {}
+      "settings": {
+        "title": "ESCOLHAS DAS BLOGUEIRAS"
+      }
     },
-    "blog_carousel": {
-      "type": "blog-carousel",
-      "settings": {}
+    "outlet_destaques": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "DESTAQUES DO OUTLET"
+      }
     },
     "trust_bar": {
       "type": "trust-bar",
@@ -39,12 +88,12 @@
   },
   "order": [
     "hero_slideshow",
-    "featured_collection",
-    "image_banner",
     "category_grid",
-    "image_banner_2",
-    "shop_the_look",
-    "blog_carousel",
+    "dual_banner",
+    "best_sellers",
+    "image_banner_lancamento",
+    "escolhas_blogueiras",
+    "outlet_destaques",
     "trust_bar",
     "newsletter"
   ]
