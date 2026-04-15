@@ -44,12 +44,12 @@
                 <a
                   href="{{ link.url }}"
                   class="site-header__nav-link"
-                  {% if link.child_links != blank %}
+                  {% if link.links.size > 0 %}
                     data-mega-menu-trigger
                   {% endif %}
                 >
                   {{ link.title }}
-                  {% if link.child_links != blank %}
+                  {% if link.links.size > 0 %}
                     <svg
                       class="site-header__nav-icon"
                       xmlns="http://www.w3.org/2000/svg"
@@ -65,13 +65,12 @@
                   {% endif %}
                 </a>
 
-                {% if link.child_links != blank %}
+                {% if link.links.size > 0 %}
                   <div class="mega-menu" data-mega-menu>
                     <div class="mega-menu__content">
-                      {% assign num_cols = link.child_links.size | ceil | divided_by: 5 %}
                       {% assign col_count = 0 %}
                       <div class="mega-menu__column">
-                        {% for child_link in link.child_links %}
+                        {% for child_link in link.links %}
                           {% if col_count >= 5 %}
                             </div>
                             <div class="mega-menu__column">
