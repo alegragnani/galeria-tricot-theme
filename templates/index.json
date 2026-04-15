@@ -11,6 +11,23 @@
   "sections": {
     "hero_slideshow": {
       "type": "hero-slideshow",
+      "blocks": {
+        "slide_C9RpJm": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783_6f1a7e07-b643-4ada-9cfd-f882794c1505.webp",
+            "image_mobile": "shopify://shop_images/c30fb47f-de38-4728-90ad-a1d3049b2189___569e252c7809823e32fd3b5a279ec7f2.webp",
+            "heading": "",
+            "subheading": "",
+            "button_text": "COMPRAR AGORA",
+            "button_link": "",
+            "text_position": "center"
+          }
+        }
+      },
+      "block_order": [
+        "slide_C9RpJm"
+      ],
       "settings": {
         "title": "Hero Slideshow"
       }
