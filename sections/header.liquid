@@ -182,15 +182,17 @@
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
   .site-header {
-    background: #ffffff;
-    background-color: #ffffff;
-    border-bottom: 1px solid #E8DED1;
+    background: transparent;
+    background-color: transparent;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     position: absolute;
     top: 39px;
     left: 0;
     right: 0;
     z-index: 100;
-    transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, top 0.35s ease;
+    transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, top 0.35s ease, backdrop-filter 0.35s ease;
     font-family: 'Raleway', -apple-system, sans-serif;
   }
 
@@ -198,16 +200,37 @@
     position: fixed;
   }
 
-  /* Header sÃ³lido branco: texto e Ã­cones escuros */
+  /* Estado translÃºcido (sem hover, sem scroll): texto e Ã­cones brancos */
   .site-header .site-header__logo-text,
   .site-header .site-header__nav-link,
   .site-header .site-header__icon-btn {
-    color: #2B1810;
+    color: #ffffff;
     text-shadow: none;
   }
   .site-header .site-header__cart-count {
+    background-color: #ffffff;
+    color: #2B1810;
+  }
+
+  /* Hover no header: vira branco sÃ³lido com texto escuro (igual PatBO) */
+  .site-header:hover {
+    background: #ffffff;
+    background-color: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: #E8DED1;
+  }
+  .site-header:hover .site-header__logo-text,
+  .site-header:hover .site-header__nav-link,
+  .site-header:hover .site-header__icon-btn {
+    color: #2B1810;
+  }
+  .site-header:hover .site-header__cart-count {
     background-color: #7A3E28;
     color: #ffffff;
+  }
+  .site-header:hover .site-header__logo-img {
+    filter: none;
   }
 
   /* Ao rolar a pÃ¡gina vira sÃ³lido branco */
@@ -287,9 +310,9 @@
     display: block;
     transition: filter 0.35s ease;
   }
-  /* Logo sempre em cor natural (header branco) */
+  /* Logo branco no estado translÃºcido (home, sem hover, sem scroll) */
   .site-header:not(.is-scrolled) .site-header__logo-img {
-    filter: none;
+    filter: brightness(0) invert(1);
   }
   body:not(.template-index) .site-header .site-header__logo-img {
     filter: none;
