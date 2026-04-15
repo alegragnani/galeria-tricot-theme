@@ -12,12 +12,20 @@
     {% for block in section.blocks %}
       <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}">
         {% if block.settings.image %}
-          <img
-            src="{{ block.settings.image | image_url: width: 1920 }}"
-            alt="{{ block.settings.heading }}"
-            class="hero-slideshow__image"
-            loading="lazy"
-          >
+          <picture>
+            {% if block.settings.image_mobile %}
+              <source
+                media="(max-width: 749px)"
+                srcset="{{ block.settings.image_mobile | image_url: width: 900 }}"
+              >
+            {% endif %}
+            <img
+              src="{{ block.settings.image | image_url: width: 1920 }}"
+              alt="{{ block.settings.heading }}"
+              class="hero-slideshow__image"
+              loading="lazy"
+            >
+          </picture>
         {% else %}
           <div class="hero-slideshow__placeholder">
             {{ 'image' | placeholder_svg_tag }}
@@ -361,7 +369,14 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "Imagem desktop",
+          "info": "Imagem horizontal/paisagem para telas grandes"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagem mobile",
+          "info": "Imagem vertical/retrato para celulares (opcional). Se vazia, usa a imagem desktop."
         },
         {
           "type": "text",
