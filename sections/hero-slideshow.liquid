@@ -1,5 +1,5 @@
 <!-- Hero Slideshow Section -->
-{%- assign fallback_slides = 'https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783.jpg|https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a63e8a86-42d4-4199-8b1b-17b00f6d37ba___b235a309973cd94d25afb7c6155996b9.jpg' | split: '|' -%}
+{%- assign fallback_slides = 'https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a63e8a86-42d4-4199-8b1b-17b00f6d37ba___b235a309973cd94d25afb7c6155996b9.jpg|https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783.jpg' | split: '|' -%}
 <div class="hero-slideshow" data-slideshow>
   <div class="hero-slideshow__slides">
     {% if section.blocks.size == 0 %}
@@ -160,9 +160,11 @@
   }
 
   .hero-slideshow__heading {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Raleway', -apple-system, sans-serif;
     font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 700;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
     line-height: 1.2;
     margin: 0 0 1rem 0;
   }

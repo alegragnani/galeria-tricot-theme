@@ -1,5 +1,10 @@
-<!-- Shop The Look Section -->
+<!-- Shop The Look Section - Escolhas das Blogueiras -->
 <section class="shop-the-look">
+  {% if section.settings.title != blank %}
+    <div class="shop-the-look__header">
+      <h2 class="shop-the-look__section-title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
   <div class="shop-the-look__container">
     <!-- Left: Lifestyle Image -->
     <div class="shop-the-look__image-column">
@@ -72,8 +77,25 @@
 
 <style>
   .shop-the-look {
-    padding: 4rem 2rem;
+    padding: 60px 40px;
     background-color: #fafafa;
+  }
+
+  .shop-the-look__header {
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    text-align: center;
+  }
+
+  .shop-the-look__section-title {
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #9E885E;
+    margin: 0;
+    line-height: 1.2;
   }
 
   .shop-the-look__container {
@@ -120,13 +142,13 @@
   }
 
   .shop-the-look__product-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 1rem 0;
-    color: #000;
+    letter-spacing: 0.6px;
+    margin: 0 0 12px 0;
+    color: #545454;
   }
 
   .shop-the-look__product-price {
@@ -216,22 +238,28 @@
 
 {% schema %}
 {
-  "name": "Shop The Look",
+  "name": "Escolhas das Blogueiras",
   "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título da seção",
+      "default": "ESCOLHAS DAS BLOGUEIRAS"
+    },
     {
       "type": "image_picker",
       "id": "lifestyle_image",
-      "label": "Lifestyle Image"
+      "label": "Foto da blogueira (lifestyle)"
     },
     {
       "type": "product",
       "id": "product",
-      "label": "Product"
+      "label": "Produto em destaque"
     }
   ],
   "presets": [
     {
-      "name": "Shop The Look"
+      "name": "Escolhas das Blogueiras"
     }
   ]
 }

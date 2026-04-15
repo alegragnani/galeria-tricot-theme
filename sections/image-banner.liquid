@@ -96,32 +96,34 @@
   }
 
   .image-banner__heading {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.5rem, 4vw, 3rem);
-    font-weight: 700;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
     line-height: 1.2;
     margin: 0 0 1.5rem 0;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.6px;
   }
 
   .image-banner__link {
     display: inline-flex;
     align-items: center;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     text-decoration: none;
     transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
-    padding-bottom: 0.25rem;
+    border: 1px solid currentColor;
+    padding: 12px 28px;
   }
 
   .image-banner__link:hover {
-    border-bottom-color: currentColor;
-    transform: translateX(4px);
+    background-color: #ffffff;
+    color: #545454 !important;
   }
+
 
   @media (max-width: 768px) {
     .image-banner__wrapper {
@@ -155,13 +157,13 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "TÍTULO DO BANNER"
+      "default": "TRAMAS & TEXTURAS"
     },
     {
       "type": "text",
       "id": "link_text",
       "label": "Link Text",
-      "default": "COMPRAR AGORA >"
+      "default": "SHOP NOW"
     },
     {
       "type": "url",
