@@ -51,10 +51,10 @@
 
   .featured-collection__track {
     display: flex;
-    gap: 1.5rem;
+    gap: 8px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding-bottom: 1rem;
+    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     cursor: grab;
@@ -71,37 +71,46 @@
   }
 
   .featured-collection__item {
-    flex: 0 0 calc(25% - 1.125rem);
+    flex: 0 0 calc(25% - 6px);
     min-width: 200px;
+    scroll-snap-align: start;
   }
 
+  /* Tablet: 2 colunas (BP: grid--2-col-tablet-down) */
   @media (max-width: 1024px) {
     .featured-collection__item {
-      flex: 0 0 calc(50% - 0.75rem);
+      flex: 0 0 calc(50% - 4px);
     }
   }
 
-  @media (max-width: 768px) {
+  /* Mobile: 2 produtos + peek do 3o (BP style) */
+  @media (max-width: 749px) {
     .featured-collection {
-      padding: 1rem 1rem 3rem;
-    }
-
-    .featured-collection__item {
-      flex: 0 0 calc(50% - 0.75rem);
+      padding: 1rem 0 3rem;
     }
 
     .featured-collection__header {
       margin-bottom: 1.5rem;
+      padding: 0 1rem;
     }
 
     .featured-collection__title {
       font-size: 26px;
     }
-  }
 
-  @media (max-width: 480px) {
+    .featured-collection__track {
+      padding-left: 1rem;
+    }
+
     .featured-collection__item {
-      flex: 0 0 calc(100% - 0rem);
+      flex: 0 0 calc(44% - 4px);
+      min-width: 140px;
+    }
+
+    /* Pseudo-elemento pra dar padding no final do scroll */
+    .featured-collection__track::after {
+      content: '';
+      flex: 0 0 1rem;
     }
   }
 </style>
