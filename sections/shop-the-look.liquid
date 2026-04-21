@@ -339,15 +339,23 @@
     }
   }
 
-  /* Mobile: empilha */
+  /* Mobile: foto grande + produto horizontal embaixo (BP mobile) */
   @media (max-width: 749px) {
     .shop-the-look__grid {
       flex-direction: column;
-      gap: 16px;
+      gap: 0;
     }
 
     .shop-the-look__container {
-      padding: 0 16px;
+      padding: 0;
+    }
+
+    .shop-the-look__header {
+      padding: 26px 16px;
+    }
+
+    .shop-the-look__lifestyle {
+      width: 100%;
     }
 
     .shop-the-look__lifestyle-image {
@@ -358,14 +366,82 @@
       aspect-ratio: 3 / 4;
     }
 
+    /* Produto: card horizontal com thumbnail + info + botao */
+    .shop-the-look__product-side {
+      width: 100%;
+      padding: 8px 16px 0;
+    }
+
     .shop-the-look__card-frame {
       width: 100%;
       max-width: none;
+      padding: 10px;
+      border: 1px solid rgba(217, 200, 158, 0.25);
     }
 
-    /* Setas: agora em cima da foto lifestyle empilhada */
-    .shop-the-look__nav {
+    .shop-the-look__product-link {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
       width: 100%;
+      gap: 0;
+    }
+
+    .shop-the-look__product-image-wrapper {
+      width: 80px;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    .shop-the-look__product-image {
+      aspect-ratio: auto;
+      width: 80px;
+      height: 100px;
+    }
+
+    /* No mobile: "Adicionar a sacola" vira botao visivel sempre */
+    .shop-the-look__quick-add {
+      position: static;
+      opacity: 1;
+      background: transparent;
+      padding: 0;
+      border-top: 1px solid #f0ede8;
+      margin-top: auto;
+    }
+
+    .shop-the-look__quick-add-text {
+      font-size: 11px;
+      color: #545454;
+      padding: 8px 0 2px;
+    }
+
+    .shop-the-look__product-info {
+      padding: 2px 0 0 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shop-the-look__product-title {
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      margin: 0 0 4px 0;
+    }
+
+    .shop-the-look__product-price {
+      display: none;
+    }
+
+    /* Setas: canto inferior direito da foto lifestyle */
+    .shop-the-look__nav {
+      right: 16px;
+      bottom: calc(130px + 20px); /* altura do card produto (~130px) + margem */
+      margin-right: 0;
+    }
+
+    .shop-the-look__arrow {
+      width: 36px;
+      height: 36px;
     }
   }
 </style>
