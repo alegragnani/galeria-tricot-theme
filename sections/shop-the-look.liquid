@@ -1,4 +1,4 @@
-<!-- Escolhas das Blogueiras — layout BP "Escolhas da Pat" -->
+<!-- Escolhas das Blogueiras — carrossel BP "Escolhas da Pat" -->
 <section class="shop-the-look">
   {% if section.settings.title != blank %}
     <div class="shop-the-look__header">
@@ -7,64 +7,84 @@
   {% endif %}
 
   <div class="shop-the-look__container">
-    <div class="shop-the-look__grid">
-      <!-- Esquerda: Foto lifestyle retrato -->
-      <div class="shop-the-look__lifestyle">
-        {% if section.settings.lifestyle_image %}
-          <img
-            src="{{ section.settings.lifestyle_image | image_url: width: 900 }}"
-            srcset="{{ section.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ section.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ section.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
-            sizes="(max-width: 749px) 100vw, 50vw"
-            alt="{{ section.settings.title | escape }}"
-            class="shop-the-look__lifestyle-image"
-            loading="lazy"
-          >
-        {% else %}
-          <div class="shop-the-look__placeholder">
-            {{ 'image' | placeholder_svg_tag }}
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- Direita: Produto com moldura -->
-      <div class="shop-the-look__product-side">
-        {% if section.settings.product != blank %}
-          {% assign product = section.settings.product %}
-          <div class="shop-the-look__card-frame">
-            <a href="{{ product.url }}" class="shop-the-look__product-link">
-              <div class="shop-the-look__product-image-wrapper">
-                {% if product.featured_image %}
+    <div class="shop-the-look__slider" id="stl-slider-{{ section.id }}">
+      <div class="shop-the-look__track" id="stl-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="shop-the-look__slide" {{ block.shopify_attributes }}>
+            <div class="shop-the-look__grid">
+              <!-- Esquerda: Foto lifestyle retrato -->
+              <div class="shop-the-look__lifestyle">
+                {% if block.settings.lifestyle_image %}
                   <img
-                    src="{{ product.featured_image | image_url: width: 600 }}"
-                    alt="{{ product.title | escape }}"
-                    class="shop-the-look__product-image"
-                    loading="lazy"
+                    src="{{ block.settings.lifestyle_image | image_url: width: 900 }}"
+                    srcset="{{ block.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ block.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ block.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
+                    sizes="(max-width: 749px) 100vw, 50vw"
+                    alt="{{ block.settings.heading | default: section.settings.title | escape }}"
+                    class="shop-the-look__lifestyle-image"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                   >
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
                 {% endif %}
-
-                <!-- Hover: Adicionar à sacola -->
-                <div class="shop-the-look__quick-add">
-                  <span class="shop-the-look__quick-add-text">Adicionar à sacola</span>
-                </div>
               </div>
 
-              <div class="shop-the-look__product-info">
-                <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
-                <div class="shop-the-look__product-price">
-                  {% if product.compare_at_price > product.price %}
-                    <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
-                  {% endif %}
-                  <span class="shop-the-look__price">{{ product.price | money }}</span>
-                </div>
+              <!-- Direita: Produto com moldura -->
+              <div class="shop-the-look__product-side">
+                {% if block.settings.product != blank %}
+                  {% assign product = block.settings.product %}
+                  <div class="shop-the-look__card-frame">
+                    <a href="{{ product.url }}" class="shop-the-look__product-link">
+                      <div class="shop-the-look__product-image-wrapper">
+                        {% if product.featured_image %}
+                          <img
+                            src="{{ product.featured_image | image_url: width: 600 }}"
+                            alt="{{ product.title | escape }}"
+                            class="shop-the-look__product-image"
+                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                          >
+                        {% endif %}
+
+                        <!-- Hover: Adicionar a sacola -->
+                        <div class="shop-the-look__quick-add">
+                          <span class="shop-the-look__quick-add-text">Adicionar à sacola</span>
+                        </div>
+                      </div>
+
+                      <div class="shop-the-look__product-info">
+                        <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
+                        <div class="shop-the-look__product-price">
+                          {% if product.compare_at_price > product.price %}
+                            <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
+                          {% endif %}
+                          <span class="shop-the-look__price">{{ product.price | money }}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
               </div>
-            </a>
+            </div>
           </div>
-        {% else %}
-          <div class="shop-the-look__placeholder">
-            {{ 'image' | placeholder_svg_tag }}
-          </div>
-        {% endif %}
+        {% endfor %}
       </div>
+
+      <!-- Setas de navegacao (BP style: centralizadas embaixo da foto lifestyle) -->
+      {% if section.blocks.size > 1 %}
+        <div class="shop-the-look__nav">
+          <button class="shop-the-look__arrow shop-the-look__arrow--prev" aria-label="Anterior" data-stl-prev="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+          <button class="shop-the-look__arrow shop-the-look__arrow--next" aria-label="Próximo" data-stl-next="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -99,6 +119,34 @@
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 50px;
+  }
+
+  /* Slider wrapper — position relative pro nav absoluto */
+  .shop-the-look__slider {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Track: scroll horizontal, snap */
+  .shop-the-look__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
+  }
+
+  .shop-the-look__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Cada slide ocupa 100% */
+  .shop-the-look__slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: start;
   }
 
   /* Grid 2 colunas 50/50, gap 8px (BP) */
@@ -169,7 +217,7 @@
     transform: scale(1.03);
   }
 
-  /* Hover: "Adicionar à sacola" (BP style) */
+  /* Hover: "Adicionar a sacola" (BP style) */
   .shop-the-look__quick-add {
     position: absolute;
     bottom: 0;
@@ -233,6 +281,53 @@
     color: #cccccc;
   }
 
+  /* === Setas de navegacao (BP: centralizadas na foto lifestyle, bottom 20px) === */
+  .shop-the-look__nav {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 50%; /* alinhado com a foto lifestyle (coluna esquerda) */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .shop-the-look__arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    color: rgb(217, 200, 158);
+    pointer-events: all;
+    transition: background 0.25s ease;
+    padding: 0;
+  }
+
+  .shop-the-look__arrow:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .shop-the-look__arrow svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Prev: caret rotacionado pra esquerda */
+  .shop-the-look__arrow--prev svg {
+    transform: rotate(90deg);
+  }
+
+  /* Next: caret rotacionado pra direita */
+  .shop-the-look__arrow--next svg {
+    transform: rotate(-90deg);
+  }
+
   /* Tablet */
   @media (max-width: 1349px) {
     .shop-the-look__container {
@@ -267,8 +362,49 @@
       width: 100%;
       max-width: none;
     }
+
+    /* Setas: agora em cima da foto lifestyle empilhada */
+    .shop-the-look__nav {
+      width: 100%;
+    }
   }
 </style>
+
+<script>
+  (function() {
+    var sectionId = '{{ section.id }}';
+    var track = document.getElementById('stl-track-' + sectionId);
+    if (!track) return;
+
+    var prevBtn = document.querySelector('[data-stl-prev="' + sectionId + '"]');
+    var nextBtn = document.querySelector('[data-stl-next="' + sectionId + '"]');
+    if (!prevBtn || !nextBtn) return;
+
+    var current = 0;
+    var total = track.children.length;
+
+    function goTo(index) {
+      if (index < 0) index = total - 1;
+      if (index >= total) index = 0;
+      current = index;
+      var slideWidth = track.children[0].offsetWidth;
+      track.scrollTo({ left: slideWidth * current, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', function() { goTo(current - 1); });
+    nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+    /* Sync current index quando usuario arrasta manualmente */
+    var scrollTimer;
+    track.addEventListener('scroll', function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        var slideWidth = track.children[0].offsetWidth;
+        current = Math.round(track.scrollLeft / slideWidth);
+      }, 150);
+    }, { passive: true });
+  })();
+</script>
 
 {% schema %}
 {
@@ -279,22 +415,36 @@
       "id": "title",
       "label": "Título da seção",
       "default": "ESCOLHAS DAS BLOGUEIRAS"
-    },
+    }
+  ],
+  "blocks": [
     {
-      "type": "image_picker",
-      "id": "lifestyle_image",
-      "label": "Foto da blogueira (lifestyle)",
-      "info": "Retrato 9:16. Tamanho ideal: 900×1600px"
-    },
-    {
-      "type": "product",
-      "id": "product",
-      "label": "Produto em destaque"
+      "type": "look",
+      "name": "Look",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "lifestyle_image",
+          "label": "Foto lifestyle (retrato)",
+          "info": "Retrato 9:16. Tamanho ideal: 900x1600px"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Produto em destaque"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Escolhas das Blogueiras"
+      "name": "Escolhas das Blogueiras",
+      "blocks": [
+        { "type": "look" },
+        { "type": "look" },
+        { "type": "look" }
+      ]
     }
   ]
 }
