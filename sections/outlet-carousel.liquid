@@ -1,0 +1,402 @@
+<!-- Destaques Outlet — carrossel BP "Blog PATBO WORLD" style -->
+<section class="outlet-carousel">
+  {% if section.settings.title != blank %}
+    <div class="outlet-carousel__header">
+      <h2 class="outlet-carousel__title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="outlet-carousel__slider" id="outlet-slider-{{ section.id }}">
+    <div class="outlet-carousel__track" id="outlet-track-{{ section.id }}">
+      {% if section.settings.collection != blank %}
+        {% assign products = section.settings.collection.products %}
+        {% for product in products limit: section.settings.max_products %}
+          <div class="outlet-carousel__item">
+            <a href="{{ product.url }}" class="outlet-carousel__card">
+              <div class="outlet-carousel__image-wrapper">
+                {% if product.featured_image %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 500 }}"
+                    srcset="{{ product.featured_image | image_url: width: 400 }} 400w, {{ product.featured_image | image_url: width: 500 }} 500w, {{ product.featured_image | image_url: width: 700 }} 700w"
+                    sizes="(max-width: 749px) 45vw, 25vw"
+                    alt="{{ product.title | escape }}"
+                    class="outlet-carousel__image"
+                    loading="{% if forloop.index <= 4 %}eager{% else %}lazy{% endif %}"
+                  >
+                {% endif %}
+
+                <!-- Overlay com info do produto sobre a imagem -->
+                <div class="outlet-carousel__overlay">
+                  {% if product.compare_at_price > product.price %}
+                    {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+                    <span class="outlet-carousel__badge">- {{ discount }}%</span>
+                  {% endif %}
+                  <h3 class="outlet-carousel__product-name">{{ product.title }}</h3>
+                  <div class="outlet-carousel__prices">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="outlet-carousel__price--old">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                    <span class="outlet-carousel__price--current">{{ product.price | money }}</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Nav: setas + contador (BP style) -->
+    {% if section.settings.collection != blank %}
+      {% assign total = section.settings.collection.products.size %}
+      {% if section.settings.max_products < total %}
+        {% assign total = section.settings.max_products %}
+      {% endif %}
+      {% if total > 4 %}
+        <div class="outlet-carousel__nav">
+          <div class="outlet-carousel__arrows">
+            <button class="outlet-carousel__arrow outlet-carousel__arrow--prev" aria-label="Anterior" data-outlet-prev="{{ section.id }}">
+              <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+            </button>
+            <button class="outlet-carousel__arrow outlet-carousel__arrow--next" aria-label="Próximo" data-outlet-next="{{ section.id }}">
+              <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+            </button>
+          </div>
+          <div class="outlet-carousel__counter">
+            <span class="outlet-carousel__counter-current" id="outlet-counter-{{ section.id }}">1</span>
+            <span class="outlet-carousel__counter-sep"> / de </span>
+            <span class="outlet-carousel__counter-total">{{ total }}</span>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .outlet-carousel {
+    padding: 36px 0;
+    margin: 0;
+    background-color: #ffffff;
+  }
+
+  .outlet-carousel__header {
+    text-align: center;
+    padding: 0 50px;
+    margin-bottom: 30px;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .outlet-carousel__title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #9E885E;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* Slider */
+  .outlet-carousel__slider {
+    position: relative;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 50px;
+  }
+
+  .outlet-carousel__track {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .outlet-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Card: 4 por vez no desktop (BP) */
+  .outlet-carousel__item {
+    flex: 0 0 calc(25% - 6px);
+    min-width: 200px;
+    scroll-snap-align: start;
+  }
+
+  .outlet-carousel__card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .outlet-carousel__image-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .outlet-carousel__image {
+    width: 100%;
+    display: block;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .outlet-carousel__card:hover .outlet-carousel__image {
+    transform: scale(1.03);
+  }
+
+  /* Overlay: texto sobre a imagem (parte inferior) */
+  .outlet-carousel__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px 14px 14px;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 70%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .outlet-carousel__badge {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    background: #C1673A;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .outlet-carousel__product-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .outlet-carousel__prices {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .outlet-carousel__price--old {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    text-decoration: line-through;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .outlet-carousel__price--current {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  /* Nav: setas + contador (BP style) */
+  .outlet-carousel__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .outlet-carousel__arrows {
+    display: flex;
+    gap: 10px;
+  }
+
+  .outlet-carousel__arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(217, 200, 158, 0.3);
+    cursor: pointer;
+    color: rgb(217, 200, 158);
+    transition: background 0.25s ease;
+    padding: 0;
+  }
+
+  .outlet-carousel__arrow:hover {
+    background: rgba(217, 200, 158, 0.15);
+  }
+
+  .outlet-carousel__arrow svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .outlet-carousel__arrow--prev svg {
+    transform: rotate(90deg);
+  }
+
+  .outlet-carousel__arrow--next svg {
+    transform: rotate(-90deg);
+  }
+
+  /* Contador "1 / de 8" */
+  .outlet-carousel__counter {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #545454;
+    letter-spacing: 0.3px;
+  }
+
+  /* Tablet */
+  @media (max-width: 1349px) {
+    .outlet-carousel__slider {
+      padding: 0 32px;
+    }
+
+    .outlet-carousel__item {
+      flex: 0 0 calc(33.333% - 6px);
+    }
+  }
+
+  /* Mobile: 2 + peek (BP style) */
+  @media (max-width: 749px) {
+    .outlet-carousel {
+      padding: 24px 0;
+    }
+
+    .outlet-carousel__slider {
+      padding: 0;
+    }
+
+    .outlet-carousel__track {
+      padding-left: 16px;
+    }
+
+    .outlet-carousel__track::after {
+      content: '';
+      flex: 0 0 16px;
+    }
+
+    .outlet-carousel__header {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .outlet-carousel__title {
+      font-size: 26px;
+    }
+
+    .outlet-carousel__item {
+      flex: 0 0 44%;
+      min-width: 140px;
+    }
+
+    .outlet-carousel__nav {
+      padding: 0 16px;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    var sectionId = '{{ section.id }}';
+    var track = document.getElementById('outlet-track-' + sectionId);
+    var counter = document.getElementById('outlet-counter-' + sectionId);
+    if (!track) return;
+
+    var prevBtn = document.querySelector('[data-outlet-prev="' + sectionId + '"]');
+    var nextBtn = document.querySelector('[data-outlet-next="' + sectionId + '"]');
+
+    function getVisibleCount() {
+      var card = track.children[0];
+      if (!card) return 4;
+      return Math.round(track.clientWidth / card.offsetWidth);
+    }
+
+    function getMaxPage() {
+      var total = track.children.length;
+      var visible = getVisibleCount();
+      return Math.max(1, total - visible + 1);
+    }
+
+    var currentPage = 1;
+
+    function scrollToPage(page) {
+      var maxPage = getMaxPage();
+      if (page < 1) page = maxPage;
+      if (page > maxPage) page = 1;
+      currentPage = page;
+      var card = track.children[0];
+      var cardWidth = card.offsetWidth + 8; /* gap */
+      track.scrollTo({ left: cardWidth * (page - 1), behavior: 'smooth' });
+      if (counter) counter.textContent = page;
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', function() { scrollToPage(currentPage - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { scrollToPage(currentPage + 1); });
+
+    /* Sync ao arrastar */
+    var scrollTimer;
+    track.addEventListener('scroll', function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        var card = track.children[0];
+        if (!card) return;
+        var cardWidth = card.offsetWidth + 8;
+        currentPage = Math.round(track.scrollLeft / cardWidth) + 1;
+        if (counter) counter.textContent = currentPage;
+      }, 150);
+    }, { passive: true });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Outlet Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título da seção",
+      "default": "OUTLET"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Coleção de produtos",
+      "info": "Selecione a coleção de Outlet"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Máximo de produtos",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Outlet Carousel"
+    }
+  ]
+}
+{% endschema %}
