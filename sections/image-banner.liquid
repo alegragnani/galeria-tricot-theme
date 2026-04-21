@@ -2,12 +2,20 @@
 <section class="image-banner">
   <div class="image-banner__wrapper">
     {% if section.settings.image %}
-      <img
-        src="{{ section.settings.image | image_url: width: 1920 }}"
-        alt="{{ section.settings.heading }}"
-        class="image-banner__image"
-        loading="lazy"
-      >
+      <picture>
+        {% if section.settings.image_mobile %}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ section.settings.image_mobile | image_url: width: 900 }}"
+          >
+        {% endif %}
+        <img
+          src="{{ section.settings.image | image_url: width: 1920 }}"
+          alt="{{ section.settings.heading }}"
+          class="image-banner__image"
+          loading="lazy"
+        >
+      </picture>
     {% else %}
       <div class="image-banner__placeholder">
         {{ 'image' | placeholder_svg_tag }}
@@ -151,7 +159,12 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Image"
+      "label": "Imagem desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Imagem mobile"
     },
     {
       "type": "text",
