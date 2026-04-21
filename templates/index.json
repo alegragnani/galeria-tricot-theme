@@ -150,6 +150,7 @@
     },
     "trust_bar": {
       "type": "trust-bar",
+      "disabled": true,
       "settings": {}
     }
   },
