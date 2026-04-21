@@ -109,6 +109,34 @@
     },
     "escolhas_blogueiras": {
       "type": "shop-the-look",
+      "blocks": {
+        "look_bGKapH": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Lily_off_2_6ac45011-e6ea-4d7b-8a2c-66839bc50103.png",
+            "product": "regata-tricot-lily-branco-marfim"
+          }
+        },
+        "look_4mGrGj": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd_e971951b-f72c-43d9-9cfe-114d09d4ec43.jpg",
+            "product": "blusa-tricot-leila-bege-areia"
+          }
+        },
+        "look_EUBiWQ": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Giovana_off_3_ba4847d9-8285-4692-8ca4-a5b51b3ba197.jpg",
+            "product": "blusa-tricot-giovana-off-white"
+          }
+        }
+      },
+      "block_order": [
+        "look_bGKapH",
+        "look_4mGrGj",
+        "look_EUBiWQ"
+      ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
       }
