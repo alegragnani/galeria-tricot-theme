@@ -123,13 +123,6 @@
     "trust_bar": {
       "type": "trust-bar",
       "settings": {}
-    },
-    "newsletter": {
-      "type": "newsletter",
-      "settings": {
-        "title": "ENTRE NA NOSSA LISTA",
-        "description": "<p>Novidades, ofertas exclusivas e inspiração direto no seu e-mail</p>"
-      }
     }
   },
   "order": [
@@ -140,7 +133,6 @@
     "image_banner_lancamento",
     "escolhas_blogueiras",
     "outlet_destaques",
-    "trust_bar",
-    "newsletter"
+    "trust_bar"
   ]
 }
