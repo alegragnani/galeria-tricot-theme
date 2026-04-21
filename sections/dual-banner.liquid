@@ -19,15 +19,15 @@
             <div class="dual-banner__placeholder">{{ 'image' | placeholder_svg_tag }}</div>
           {% endif %}
           <div class="dual-banner__overlay dual-banner__overlay--h-{{ block.settings.text_horizontal }} dual-banner__overlay--v-{{ block.settings.text_vertical }}">
-            <div class="dual-banner__content">
+            <div class="dual-banner__content" style="color: {{ block.settings.text_color }};">
               {% if block.settings.subheading != blank %}
-                <p class="dual-banner__subheading">{{ block.settings.subheading }}</p>
+                <p class="dual-banner__subheading" style="color: {{ block.settings.text_color }};">{{ block.settings.subheading }}</p>
               {% endif %}
               {% if block.settings.heading != blank %}
-                <h3 class="dual-banner__heading">{{ block.settings.heading }}</h3>
+                <h3 class="dual-banner__heading" style="color: {{ block.settings.text_color }};">{{ block.settings.heading }}</h3>
               {% endif %}
               {% if block.settings.cta_text != blank %}
-                <span class="dual-banner__cta">{{ block.settings.cta_text }}</span>
+                <span class="dual-banner__cta" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">{{ block.settings.cta_text }}</span>
               {% endif %}
             </div>
           </div>
@@ -217,6 +217,12 @@
             { "value": "bottom", "label": "Embaixo" }
           ],
           "default": "bottom"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Cor do texto",
+          "default": "#ffffff"
         }
       ]
     }
