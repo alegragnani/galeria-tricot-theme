@@ -288,10 +288,16 @@
     box-shadow: none;
   }
 
-  /* Scroll pra baixo: header desliza pra fora (igual BP) */
+  /* Scroll pra baixo: header some INSTANTANEO (igual BP) */
   .site-header.is-hidden {
     transform: translateY(-110%);
+    transition: none;
     pointer-events: none;
+  }
+
+  /* Scroll pra cima: header reaparece com transição suave */
+  .site-header.is-revealing {
+    transition: transform 0.3s ease;
   }
   .site-header.is-scrolled .site-header__logo-text,
   .site-header.is-scrolled .site-header__nav-link,
@@ -709,7 +715,7 @@
 
       // Perto do topo: estado transparente original
       if (currentY <= SCROLL_THRESHOLD) {
-        header.classList.remove('is-scrolled', 'is-hidden');
+        header.classList.remove('is-scrolled', 'is-hidden', 'is-revealing');
         lastScrollY = currentY;
         return;
       }
@@ -719,10 +725,12 @@
 
       // Direção do scroll
       if (currentY > lastScrollY + 5) {
-        // Scroll pra BAIXO → esconde header (desliza pra cima)
+        // Scroll pra BAIXO → some instantâneo (sem animação)
+        header.classList.remove('is-revealing');
         header.classList.add('is-hidden');
       } else if (currentY < lastScrollY - 5) {
-        // Scroll pra CIMA → revela header (desliza pra baixo)
+        // Scroll pra CIMA → reaparece suave
+        header.classList.add('is-revealing');
         header.classList.remove('is-hidden');
       }
 
