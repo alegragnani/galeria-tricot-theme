@@ -11,26 +11,7 @@
   "sections": {
     "hero_slideshow": {
       "type": "hero-slideshow",
-      "blocks": {
-        "slide_C9RpJm": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783_6f1a7e07-b643-4ada-9cfd-f882794c1505.webp",
-            "image_mobile": "shopify://shop_images/c30fb47f-de38-4728-90ad-a1d3049b2189___569e252c7809823e32fd3b5a279ec7f2.webp",
-            "heading": "",
-            "subheading": "",
-            "button_text": "COMPRAR AGORA",
-            "button_link": "",
-            "text_position": "center"
-          }
-        }
-      },
-      "block_order": [
-        "slide_C9RpJm"
-      ],
-      "settings": {
-        "title": "Hero Slideshow"
-      }
+      "settings": {}
     },
     "category_grid": {
       "type": "category-grid",
@@ -38,15 +19,13 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_c61a2780-35c8-4aad-9ae0-fc5df422db89.webp",
-            "heading": "Conjuntos",
+            "heading": "Conjuntos de Calça",
             "link": "/collections/conjuntos-de-calca"
           }
         },
         "cat2": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com.webp",
             "heading": "Casacos e Blusas",
             "link": "/collections/casacos-e-blusas"
           }
@@ -54,7 +33,6 @@
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
             "heading": "Vestidos",
             "link": "/collections/vestidos"
           }
@@ -62,7 +40,6 @@
         "cat4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_702cc134-0660-4df0-a270-8a61c2a4e5dc.webp",
             "heading": "Macacão",
             "link": "/collections/macacao"
           }
@@ -81,23 +58,11 @@
       "blocks": {
         "b1": {
           "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/mae_e_filha_-_descalca.png",
-            "subheading": "Confira",
-            "heading": "Nova Coleção",
-            "cta_text": "SHOP NOW",
-            "link": ""
-          }
+          "settings": {}
         },
         "b2": {
           "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/Lily_off_1-1_57608b11-6cf7-4a50-8454-5a69607d1b54.png",
-            "subheading": "Confira",
-            "heading": "Nova Coleção",
-            "cta_text": "SHOP NOW",
-            "link": ""
-          }
+          "settings": {}
         }
       },
       "block_order": [
@@ -109,59 +74,20 @@
     "best_sellers": {
       "type": "featured-collection",
       "settings": {
-        "title": "BEST SELLERS",
-        "collection": "best-sellers"
+        "title": "BEST SELLERS"
       }
     },
     "image_banner_lancamento": {
       "type": "image-banner",
       "settings": {
-        "image": "shopify://shop_images/36bb74c7-3977-4a7e-85d2-10614c6874f8___aade505a07bce0cbd785dffe84addebd.webp",
-        "heading": "",
-        "link_text": "",
-        "link": "",
+        "heading": "TRAMAS & TEXTURAS",
+        "link_text": "SHOP NOW",
         "text_position": "left",
         "text_color": "#ffffff"
       }
     },
     "escolhas_blogueiras": {
       "type": "shop-the-look",
-      "blocks": {
-        "look_KEJQhR": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd.jpg",
-            "product": "blusa-tricot-leila-bege-areia"
-          }
-        },
-        "look_YXMYcd": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Giovana_off_3.jpg",
-            "product": "blusa-tricot-giovana-off-white"
-          }
-        },
-        "look_xXVdXg": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Lily_off_2.png",
-            "product": "regata-tricot-lily-branco-marfim"
-          }
-        },
-        "look_QVwWtM": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/download.webp",
-            "product": "blusa-tricot-ski-preto"
-          }
-        }
-      },
-      "block_order": [
-        "look_KEJQhR",
-        "look_YXMYcd",
-        "look_xXVdXg",
-        "look_QVwWtM"
-      ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
       }
@@ -169,20 +95,12 @@
     "outlet_destaques": {
       "type": "featured-collection",
       "settings": {
-        "title": "DESTAQUES DO OUTLET",
-        "collection": "outlet"
+        "title": "DESTAQUES DO OUTLET"
       }
     },
     "trust_bar": {
       "type": "trust-bar",
       "settings": {}
-    },
-    "newsletter": {
-      "type": "newsletter",
-      "settings": {
-        "title": "ENTRE NA NOSSA LISTA",
-        "description": "<p>Novidades, ofertas exclusivas e inspiração direto no seu e-mail</p>"
-      }
     }
   },
   "order": [
@@ -193,7 +111,6 @@
     "image_banner_lancamento",
     "escolhas_blogueiras",
     "outlet_destaques",
-    "trust_bar",
-    "newsletter"
+    "trust_bar"
   ]
 }
