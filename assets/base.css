@@ -389,7 +389,7 @@ h1, h2, h3, h4, h5, h6, .heading {
 
 .product-card__image-wrapper {
   position: relative; overflow: hidden;
-  aspect-ratio: 3/4;
+  aspect-ratio: 2/3;
   background: transparent;
 }
 
@@ -443,29 +443,34 @@ h1, h2, h3, h4, h5, h6, .heading {
 }
 .product-card:hover .product-card__quickadd { transform: translateY(0); }
 
-.product-card__info { padding: 15px 0; text-align: center; }
+.product-card__info { padding: 12px 0 0; text-align: left; }
 
 .product-card__title {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin: 0 0 6px 0;
   line-height: 1.4;
+  color: #121212;
 }
 
 .product-card__price {
-  font-size: 0.8125rem;
-  color: var(--color-text-light);
+  font-family: 'Raleway', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #aaaaaa;
 }
 
 .product-card__price--compare {
   text-decoration: line-through;
-  color: var(--color-text-light);
+  color: #cccccc;
+  font-size: 14px;
   margin-right: 8px;
 }
-.product-card__price--sale { color: var(--color-sale); font-weight: 600; }
+.product-card__price--sale { color: #c1673a; font-weight: 600; }
 
 /* ── Image Banner / Category Banners ──────────────────────── */
 .image-banner {
