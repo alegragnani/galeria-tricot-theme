@@ -388,11 +388,9 @@
       overflow: hidden;
     }
 
-    /* Layout: wrap pra quick-add cair como linha cheia embaixo */
     .shop-the-look__product-link {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
       align-items: flex-start;
       gap: 0;
     }
@@ -403,7 +401,7 @@
       min-width: 110px;
       flex-shrink: 0;
       background: rgb(249, 247, 240);
-      position: relative;
+      position: static;
       overflow: hidden;
     }
 
@@ -414,17 +412,17 @@
       object-fit: cover;
     }
 
-    /* ADICIONAR A SACOLA: faixa no fundo do card, largura 100% */
+    /* ADICIONAR A SACOLA: sobreposto no fundo do card, largura total (BP) */
     .shop-the-look__quick-add {
-      position: static;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       opacity: 1;
-      width: 100%;
-      order: 3; /* forca pra ultima linha */
-      background: rgb(249, 247, 240);
-      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 12px;
       justify-content: center;
       z-index: 4;
-      border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .shop-the-look__quick-add-text {
@@ -436,11 +434,10 @@
 
     /* Info a direita do thumbnail */
     .shop-the-look__product-info {
-      padding: 14px 14px 14px;
+      padding: 14px 14px 44px; /* padding-bottom pra nao ficar atras do botao */
       flex: 1;
       display: flex;
       flex-direction: column;
-      order: 2;
     }
 
     .shop-the-look__product-title {
