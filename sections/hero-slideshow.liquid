@@ -115,12 +115,13 @@
     }
   }
 
-  /* Mobile — proporcao retrato igual BP */
+  /* Mobile — proporcao retrato igual BP: 390x720 = aspect-ratio 390/720 */
   @media (max-width: 749px) {
     .hero-slideshow__slides {
-      height: 0 !important;
+      height: auto !important;
       max-height: none !important;
-      padding-bottom: 184.6% !important; /* proporção exata da BP: 390x720 = 1.846 */
+      padding-bottom: 0 !important;
+      aspect-ratio: 390 / 720;
     }
   }
 
