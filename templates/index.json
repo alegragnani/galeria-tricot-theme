@@ -126,10 +126,20 @@
     },
     "escolhas_blogueiras": {
       "type": "shop-the-look",
+      "blocks": {
+        "look_KEJQhR": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/IMG_4304.jpg",
+            "product": "blusa-tricot-leila-bege-areia"
+          }
+        }
+      },
+      "block_order": [
+        "look_KEJQhR"
+      ],
       "settings": {
-        "title": "ESCOLHAS DAS BLOGUEIRAS",
-        "lifestyle_image": "shopify://shop_images/IMG_4304.jpg",
-        "product": "blusa-tricot-leila-bege-areia"
+        "title": "ESCOLHAS DAS BLOGUEIRAS"
       }
     },
     "outlet_destaques": {
