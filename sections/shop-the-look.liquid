@@ -370,7 +370,7 @@
     /* Produto: card horizontal compacto */
     .shop-the-look__product-side {
       width: 100%;
-      padding: 8px 16px 0;
+      padding: 0 16px;
       display: block;
     }
 
@@ -378,11 +378,13 @@
       width: 100%;
       max-width: none;
       padding: 0;
-      border: 1px solid rgba(217, 200, 158, 0.25);
+      border: none;
       display: flex;
       flex-direction: row;
       align-items: stretch;
       overflow: hidden;
+      background: #f9f7f2;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
 
     .shop-the-look__product-link {
@@ -430,7 +432,7 @@
       display: none;
     }
 
-    /* Botao "ADICIONAR A SACOLA" — aparece como elemento extra via ::after no card-frame */
+    /* Botao "ADICIONAR A SACOLA" visivel no mobile */
     .shop-the-look__card-frame::after {
       content: 'ADICIONAR À SACOLA';
       position: absolute;
@@ -445,13 +447,42 @@
       text-align: center;
       color: #545454;
       padding: 10px 14px;
-      border-top: 1px solid #f0ede8;
-      background: #ffffff;
+      border-top: 1px solid #e8e2d8;
+      background: #f9f7f2;
     }
 
     .shop-the-look__card-frame {
       position: relative;
       min-height: 130px;
+    }
+
+    /* Info: alinhar verticalmente no centro-topo */
+    .shop-the-look__product-info {
+      padding: 14px 14px 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background: #f9f7f2;
+    }
+
+    .shop-the-look__product-title {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      margin: 0;
+      line-height: 1.5;
+      color: #333333;
+    }
+
+    .shop-the-look__product-price {
+      display: flex;
+      margin-top: 4px;
+    }
+
+    .shop-the-look__price {
+      font-size: 13px;
+      color: #888888;
     }
 
     /* Setas: canto inferior direito da foto lifestyle */
