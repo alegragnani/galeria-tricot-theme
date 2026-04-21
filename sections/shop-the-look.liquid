@@ -339,7 +339,7 @@
     }
   }
 
-  /* Mobile: foto grande + produto horizontal embaixo (BP mobile) */
+  /* Mobile: foto grande em cima + card produto horizontal embaixo (BP mobile) */
   @media (max-width: 749px) {
     .shop-the-look__grid {
       flex-direction: column;
@@ -356,6 +356,7 @@
 
     .shop-the-look__lifestyle {
       width: 100%;
+      position: relative;
     }
 
     .shop-the-look__lifestyle-image {
@@ -366,76 +367,97 @@
       aspect-ratio: 3 / 4;
     }
 
-    /* Produto: card horizontal com thumbnail + info + botao */
+    /* Produto: card horizontal compacto */
     .shop-the-look__product-side {
       width: 100%;
       padding: 8px 16px 0;
+      display: block;
     }
 
     .shop-the-look__card-frame {
       width: 100%;
       max-width: none;
-      padding: 10px;
+      padding: 0;
       border: 1px solid rgba(217, 200, 158, 0.25);
-    }
-
-    .shop-the-look__product-link {
       display: flex;
       flex-direction: row;
       align-items: stretch;
-      width: 100%;
-      gap: 0;
+      overflow: hidden;
     }
 
+    .shop-the-look__product-link {
+      display: contents;
+    }
+
+    /* Thumbnail a esquerda */
     .shop-the-look__product-image-wrapper {
-      width: 80px;
-      min-width: 80px;
+      width: 100px;
+      min-width: 100px;
       flex-shrink: 0;
+      background: rgb(249, 247, 240);
     }
 
     .shop-the-look__product-image {
       aspect-ratio: auto;
-      width: 80px;
-      height: 100px;
+      width: 100px;
+      height: 130px;
+      object-fit: cover;
     }
 
-    /* No mobile: "Adicionar a sacola" vira botao visivel sempre */
+    /* Esconde o hover overlay dentro da foto */
     .shop-the-look__quick-add {
-      position: static;
-      opacity: 1;
-      background: transparent;
-      padding: 0;
-      border-top: 1px solid #f0ede8;
-      margin-top: auto;
+      display: none;
     }
 
-    .shop-the-look__quick-add-text {
-      font-size: 11px;
-      color: #545454;
-      padding: 8px 0 2px;
-    }
-
+    /* Info a direita */
     .shop-the-look__product-info {
-      padding: 2px 0 0 12px;
+      padding: 12px 14px;
       flex: 1;
       display: flex;
       flex-direction: column;
+      justify-content: center;
     }
 
     .shop-the-look__product-title {
       font-size: 12px;
+      font-weight: 500;
       letter-spacing: 0.4px;
-      margin: 0 0 4px 0;
+      margin: 0 0 0 0;
+      line-height: 1.5;
     }
 
     .shop-the-look__product-price {
       display: none;
     }
 
+    /* Botao "ADICIONAR A SACOLA" — aparece como elemento extra via ::after no card-frame */
+    .shop-the-look__card-frame::after {
+      content: 'ADICIONAR À SACOLA';
+      position: absolute;
+      bottom: 0;
+      left: 100px;
+      right: 0;
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-align: center;
+      color: #545454;
+      padding: 10px 14px;
+      border-top: 1px solid #f0ede8;
+      background: #ffffff;
+    }
+
+    .shop-the-look__card-frame {
+      position: relative;
+      min-height: 130px;
+    }
+
     /* Setas: canto inferior direito da foto lifestyle */
     .shop-the-look__nav {
       right: 16px;
-      bottom: calc(130px + 20px); /* altura do card produto (~130px) + margem */
+      bottom: 160px; /* acima do card de produto (~138px + padding) */
       margin-right: 0;
     }
 
