@@ -1,17 +1,20 @@
-<!-- Shop The Look Section - Escolhas das Blogueiras -->
+<!-- Escolhas das Blogueiras — layout BP "Escolhas da Pat" -->
 <section class="shop-the-look">
   {% if section.settings.title != blank %}
     <div class="shop-the-look__header">
       <h2 class="shop-the-look__section-title">{{ section.settings.title }}</h2>
     </div>
   {% endif %}
-  <div class="shop-the-look__container">
-    <!-- Left: Lifestyle Image -->
-    <div class="shop-the-look__image-column">
+
+  <div class="shop-the-look__grid">
+    <!-- Esquerda: Foto lifestyle retrato -->
+    <div class="shop-the-look__lifestyle">
       {% if section.settings.lifestyle_image %}
         <img
-          src="{{ section.settings.lifestyle_image | image_url: width: 1000 }}"
-          alt="Shop the Look"
+          src="{{ section.settings.lifestyle_image | image_url: width: 900 }}"
+          srcset="{{ section.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ section.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ section.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
+          sizes="(max-width: 749px) 100vw, 50vw"
+          alt="{{ section.settings.title | escape }}"
           class="shop-the-look__lifestyle-image"
           loading="lazy"
         >
@@ -22,17 +25,16 @@
       {% endif %}
     </div>
 
-    <!-- Right: Product Section -->
-    <div class="shop-the-look__content-column">
-      <div class="shop-the-look__product">
-        {% if section.settings.product != blank %}
-          {% assign product = section.settings.product %}
-
+    <!-- Direita: Produto -->
+    <div class="shop-the-look__product-side">
+      {% if section.settings.product != blank %}
+        {% assign product = section.settings.product %}
+        <a href="{{ product.url }}" class="shop-the-look__product-link">
           <div class="shop-the-look__product-image-wrapper">
             {% if product.featured_image %}
               <img
                 src="{{ product.featured_image | image_url: width: 600 }}"
-                alt="{{ product.title }}"
+                alt="{{ product.title | escape }}"
                 class="shop-the-look__product-image"
                 loading="lazy"
               >
@@ -41,50 +43,33 @@
 
           <div class="shop-the-look__product-info">
             <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
-
             <div class="shop-the-look__product-price">
-              {% if product.available %}
-                <span class="shop-the-look__price">
-                  {{ product.price | money }}
-                </span>
-                {% if product.compare_at_price %}
-                  <span class="shop-the-look__original-price">
-                    {{ product.compare_at_price | money }}
-                  </span>
-                {% endif %}
-              {% else %}
-                <span class="shop-the-look__sold-out">Sold Out</span>
+              {% if product.compare_at_price > product.price %}
+                <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
               {% endif %}
+              <span class="shop-the-look__price">{{ product.price | money }}</span>
             </div>
-
-            <p class="shop-the-look__description">
-              {{ product.description | strip_html | truncatewords: 15 }}
-            </p>
-
-            <a href="{{ product.url }}" class="button button--primary shop-the-look__button">
-              View Product
-            </a>
           </div>
-        {% else %}
-          <div class="shop-the-look__empty">
-            <p>Please select a product</p>
-          </div>
-        {% endif %}
-      </div>
+        </a>
+      {% else %}
+        <div class="shop-the-look__placeholder">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>
 
 <style>
   .shop-the-look {
-    padding: 60px 40px;
-    background-color: #fafafa;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
   }
 
   .shop-the-look__header {
-    max-width: 1400px;
-    margin: 0 auto 32px;
     text-align: center;
+    padding: 2rem 2rem 1.5rem;
   }
 
   .shop-the-look__section-title {
@@ -98,64 +83,90 @@
     line-height: 1.3;
   }
 
-  .shop-the-look__container {
-    max-width: 1400px;
-    margin: 0 auto;
+  /* Grid 2 colunas 50/50, sem gap (igual BP) */
+  .shop-the-look__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-
-  .shop-the-look__image-column {
-    position: relative;
-  }
-
-  .shop-the-look__lifestyle-image,
-  .shop-the-look__placeholder {
+    gap: 0;
     width: 100%;
-    aspect-ratio: 3 / 4;
+  }
+
+  /* Esquerda: lifestyle 9:16 */
+  .shop-the-look__lifestyle {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shop-the-look__lifestyle-image {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 9 / 16;
     object-fit: cover;
     display: block;
-    border-radius: 4px;
   }
 
-  .shop-the-look__product {
-    background-color: #fff;
-    padding: 3rem;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  .shop-the-look__placeholder {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Direita: produto centralizado verticalmente */
+  .shop-the-look__product-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #ffffff;
+  }
+
+  .shop-the-look__product-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    max-width: 500px;
+    width: 100%;
   }
 
   .shop-the-look__product-image-wrapper {
-    margin-bottom: 2rem;
-    border-radius: 4px;
     overflow: hidden;
+    margin-bottom: 1rem;
   }
 
   .shop-the-look__product-image {
     width: 100%;
-    height: auto;
     display: block;
     aspect-ratio: 2 / 3;
     object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .shop-the-look__product-link:hover .shop-the-look__product-image {
+    transform: scale(1.03);
+  }
+
+  .shop-the-look__product-info {
+    padding: 0;
   }
 
   .shop-the-look__product-title {
-    font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
     font-weight: 400;
-    text-transform: uppercase;
     letter-spacing: 0.6px;
-    margin: 0 0 12px 0;
-    color: #545454;
+    text-transform: uppercase;
+    color: #121212;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
   }
 
   .shop-the-look__product-price {
     display: flex;
-    gap: 0.75rem;
+    gap: 8px;
     align-items: center;
-    margin-bottom: 1.5rem;
   }
 
   .shop-the-look__price {
@@ -166,74 +177,33 @@
     color: #aaaaaa;
   }
 
-  .shop-the-look__original-price {
-    font-size: 1rem;
-    color: #999;
+  .shop-the-look__price--compare {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
     text-decoration: line-through;
+    color: #cccccc;
   }
 
-  .shop-the-look__sold-out {
-    font-size: 1rem;
-    color: #e74c3c;
-    font-weight: 600;
-  }
-
-  .shop-the-look__description {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: #666;
-    margin: 0 0 2rem 0;
-  }
-
-  .shop-the-look__button {
-    width: 100%;
-    padding: 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-  }
-
-  .shop-the-look__button:hover {
-    background-color: #333;
-  }
-
-  .shop-the-look__empty {
-    padding: 3rem;
-    text-align: center;
-    color: #999;
-  }
-
-  @media (max-width: 1024px) {
-    .shop-the-look__container {
+  /* Mobile: empilha */
+  @media (max-width: 749px) {
+    .shop-the-look__grid {
       grid-template-columns: 1fr;
-      gap: 2rem;
     }
 
-    .shop-the-look__product {
-      padding: 2rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .shop-the-look {
-      padding: 3rem 1rem;
+    .shop-the-look__lifestyle-image {
+      aspect-ratio: 3 / 4;
     }
 
-    .shop-the-look__product {
+    .shop-the-look__placeholder {
+      aspect-ratio: 3 / 4;
+    }
+
+    .shop-the-look__product-side {
       padding: 1.5rem;
     }
 
-    .shop-the-look__product-title {
-      font-size: 1.5rem;
+    .shop-the-look__product-image {
+      aspect-ratio: 2 / 3;
     }
   }
 </style>
@@ -251,7 +221,8 @@
     {
       "type": "image_picker",
       "id": "lifestyle_image",
-      "label": "Foto da blogueira (lifestyle)"
+      "label": "Foto da blogueira (lifestyle)",
+      "info": "Retrato 9:16. Tamanho ideal: 900×1600px"
     },
     {
       "type": "product",
