@@ -356,7 +356,6 @@
 
     .shop-the-look__lifestyle {
       width: 100%;
-      position: relative;
     }
 
     .shop-the-look__lifestyle-image {
@@ -367,31 +366,32 @@
       aspect-ratio: 3 / 4;
     }
 
-    /* Produto: card horizontal compacto */
+    /* Produto: centralizado embaixo da foto, 70% width (BP: width 70%, padding 1.5rem) */
     .shop-the-look__product-side {
       width: 100%;
+      display: flex;
+      justify-content: center;
       padding: 0 16px;
-      display: block;
     }
 
     .shop-the-look__card-frame {
-      width: 100%;
+      width: 70%;
       max-width: none;
-      padding: 0;
-      border: none;
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      overflow: hidden;
-      background: #f9f7f2;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      padding: 1.5rem;
+      border: 0.5px solid rgba(217, 200, 158, 0.4);
+      background: transparent;
+      box-shadow: none;
+      position: relative;
     }
 
     .shop-the-look__product-link {
-      display: contents;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0;
     }
 
-    /* Thumbnail a esquerda */
+    /* Thumbnail a esquerda (BP: 10rem = 160px) */
     .shop-the-look__product-image-wrapper {
       width: 100px;
       min-width: 100px;
@@ -400,95 +400,68 @@
     }
 
     .shop-the-look__product-image {
-      aspect-ratio: auto;
+      aspect-ratio: 2 / 3;
       width: 100px;
-      height: 130px;
+      height: auto;
       object-fit: cover;
     }
 
-    /* Esconde o hover overlay dentro da foto */
+    /* Esconde o hover overlay */
     .shop-the-look__quick-add {
-      display: none;
-    }
-
-    /* Info a direita */
-    .shop-the-look__product-info {
-      padding: 12px 14px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      position: static;
+      opacity: 1;
+      background: rgb(249, 247, 240);
+      padding: 8px 0;
       justify-content: center;
     }
 
-    .shop-the-look__product-title {
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.4px;
-      margin: 0 0 0 0;
-      line-height: 1.5;
-    }
-
-    .shop-the-look__product-price {
-      display: none;
-    }
-
-    /* Botao "ADICIONAR A SACOLA" visivel no mobile */
-    .shop-the-look__card-frame::after {
-      content: 'ADICIONAR À SACOLA';
-      position: absolute;
-      bottom: 0;
-      left: 100px;
-      right: 0;
-      font-family: 'Raleway', sans-serif;
-      font-size: 11px;
+    .shop-the-look__quick-add-text {
+      font-size: 10px;
       font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      text-align: center;
       color: #545454;
-      padding: 10px 14px;
-      border-top: 1px solid #e8e2d8;
-      background: #f9f7f2;
     }
 
-    .shop-the-look__card-frame {
-      position: relative;
-      min-height: 130px;
-    }
-
-    /* Info: alinhar verticalmente no centro-topo */
+    /* Info a direita do thumbnail */
     .shop-the-look__product-info {
-      padding: 14px 14px 40px;
+      padding: 4px 0 0 14px;
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      background: #f9f7f2;
     }
 
     .shop-the-look__product-title {
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      margin: 0;
+      font-family: 'Raleway', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin: 0 0 6px 0;
       line-height: 1.5;
-      color: #333333;
+      color: #121212;
     }
 
     .shop-the-look__product-price {
       display: flex;
-      margin-top: 4px;
+      gap: 6px;
     }
 
     .shop-the-look__price {
-      font-size: 13px;
-      color: #888888;
+      font-size: 12px;
+      font-weight: 500;
+      color: #aaaaaa;
     }
 
-    /* Setas: canto inferior direito da foto lifestyle */
+    .shop-the-look__price--compare {
+      font-size: 11px;
+    }
+
+    /* Setas: canto inferior direito da foto lifestyle
+       No mobile, a foto é 3:4, e o card produto fica embaixo.
+       O nav é absoluto no slider, entao bottom precisa
+       pular a altura do card (~200px) */
     .shop-the-look__nav {
       right: 16px;
-      bottom: 160px; /* acima do card de produto (~138px + padding) */
+      bottom: 200px;
       margin-right: 0;
     }
 
