@@ -1,4 +1,9 @@
 <!-- Category Grid - 4 mini banners de categoria (estilo PatBO) -->
+{% assign has_any_image = false %}
+{% for block in section.blocks %}
+  {% if block.settings.image %}{% assign has_any_image = true %}{% endif %}
+{% endfor %}
+{% if has_any_image %}
 <section class="gt-cats">
   <ul class="gt-cats__grid">
     {% for block in section.blocks %}
@@ -30,6 +35,7 @@
     {% endfor %}
   </ul>
 </section>
+{% endif %}
 
 <style>
   .gt-cats {
@@ -41,7 +47,7 @@
 
   .gt-cats__grid {
     list-style: none;
-    margin: 8px 0 0;
+    margin: 3px 0 0;
     padding: 0;
     width: 100vw;
     max-width: 100vw;
@@ -49,7 +55,7 @@
     box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    gap: 3px;
   }
 
   .gt-cats__item {
