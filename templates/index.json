@@ -11,7 +11,9 @@
   "sections": {
     "hero_slideshow": {
       "type": "hero-slideshow",
-      "settings": {}
+      "settings": {
+        "title": "Hero Slideshow"
+      }
     },
     "category_grid": {
       "type": "category-grid",
@@ -19,13 +21,15 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "heading": "Conjuntos de Calça",
+            "image": "shopify://shop_images/www.galeriatricot.com_c61a2780-35c8-4aad-9ae0-fc5df422db89.webp",
+            "heading": "Conjuntos",
             "link": "/collections/conjuntos-de-calca"
           }
         },
         "cat2": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/www.galeriatricot.com.webp",
             "heading": "Casacos e Blusas",
             "link": "/collections/casacos-e-blusas"
           }
@@ -33,6 +37,7 @@
         "cat3": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
             "heading": "Vestidos",
             "link": "/collections/vestidos"
           }
@@ -40,6 +45,7 @@
         "cat4": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/www.galeriatricot.com_702cc134-0660-4df0-a270-8a61c2a4e5dc.webp",
             "heading": "Macacão",
             "link": "/collections/macacao"
           }
@@ -58,11 +64,23 @@
       "blocks": {
         "b1": {
           "type": "banner",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/mae_e_filha_-_descalca.png",
+            "subheading": "Confira",
+            "heading": "Nova Coleção",
+            "cta_text": "SHOP NOW",
+            "link": ""
+          }
         },
         "b2": {
           "type": "banner",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/Lily_off_1-1_57608b11-6cf7-4a50-8454-5a69607d1b54.png",
+            "subheading": "Confira",
+            "heading": "Nova Coleção",
+            "cta_text": "SHOP NOW",
+            "link": ""
+          }
         }
       },
       "block_order": [
@@ -74,14 +92,17 @@
     "best_sellers": {
       "type": "featured-collection",
       "settings": {
-        "title": "BEST SELLERS"
+        "title": "BEST SELLERS",
+        "collection": "best-sellers"
       }
     },
     "image_banner_lancamento": {
       "type": "image-banner",
       "settings": {
-        "heading": "TRAMAS & TEXTURAS",
-        "link_text": "SHOP NOW",
+        "image": "shopify://shop_images/36bb74c7-3977-4a7e-85d2-10614c6874f8___aade505a07bce0cbd785dffe84addebd.webp",
+        "heading": "",
+        "link_text": "",
+        "link": "",
         "text_position": "left",
         "text_color": "#ffffff"
       }
@@ -95,12 +116,20 @@
     "outlet_destaques": {
       "type": "featured-collection",
       "settings": {
-        "title": "DESTAQUES DO OUTLET"
+        "title": "DESTAQUES DO OUTLET",
+        "collection": ""
       }
     },
     "trust_bar": {
       "type": "trust-bar",
       "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "title": "ENTRE NA NOSSA LISTA",
+        "description": "<p>Novidades, ofertas exclusivas e inspiração direto no seu e-mail</p>"
+      }
     }
   },
   "order": [
@@ -111,6 +140,7 @@
     "image_banner_lancamento",
     "escolhas_blogueiras",
     "outlet_destaques",
-    "trust_bar"
+    "trust_bar",
+    "newsletter"
   ]
 }
