@@ -15,28 +15,28 @@
       "type": "footer",
       "blocks": {
         "institucional": {
-          "type": "link_list",
+          "type": "text",
           "settings": {
             "heading": "INSTITUCIONAL",
-            "menu": "footer"
+            "text": "<p><a href=\"/pages/sobre\">Sobre a Galeria Tricot</a><br><a href=\"/pages/collab-thassia-naves\">Sobre a Collab Thassia Naves</a><br><a href=\"/pages/nossas-lojas\">Nossas Lojas</a><br><a href=\"/pages/trabalhe-conosco\">Trabalhe conosco</a><br><a href=\"/pages/fale-conosco\">Fale conosco</a></p>"
+          }
+        },
+        "politicas": {
+          "type": "text",
+          "settings": {
+            "heading": "NOSSAS POLÍTICAS",
+            "text": "<p>Trocas e devoluções<br>Política de privacidade<br>Entregas e frete<br>Ouvidoria</p>"
           }
         },
         "ajuda": {
           "type": "text",
           "settings": {
-            "heading": "AJUDA",
-            "text": "<p>Central de Atendimento<br>Trocas e Devoluções<br>Formas de Pagamento<br>Entrega</p>"
-          }
-        },
-        "atendimento": {
-          "type": "text",
-          "settings": {
-            "heading": "ATENDIMENTO",
-            "text": "<p>Seg a Sex, 9h às 18h<br>WhatsApp: (11) 99999-9999<br>contato@galeriatricot.com.br</p>"
+            "heading": "PRECISA DE AJUDA?",
+            "text": "<p>Acompanhe seu pedido<br>Fale com o SAC<br>Dúvidas frequentes</p>"
           }
         }
       },
-      "block_order": ["institucional", "ajuda", "atendimento"],
+      "block_order": ["institucional", "politicas", "ajuda"],
       "settings": {
         "show_newsletter": true,
         "newsletter_heading": "ENTRE NA NOSSA LISTA",
