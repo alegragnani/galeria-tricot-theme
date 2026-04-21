@@ -1,4 +1,4 @@
-<!-- Image Banner Section -->
+<!-- Image Banner Section — configuravel pelo editor -->
 <section class="image-banner">
   <div class="image-banner__wrapper">
     {% if section.settings.image %}
@@ -22,22 +22,24 @@
       </div>
     {% endif %}
 
-    {% if section.settings.heading or section.settings.link_text %}
-      <div class="image-banner__overlay image-banner__overlay--{{ section.settings.text_position }}">
+    {% if section.settings.heading or section.settings.subtitle or section.settings.link_text %}
+      <div class="image-banner__overlay image-banner__overlay--{{ section.settings.text_position }} image-banner__overlay--{{ section.settings.text_vertical }}">
         <div class="image-banner__content">
-          {% if section.settings.heading %}
-            <h2 class="image-banner__heading" style="color: {{ section.settings.text_color }};">
+          {% if section.settings.subtitle != blank %}
+            <p class="image-banner__subtitle" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.subtitle_size }}px;">
+              {{ section.settings.subtitle }}
+            </p>
+          {% endif %}
+
+          {% if section.settings.heading != blank %}
+            <h2 class="image-banner__heading" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.heading_size }}px;">
               {{ section.settings.heading }}
             </h2>
           {% endif %}
 
-          {% if section.settings.link_text and section.settings.link %}
-            <a href="{{ section.settings.link }}" class="image-banner__link" style="color: {{ section.settings.text_color }};">
+          {% if section.settings.link_text != blank and section.settings.link != blank %}
+            <a href="{{ section.settings.link }}" class="image-banner__link" style="color: {{ section.settings.text_color }}; border-color: {{ section.settings.text_color }};">
               {{ section.settings.link_text }}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-left: 0.5rem; vertical-align: -2px;">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
             </a>
           {% endif %}
         </div>
@@ -50,6 +52,7 @@
   .image-banner {
     width: 100%;
     padding: 0;
+    margin-bottom: 24px;
     overflow: hidden;
   }
 
@@ -80,11 +83,11 @@
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center;
     z-index: 2;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
   }
 
+  /* Horizontal */
   .image-banner__overlay--left {
     justify-content: flex-start;
     padding-left: 5%;
@@ -92,6 +95,7 @@
 
   .image-banner__overlay--center {
     justify-content: center;
+    text-align: center;
   }
 
   .image-banner__overlay--right {
@@ -99,15 +103,38 @@
     padding-right: 5%;
   }
 
+  /* Vertical */
+  .image-banner__overlay--top {
+    align-items: flex-start;
+    padding-top: 8%;
+  }
+
+  .image-banner__overlay--middle {
+    align-items: center;
+  }
+
+  .image-banner__overlay--bottom {
+    align-items: flex-end;
+    padding-bottom: 8%;
+  }
+
   .image-banner__content {
-    max-width: 400px;
+    max-width: 500px;
+  }
+
+  .image-banner__subtitle {
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
   }
 
   .image-banner__heading {
     font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
-    font-size: clamp(28px, 4vw, 48px);
     font-weight: 400;
-    line-height: 1.3;
+    line-height: 1.2;
     margin: 0 0 1.5rem 0;
     text-transform: uppercase;
     letter-spacing: 0.6px;
@@ -123,19 +150,19 @@
     text-transform: uppercase;
     text-decoration: none;
     transition: all 0.3s ease;
-    border: 1px solid currentColor;
+    border: 1px solid;
     padding: 12px 28px;
   }
 
   .image-banner__link:hover {
     background-color: #ffffff;
     color: #545454 !important;
+    border-color: #ffffff !important;
   }
-
 
   @media (max-width: 768px) {
     .image-banner__wrapper {
-      aspect-ratio: 9 / 16.6; /* BP mobile — quase tela cheia vertical */
+      aspect-ratio: 9 / 16.6; /* BP mobile */
     }
 
     .image-banner__overlay--left {
@@ -147,7 +174,11 @@
     }
 
     .image-banner__heading {
-      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-size: clamp(1.25rem, 6vw, 2.5rem) !important;
+    }
+
+    .image-banner__subtitle {
+      font-size: 13px !important;
     }
   }
 </style>
@@ -156,6 +187,10 @@
 {
   "name": "Image Banner",
   "settings": [
+    {
+      "type": "header",
+      "content": "Imagens"
+    },
     {
       "type": "image_picker",
       "id": "image",
@@ -167,46 +202,84 @@
       "label": "Imagem mobile"
     },
     {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo (texto menor em cima)",
+      "default": "CONFIRA"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Tamanho do subtítulo (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14
+    },
+    {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "TRAMAS & TEXTURAS"
+      "label": "Título principal",
+      "default": "NOVA COLEÇÃO"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Tamanho do título (px)",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Botão"
     },
     {
       "type": "text",
       "id": "link_text",
-      "label": "Link Text",
+      "label": "Texto do botão",
       "default": "SHOP NOW"
     },
     {
       "type": "url",
       "id": "link",
-      "label": "Link"
+      "label": "Link do botão"
+    },
+    {
+      "type": "header",
+      "content": "Posição e cor"
     },
     {
       "type": "select",
       "id": "text_position",
-      "label": "Text Position",
+      "label": "Posição horizontal",
       "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
+        { "value": "left", "label": "Esquerda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Direita" }
       ],
-      "default": "left"
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "text_vertical",
+      "label": "Posição vertical",
+      "options": [
+        { "value": "top", "label": "Topo" },
+        { "value": "middle", "label": "Meio" },
+        { "value": "bottom", "label": "Embaixo" }
+      ],
+      "default": "middle"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color",
+      "label": "Cor dos textos",
       "default": "#ffffff"
     }
   ],
