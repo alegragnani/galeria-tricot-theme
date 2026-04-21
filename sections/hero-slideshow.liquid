@@ -115,7 +115,24 @@
     }
   }
 
-  /* Mobile — sem override, banner usa tamanho natural da imagem */
+  /* Mobile — imagem determina a altura naturalmente */
+  @media (max-width: 749px) {
+    .hero-slideshow__slides {
+      height: auto !important;
+      max-height: none !important;
+      padding-bottom: 0 !important;
+    }
+    .hero-slideshow__slide:first-child {
+      position: relative !important;
+    }
+    .hero-slideshow__slide picture {
+      height: auto !important;
+    }
+    .hero-slideshow__image {
+      height: auto !important;
+      object-fit: contain !important;
+    }
+  }
 
   .hero-slideshow__slide {
     position: absolute;
