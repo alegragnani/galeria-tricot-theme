@@ -1,31 +1,33 @@
 {%- comment -%}
-  Product Card Snippet — Galeria Tricot
+  Product Card Snippet — Galeria Tricot (estilo BP)
   Usage: {% render 'product-card', product: product %}
 {%- endcomment -%}
 
 <div class="product-card">
-  <a href="{{ product.url }}" class="product-card__image-wrapper">
-    {%- if product.featured_image -%}
-      <img
-        src="{{ product.featured_image | image_url: width: 600 }}"
-        alt="{{ product.featured_image.alt | escape }}"
-        class="product-card__image product-card__image--primary"
-        loading="lazy"
-        width="600"
-        height="800"
-      >
-    {%- endif -%}
+  <div class="product-card__image-wrapper">
+    <a href="{{ product.url }}" class="product-card__image-link">
+      {%- if product.featured_image -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          class="product-card__image product-card__image--primary"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
 
-    {%- if product.images.size > 1 -%}
-      <img
-        src="{{ product.images[1] | image_url: width: 600 }}"
-        alt="{{ product.images[1].alt | escape }}"
-        class="product-card__image product-card__image--hover"
-        loading="lazy"
-        width="600"
-        height="800"
-      >
-    {%- endif -%}
+      {%- if product.images.size > 1 -%}
+        <img
+          src="{{ product.images[1] | image_url: width: 600 }}"
+          alt="{{ product.images[1].alt | escape }}"
+          class="product-card__image product-card__image--hover"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
+    </a>
 
     {%- if product.compare_at_price > product.price -%}
       {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
@@ -37,10 +39,15 @@
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     </button>
-  </a>
+
+    <!-- Botao "Adicionar a sacola" no hover (estilo BP) -->
+    <div class="product-card__quick-add">
+      <span class="product-card__quick-add-text">ADICIONAR À SACOLA</span>
+    </div>
+  </div>
 
   <div class="product-card__info">
-    <a href="{{ product.url }}">
+    <a href="{{ product.url }}" class="product-card__title-link">
       <h3 class="product-card__title">{{ product.title }}</h3>
     </a>
 
@@ -58,3 +65,157 @@
     </div>
   </div>
 </div>
+
+<style>
+  .product-card {
+    position: relative;
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .product-card__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.4s ease;
+  }
+
+  .product-card__image--hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+
+  .product-card__image-wrapper:hover .product-card__image--hover {
+    opacity: 1;
+  }
+
+  .product-card__image-wrapper:hover .product-card__image--primary {
+    opacity: 0;
+  }
+
+  /* Badge de desconto */
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    background: #000;
+    color: #fff;
+  }
+
+  /* Wishlist heart */
+  .product-card__wishlist {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card__image-wrapper:hover .product-card__wishlist {
+    opacity: 1;
+  }
+
+  .product-card__wishlist svg {
+    width: 20px;
+    height: 20px;
+    color: #545454;
+  }
+
+  /* Botao "ADICIONAR À SACOLA" — aparece no hover (BP style) */
+  .product-card__quick-add {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .product-card__image-wrapper:hover .product-card__quick-add {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .product-card__quick-add-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #4a4a4a;
+  }
+
+  /* Info: titulo + preco (BP specs) */
+  .product-card__info {
+    padding: 12px 0 0;
+  }
+
+  .product-card__title-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #121212;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+  }
+
+  .product-card__price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #aaaaaa;
+  }
+
+  .product-card__price--compare {
+    text-decoration: line-through;
+    color: #cccccc;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .product-card__price--sale {
+    color: #c1673a;
+  }
+</style>
