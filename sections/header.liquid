@@ -236,7 +236,7 @@
     left: 0;
     right: 0;
     z-index: 100;
-    transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, top 0.35s ease, backdrop-filter 0.35s ease;
+    transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease, backdrop-filter 0.35s ease;
     font-family: 'Raleway', -apple-system, sans-serif;
   }
 
@@ -279,9 +279,9 @@
     filter: none;
   }
 
-  /* Ao rolar a página vira sólido branco */
+  /* Ao rolar a página vira sólido branco — top muda instantaneamente */
   .site-header.is-scrolled {
-    top: 0;
+    top: 0 !important;
     background: #ffffff;
     background-color: #ffffff;
     border-bottom-color: #E8DED1;
@@ -290,7 +290,7 @@
 
   /* Scroll pra baixo: header desliza pra fora (igual BP) */
   .site-header.is-hidden {
-    top: calc(-1 * 90px); /* empurra pra cima, fora da tela */
+    transform: translateY(-110%);
     pointer-events: none;
   }
   .site-header.is-scrolled .site-header__logo-text,
