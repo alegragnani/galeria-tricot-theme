@@ -365,22 +365,25 @@
       aspect-ratio: 3 / 4;
     }
 
-    /* Produto: centralizado embaixo da foto, 70% width (BP: width 70%, padding 1.5rem) */
+    /* Card produto: BP usa card largo com sombra + cantos arredondados */
     .shop-the-look__product-side {
       width: 100%;
       display: flex;
       justify-content: center;
-      padding: 0 16px;
+      padding: 12px 16px 0;
     }
 
     .shop-the-look__card-frame {
-      width: 70%;
+      width: 92%;
       max-width: none;
-      padding: 1.5rem;
-      border: 0.5px solid rgba(217, 200, 158, 0.4);
-      background: transparent;
-      box-shadow: none;
+      padding: 0;
+      border: none;
+      background: #ffffff;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+      border-radius: 6px;
       position: relative;
+      overflow: hidden;
+      padding-bottom: 40px; /* espaco pro botao ADICIONAR */
     }
 
     .shop-the-look__product-link {
@@ -390,39 +393,45 @@
       gap: 0;
     }
 
-    /* Thumbnail a esquerda (BP: 10rem = 160px) */
+    /* Thumbnail a esquerda (BP: ~120px) */
     .shop-the-look__product-image-wrapper {
-      width: 100px;
-      min-width: 100px;
+      width: 110px;
+      min-width: 110px;
       flex-shrink: 0;
       background: rgb(249, 247, 240);
+      position: static; /* permite quick-add escapar para o card-frame */
     }
 
     .shop-the-look__product-image {
       aspect-ratio: 2 / 3;
-      width: 100px;
+      width: 110px;
       height: auto;
       object-fit: cover;
     }
 
-    /* Esconde o hover overlay */
+    /* ADICIONAR A SACOLA: faixa no fundo do card, largura total (BP style) */
     .shop-the-look__quick-add {
-      position: static;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       opacity: 1;
       background: rgb(249, 247, 240);
-      padding: 8px 0;
+      padding: 10px 12px;
       justify-content: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
     }
 
     .shop-the-look__quick-add-text {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       color: #545454;
+      letter-spacing: 0.8px;
     }
 
     /* Info a direita do thumbnail */
     .shop-the-look__product-info {
-      padding: 4px 0 0 14px;
+      padding: 14px 14px 0;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -431,36 +440,23 @@
     .shop-the-look__product-title {
       font-family: 'Raleway', sans-serif;
       font-size: 12px;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: 0.4px;
       text-transform: uppercase;
-      margin: 0 0 6px 0;
+      margin: 0;
       line-height: 1.5;
-      color: #121212;
+      color: #333333;
     }
 
     .shop-the-look__product-price {
-      display: flex;
-      gap: 6px;
+      display: none; /* BP nao mostra preco no card mobile */
     }
 
-    .shop-the-look__price {
-      font-size: 12px;
-      font-weight: 500;
-      color: #aaaaaa;
-    }
-
-    .shop-the-look__price--compare {
-      font-size: 11px;
-    }
-
-    /* Setas: canto inferior direito da foto lifestyle
-       No mobile, a foto é 3:4, e o card produto fica embaixo.
-       O nav é absoluto no slider, entao bottom precisa
-       pular a altura do card (~200px) */
+    /* Setas: sobre a foto lifestyle, canto inferior direito */
     .shop-the-look__nav {
       right: 16px;
-      bottom: 200px;
+      bottom: auto;
+      top: calc(100vw * 4 / 3 - 56px); /* posiciona no final da foto 3:4 */
       margin-right: 0;
     }
 
