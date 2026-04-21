@@ -128,7 +128,8 @@
       "type": "shop-the-look",
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS",
-        "product": ""
+        "lifestyle_image": "shopify://shop_images/IMG_4304.jpg",
+        "product": "blusa-tricot-leila-bege-areia"
       }
     },
     "outlet_destaques": {
