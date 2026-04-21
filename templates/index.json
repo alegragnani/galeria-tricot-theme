@@ -170,7 +170,7 @@
       "type": "featured-collection",
       "settings": {
         "title": "DESTAQUES DO OUTLET",
-        "collection": ""
+        "collection": "outlet"
       }
     },
     "trust_bar": {
