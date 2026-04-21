@@ -202,7 +202,7 @@
 
   .shop-the-look__product-image-wrapper {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     background: rgb(249, 247, 240);
   }
 
@@ -218,10 +218,10 @@
     transform: scale(1.03);
   }
 
-  /* Hover: "Adicionar a sacola" — sobreposto na imagem, um pouco menor que a largura (BP) */
+  /* Hover: "Adicionar a sacola" — metade sobre a imagem, metade sobre o titulo (BP) */
   .shop-the-look__quick-add {
     position: absolute;
-    bottom: 8px;
+    bottom: -18px;
     left: 10px;
     right: 10px;
     background: rgba(255, 255, 255, 0.95);
@@ -231,6 +231,7 @@
     align-items: center;
     opacity: 0;
     cursor: pointer;
+    z-index: 4;
   }
 
   .shop-the-look__product-link:hover .shop-the-look__quick-add {
@@ -401,6 +402,7 @@
       flex-shrink: 0;
       background: rgb(249, 247, 240);
       position: relative;
+      overflow: visible;
     }
 
     .shop-the-look__product-image {
@@ -410,16 +412,17 @@
       object-fit: cover;
     }
 
-    /* ADICIONAR A SACOLA: sobreposto no card, largura total menos margens (BP style) */
+    /* ADICIONAR A SACOLA: sobreposto na divisa imagem/titulo (BP style) */
     .shop-the-look__quick-add {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: -16px;
+      left: 4px;
+      right: 4px;
       opacity: 1;
       background: rgba(255, 255, 255, 0.92);
-      padding: 10px 12px;
+      padding: 8px 6px;
       justify-content: center;
+      z-index: 4;
     }
 
     .shop-the-look__quick-add-text {
