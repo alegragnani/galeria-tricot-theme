@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Footer Group",
@@ -32,7 +41,13 @@
         "show_newsletter": true,
         "newsletter_heading": "ENTRE NA NOSSA LISTA",
         "newsletter_text": "Novidades, ofertas exclusivas e inspiração direto no seu e-mail.",
-        "show_payment_icons": true
+        "show_payment_icons": true,
+        "social_instagram": "https://www.instagram.com/galeriatricot",
+        "social_whatsapp": "https://api.whatsapp.com/send?phone=5535998543079&text=Ola%20Equipe%20GT!",
+        "social_youtube": "",
+        "social_tiktok": "",
+        "social_pinterest": "",
+        "social_linkedin": ""
       }
     }
   },
