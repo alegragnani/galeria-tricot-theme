@@ -127,10 +127,25 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_xXVdXg": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Lily_off_2.png",
+            "product": "regata-tricot-lily-branco-marfim"
+          }
+        },
+        "look_QVwWtM": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/download.webp",
+            "product": "blusa-tricot-ski-preto"
+          }
+        },
         "look_YXMYcd": {
           "type": "look",
           "settings": {
-            "product": ""
+            "lifestyle_image": "shopify://shop_images/Giovana_off_3.jpg",
+            "product": "blusa-tricot-giovana-off-white"
           }
         },
         "look_KEJQhR": {
@@ -142,6 +157,8 @@
         }
       },
       "block_order": [
+        "look_xXVdXg",
+        "look_QVwWtM",
         "look_YXMYcd",
         "look_KEJQhR"
       ],
