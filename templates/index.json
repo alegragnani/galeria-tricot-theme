@@ -127,6 +127,20 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_KEJQhR": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd.jpg",
+            "product": "blusa-tricot-leila-bege-areia"
+          }
+        },
+        "look_YXMYcd": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Giovana_off_3.jpg",
+            "product": "blusa-tricot-giovana-off-white"
+          }
+        },
         "look_xXVdXg": {
           "type": "look",
           "settings": {
@@ -140,27 +154,13 @@
             "lifestyle_image": "shopify://shop_images/download.webp",
             "product": "blusa-tricot-ski-preto"
           }
-        },
-        "look_YXMYcd": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Giovana_off_3.jpg",
-            "product": "blusa-tricot-giovana-off-white"
-          }
-        },
-        "look_KEJQhR": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd.jpg",
-            "product": "blusa-tricot-leila-bege-areia"
-          }
         }
       },
       "block_order": [
-        "look_xXVdXg",
-        "look_QVwWtM",
+        "look_KEJQhR",
         "look_YXMYcd",
-        "look_KEJQhR"
+        "look_xXVdXg",
+        "look_QVwWtM"
       ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
