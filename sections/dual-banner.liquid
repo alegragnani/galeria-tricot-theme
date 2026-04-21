@@ -18,7 +18,7 @@
           {% else %}
             <div class="dual-banner__placeholder">{{ 'image' | placeholder_svg_tag }}</div>
           {% endif %}
-          <div class="dual-banner__overlay">
+          <div class="dual-banner__overlay dual-banner__overlay--h-{{ block.settings.text_horizontal }} dual-banner__overlay--v-{{ block.settings.text_vertical }}">
             <div class="dual-banner__content">
               {% if block.settings.subheading != blank %}
                 <p class="dual-banner__subheading">{{ block.settings.subheading }}</p>
@@ -88,14 +88,21 @@
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
     padding: 40px 24px;
     background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35) 100%);
   }
 
+  /* Horizontal */
+  .dual-banner__overlay--h-left { justify-content: flex-start; text-align: left; }
+  .dual-banner__overlay--h-center { justify-content: center; text-align: center; }
+  .dual-banner__overlay--h-right { justify-content: flex-end; text-align: right; }
+
+  /* Vertical */
+  .dual-banner__overlay--v-top { align-items: flex-start; background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 50%); }
+  .dual-banner__overlay--v-middle { align-items: center; background: rgba(0,0,0,0.15); }
+  .dual-banner__overlay--v-bottom { align-items: flex-end; }
+
   .dual-banner__content {
-    text-align: center;
     color: #ffffff;
   }
 
@@ -188,6 +195,28 @@
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "text_horizontal",
+          "label": "Posição horizontal do texto",
+          "options": [
+            { "value": "left", "label": "Esquerda" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right", "label": "Direita" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "text_vertical",
+          "label": "Posição vertical do texto",
+          "options": [
+            { "value": "top", "label": "Topo" },
+            { "value": "middle", "label": "Meio" },
+            { "value": "bottom", "label": "Embaixo" }
+          ],
+          "default": "bottom"
         }
       ]
     }
