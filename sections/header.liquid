@@ -287,6 +287,12 @@
     border-bottom-color: #E8DED1;
     box-shadow: none;
   }
+
+  /* Scroll pra baixo: header desliza pra fora (igual BP) */
+  .site-header.is-hidden {
+    top: calc(-1 * 90px); /* empurra pra cima, fora da tela */
+    pointer-events: none;
+  }
   .site-header.is-scrolled .site-header__logo-text,
   .site-header.is-scrolled .site-header__nav-link,
   .site-header.is-scrolled .site-header__icon-btn,
@@ -693,16 +699,48 @@
     const header = document.querySelector('[data-site-header]');
     if (!header) return;
 
-    // Toggle is-scrolled conforme rola a página
-    function updateScrollState() {
-      if (window.scrollY > 60) {
-        header.classList.add('is-scrolled');
-      } else {
-        header.classList.remove('is-scrolled');
+    // ===== Scroll direction: hide/reveal igual BP =====
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    const SCROLL_THRESHOLD = 60; // px antes de ativar sticky
+
+    function onScroll() {
+      const currentY = window.scrollY;
+
+      // Perto do topo: estado transparente original
+      if (currentY <= SCROLL_THRESHOLD) {
+        header.classList.remove('is-scrolled', 'is-hidden');
+        lastScrollY = currentY;
+        return;
       }
+
+      // Passou do threshold: vira sólido branco
+      header.classList.add('is-scrolled');
+
+      // Direção do scroll
+      if (currentY > lastScrollY + 5) {
+        // Scroll pra BAIXO → esconde header (desliza pra cima)
+        header.classList.add('is-hidden');
+      } else if (currentY < lastScrollY - 5) {
+        // Scroll pra CIMA → revela header (desliza pra baixo)
+        header.classList.remove('is-hidden');
+      }
+
+      lastScrollY = currentY;
     }
-    updateScrollState();
-    window.addEventListener('scroll', updateScrollState, { passive: true });
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Estado inicial
+    onScroll();
 
     // Close mega menus when clicking outside
     document.addEventListener('click', function(e) {
