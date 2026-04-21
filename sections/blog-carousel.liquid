@@ -1,286 +1,227 @@
-<!-- Blog Carousel Section -->
-<section class="blog-carousel">
-  <div class="blog-carousel__header">
-    {% if section.settings.title %}
-      <h2 class="blog-carousel__title">{{ section.settings.title }}</h2>
-    {% endif %}
-  </div>
+<!-- Escolhas das Blogueiras — 2 banners retrato lado a lado (lookbook estilo BP) -->
+<section class="lookbook">
+  {% if section.settings.title != blank %}
+    <div class="lookbook__header">
+      <h2 class="lookbook__title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
 
-  <div class="blog-carousel__carousel" data-carousel>
-    <div class="blog-carousel__track">
-      {% if section.settings.blog != blank %}
-        {% for article in section.settings.blog.articles limit: 6 %}
-          <article class="blog-carousel__item">
-            <a href="{{ article.url }}" class="blog-carousel__card">
-              <div class="blog-carousel__image-wrapper">
-                {% if article.image %}
-                  <img
-                    src="{{ article.image | image_url: width: 600 }}"
-                    alt="{{ article.title }}"
-                    class="blog-carousel__image"
-                    loading="lazy"
-                  >
-                {% else %}
-                  <div class="blog-carousel__placeholder">
-                    {{ 'image' | placeholder_svg_tag }}
-                  </div>
-                {% endif %}
+  <div class="lookbook__grid">
+    {% for block in section.blocks %}
+      <div class="lookbook__item" {{ block.shopify_attributes }}>
+        {% if block.settings.link %}<a href="{{ block.settings.link }}" class="lookbook__link">{% endif %}
+          <div class="lookbook__image-wrapper">
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | image_url: width: 900 }}"
+                srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 900 }} 900w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 749px) 100vw, 50vw"
+                alt="{{ block.settings.heading | escape }}"
+                class="lookbook__image"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="lookbook__placeholder">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
 
-                <div class="blog-carousel__overlay">
-                  <div class="blog-carousel__content">
-                    {% if article.tags.size > 0 %}
-                      <span class="blog-carousel__tag">{{ article.tags | first }}</span>
-                    {% endif %}
-                    <h3 class="blog-carousel__post-title">{{ article.title }}</h3>
-                    <span class="blog-carousel__date">{{ article.published_at | date: "%b %d, %Y" }}</span>
-                  </div>
+            {% if block.settings.heading != blank or block.settings.cta_text != blank %}
+              <div class="lookbook__overlay">
+                <div class="lookbook__content">
+                  {% if block.settings.heading != blank %}
+                    <h3 class="lookbook__heading">{{ block.settings.heading }}</h3>
+                  {% endif %}
+                  {% if block.settings.cta_text != blank %}
+                    <span class="lookbook__cta">{{ block.settings.cta_text }}</span>
+                  {% endif %}
                 </div>
               </div>
-            </a>
-          </article>
-        {% endfor %}
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Scroll Navigation -->
-  <div class="blog-carousel__nav">
-    <button class="blog-carousel__scroll-btn blog-carousel__scroll-btn--prev" aria-label="Scroll left">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    <button class="blog-carousel__scroll-btn blog-carousel__scroll-btn--next" aria-label="Scroll right">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
+            {% endif %}
+          </div>
+        {% if block.settings.link %}</a>{% endif %}
+      </div>
+    {% endfor %}
   </div>
 </section>
 
 <style>
-  .blog-carousel {
-    padding: 4rem 2rem;
-    background-color: #fff;
+  .lookbook {
+    padding: 24px 0;
+    background-color: #ffffff;
   }
 
-  .blog-carousel__header {
-    max-width: 1400px;
-    margin: 0 auto 3rem;
+  .lookbook__header {
     text-align: center;
+    margin-bottom: 2rem;
+    padding: 0 2rem;
   }
 
-  .blog-carousel__title {
+  .lookbook__title {
     font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
     font-size: 32px;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    margin: 0;
     color: #9E885E;
     line-height: 1.3;
+    margin: 0;
   }
 
-  .blog-carousel__carousel {
-    position: relative;
+  .lookbook__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+
+  .lookbook__item {
     overflow: hidden;
-    max-width: 1400px;
-    margin: 0 auto;
   }
 
-  .blog-carousel__track {
-    display: flex;
-    gap: 2rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 1rem 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .blog-carousel__track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .blog-carousel__item {
-    flex: 0 0 calc(33.333% - 1.35rem);
-    min-width: 280px;
-  }
-
-  .blog-carousel__card {
+  .lookbook__link {
     display: block;
     text-decoration: none;
     color: inherit;
-    height: 100%;
   }
 
-  .blog-carousel__image-wrapper {
+  .lookbook__image-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 9 / 16;
     overflow: hidden;
     background-color: #f5f5f5;
-    border-radius: 4px;
   }
 
-  .blog-carousel__image,
-  .blog-carousel__placeholder {
+  .lookbook__image,
+  .lookbook__placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .blog-carousel__card:hover .blog-carousel__image {
+  .lookbook__link:hover .lookbook__image {
     transform: scale(1.05);
   }
 
-  /* Gradient Overlay */
-  .blog-carousel__overlay {
+  .lookbook__overlay {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+    padding: 3rem 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
     display: flex;
     align-items: flex-end;
-    padding: 2rem;
     z-index: 2;
   }
 
-  .blog-carousel__content {
-    width: 100%;
-    color: white;
+  .lookbook__content {
+    color: #ffffff;
   }
 
-  .blog-carousel__tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+  .lookbook__heading {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 400;
     text-transform: uppercase;
-    padding: 0.5rem 0.75rem;
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #000;
-    border-radius: 2px;
-    margin-bottom: 0.75rem;
-  }
-
-  .blog-carousel__post-title {
-    font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 16px;
-    font-weight: 500;
     letter-spacing: 0.6px;
-    text-transform: uppercase;
     line-height: 1.3;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 1rem 0;
+  }
+
+  .lookbook__cta {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    border: 1px solid #ffffff;
+    padding: 12px 28px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .lookbook__link:hover .lookbook__cta {
+    background-color: #ffffff;
     color: #545454;
   }
 
-  .blog-carousel__date {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0.95;
-  }
-
-  /* Scroll Navigation */
-  .blog-carousel__nav {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .blog-carousel__scroll-btn {
-    background-color: #000;
-    color: #fff;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 0;
-  }
-
-  .blog-carousel__scroll-btn:hover {
-    background-color: #333;
-    transform: scale(1.05);
-  }
-
-  @media (max-width: 1024px) {
-    .blog-carousel__item {
-      flex: 0 0 calc(50% - 1rem);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .blog-carousel {
-      padding: 3rem 1rem;
+  /* Mobile: empilha 1 coluna */
+  @media (max-width: 749px) {
+    .lookbook__grid {
+      grid-template-columns: 1fr;
     }
 
-    .blog-carousel__item {
-      flex: 0 0 calc(100%);
+    .lookbook__image-wrapper {
+      aspect-ratio: 3 / 4;
     }
 
-    .blog-carousel__header {
-      margin-bottom: 2rem;
-    }
-
-    .blog-carousel__nav {
-      display: none;
+    .lookbook__overlay {
+      padding: 2rem 1.5rem;
     }
   }
 </style>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.querySelector('[data-carousel]');
-    if (!carousel) return;
-
-    const track = carousel.querySelector('.blog-carousel__track');
-    const prevBtn = carousel.parentElement.querySelector('.blog-carousel__scroll-btn--prev');
-    const nextBtn = carousel.parentElement.querySelector('.blog-carousel__scroll-btn--next');
-
-    const scrollAmount = 400;
-
-    prevBtn.addEventListener('click', () => {
-      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    nextBtn.addEventListener('click', () => {
-      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-  });
-</script>
-
 {% schema %}
 {
-  "name": "Blog Carousel",
+  "name": "Escolhas Blogueiras",
   "settings": [
     {
       "type": "text",
       "id": "title",
-      "label": "Section Title",
-      "default": "DO NOSSO DIÁRIO"
-    },
+      "label": "Título da seção",
+      "default": "ESCOLHAS DAS BLOGUEIRAS"
+    }
+  ],
+  "blocks": [
     {
-      "type": "blog",
-      "id": "blog",
-      "label": "Blog"
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem",
+          "info": "Retrato (9:16). Tamanho ideal: 900×1600px"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título",
+          "default": "NOME DA BLOGUEIRA"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Texto do botão",
+          "default": "SHOP NOW"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Blog Carousel"
+      "name": "Escolhas Blogueiras",
+      "blocks": [
+        {
+          "type": "banner"
+        },
+        {
+          "type": "banner"
+        }
+      ]
     }
   ]
 }
