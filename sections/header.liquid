@@ -249,10 +249,10 @@
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
   .site-header {
-    background: transparent;
+    background: linear-gradient(360deg, rgba(55, 44, 25, 0), rgba(15, 15, 14, 0.35));
     background-color: transparent;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-bottom: 1px solid transparent;
     position: fixed;
     top: 39px;
@@ -704,12 +704,10 @@
   .mobile-drawer__expand {
     background: none;
     border: none;
-    padding: 20px 12px;
+    padding: 0 0 0 8px;
     cursor: pointer;
     color: #545454;
     transition: transform 0.3s ease;
-    position: absolute;
-    right: 12px;
   }
   /* Itens SEM setinha: mesmo padding que os com link-row */
   .mobile-drawer__item:not(.has-submenu) .mobile-drawer__link {
@@ -924,13 +922,17 @@
       if (e.key === 'Escape') closeDrawer();
     });
 
-    // ===== Submenu toggle (seta pra expandir/colapsar) =====
-    document.querySelectorAll('[data-submenu-toggle]').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
+    // ===== Submenu toggle (seta E link expandem/colapsam) =====
+    document.querySelectorAll('.mobile-drawer__item.has-submenu').forEach(function(item) {
+      // Clicar no link ou na seta expande o submenu (não navega)
+      var link = item.querySelector('.mobile-drawer__link');
+      var btn = item.querySelector('[data-submenu-toggle]');
+      function toggleSubmenu(e) {
         e.preventDefault();
-        var item = btn.closest('.mobile-drawer__item');
         item.classList.toggle('is-open');
-      });
+      }
+      if (link) link.addEventListener('click', toggleSubmenu);
+      if (btn) btn.addEventListener('click', toggleSubmenu);
     });
   });
 </script>
