@@ -51,7 +51,7 @@
 
   .featured-collection__track {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     overflow-x: auto;
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
@@ -71,7 +71,7 @@
   }
 
   .featured-collection__item {
-    flex: 0 0 calc(25% - 6px);
+    flex: 0 0 calc(25% - 3px);
     min-width: 200px;
     scroll-snap-align: start;
   }
@@ -79,7 +79,7 @@
   /* Tablet: 2 colunas (BP: grid--2-col-tablet-down) */
   @media (max-width: 1024px) {
     .featured-collection__item {
-      flex: 0 0 calc(50% - 4px);
+      flex: 0 0 calc(50% - 2px);
     }
   }
 
@@ -99,7 +99,7 @@
     }
 
     .featured-collection__track {
-      padding-left: 20px;
+      padding-left: 15px;
     }
 
     .featured-collection__item {

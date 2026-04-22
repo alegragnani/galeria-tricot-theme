@@ -671,7 +671,7 @@
   .mobile-drawer__menu {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 16px 0 0;
     flex: 1;
   }
   .mobile-drawer__item {
@@ -809,27 +809,30 @@
       header.style.top = dynamicTop + 'px';
 
       // Perto do topo: estado transparente original
-      if (currentY <= SCROLL_THRESHOLD) {
+      if (currentY <= 5) {
         header.classList.remove('is-scrolled', 'is-hidden', 'is-revealing');
         lastScrollY = currentY;
+        updateDrawerTop();
         return;
       }
 
-      // Passou do threshold: vira sólido branco
+      // Qualquer scroll > 5px: header sólido branco (NUNCA volta pra transparente no meio da página)
       header.classList.add('is-scrolled');
 
-      // Direção do scroll
-      if (currentY > lastScrollY + 5) {
-        // Scroll pra BAIXO → some instantâneo (sem animação)
+      // Direção do scroll (dead zone de 8px pra evitar bounce)
+      if (currentY > lastScrollY + 8) {
+        // Scroll pra BAIXO → some instantâneo
         header.classList.remove('is-revealing');
         header.classList.add('is-hidden');
-      } else if (currentY < lastScrollY - 5) {
+        lastScrollY = currentY;
+      } else if (currentY < lastScrollY - 8) {
         // Scroll pra CIMA → reaparece suave
         header.classList.add('is-revealing');
         header.classList.remove('is-hidden');
+        lastScrollY = currentY;
       }
+      // Se dentro da dead zone (±8px), não muda nada — evita bouncing
 
-      lastScrollY = currentY;
       updateDrawerTop();
     }
 
