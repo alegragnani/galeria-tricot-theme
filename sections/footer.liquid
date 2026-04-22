@@ -322,8 +322,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     color: #D4A07A;
     transition: color 0.2s ease;
   }
@@ -333,8 +333,10 @@
   }
 
   .site-footer__social-link svg {
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
+    stroke-width: 2.2;
+    shape-rendering: geometricPrecision;
   }
 
   /* ============ BOTTOM: pagamento + copyright ============ */
@@ -400,7 +402,7 @@
     .site-footer__accordion-toggle {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       width: 100%;
       background: none;
       border: none;
@@ -408,10 +410,14 @@
       padding: 18px 0;
       cursor: pointer;
       color: #545454;
+      gap: 12px;
     }
     .site-footer__accordion-toggle .site-footer__heading {
       margin: 0;
       pointer-events: none;
+    }
+    .site-footer__accordion-body {
+      text-align: center;
     }
     .site-footer__accordion-icon {
       font-size: 22px;
