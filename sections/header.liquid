@@ -6,7 +6,7 @@
       aria-label="Menu"
       data-menu-toggle
     >
-      <svg
+      <svg class="icon-hamburger"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
@@ -18,6 +18,18 @@
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <svg class="icon-close"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        width="24"
+        height="24"
+      >
+        <line x1="5" y1="5" x2="19" y2="19"></line>
+        <line x1="19" y1="5" x2="5" y2="19"></line>
       </svg>
     </button>
 
@@ -286,13 +298,13 @@
     background-color: #7A3E28;
     color: #ffffff;
   }
-  .site-header:hover .site-header__logo-img {
+  .site-header:hover .site-header__logo-img,
+  body.drawer-open .site-header .site-header__logo-img {
     filter: none;
   }
 
   /* Ao rolar a página vira sólido branco — top muda instantaneamente */
   .site-header.is-scrolled {
-    top: 0 !important;
     background: #ffffff;
     background-color: #ffffff;
     border-bottom-color: #E8DED1;
@@ -549,6 +561,10 @@
     height: 30px;
     stroke-width: 1.8;
   }
+  /* Hamburger/X toggle */
+  .site-header__menu-toggle .icon-close { display: none; }
+  body.drawer-open .site-header__menu-toggle .icon-hamburger { display: none; }
+  body.drawer-open .site-header__menu-toggle .icon-close { display: block; }
 
   /* ================================================================
      BP LAYOUT 2 — Tablet (750-1349px)
@@ -678,18 +694,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
   .mobile-drawer__link-row .mobile-drawer__link {
     flex: 1;
     border-bottom: none;
+    text-align: center;
   }
   .mobile-drawer__expand {
     background: none;
     border: none;
-    padding: 20px 24px 20px 12px;
+    padding: 20px 12px;
     cursor: pointer;
     color: #545454;
     transition: transform 0.3s ease;
+    position: absolute;
+    right: 12px;
+  }
+  /* Itens SEM setinha: mesmo padding que os com link-row */
+  .mobile-drawer__item:not(.has-submenu) .mobile-drawer__link {
+    text-align: center;
   }
   .mobile-drawer__item.is-open .mobile-drawer__expand {
     transform: rotate(180deg);
@@ -747,6 +771,23 @@
   body.drawer-open {
     overflow: hidden;
   }
+  /* Drawer aberto: header sempre sólido branco com ícones escuros */
+  body.drawer-open .site-header {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    border-bottom-color: #E8DED1;
+  }
+  body.drawer-open .site-header .site-header__logo-text,
+  body.drawer-open .site-header .site-header__icon-btn,
+  body.drawer-open .site-header .site-header__menu-toggle {
+    color: #2B1810 !important;
+    text-shadow: none !important;
+  }
+  body.drawer-open .site-header .site-header__cart-count {
+    background-color: #7A3E28;
+    color: #ffffff;
+  }
 </style>
 
 <script>
@@ -758,9 +799,14 @@
     let lastScrollY = window.scrollY;
     let ticking = false;
     const SCROLL_THRESHOLD = 60; // px antes de ativar sticky
+    const ANNOUNCEMENT_HEIGHT = 39; // altura da barra de anúncio
 
     function onScroll() {
       const currentY = window.scrollY;
+
+      // Top dinâmico: header acompanha a barra de anúncio suavemente
+      const dynamicTop = Math.max(0, ANNOUNCEMENT_HEIGHT - currentY);
+      header.style.top = dynamicTop + 'px';
 
       // Perto do topo: estado transparente original
       if (currentY <= SCROLL_THRESHOLD) {
@@ -784,6 +830,7 @@
       }
 
       lastScrollY = currentY;
+      updateDrawerTop();
     }
 
     window.addEventListener('scroll', function() {
@@ -796,8 +843,19 @@
       }
     }, { passive: true });
 
+    // Atualizar drawer panel top conforme header se move
+    const drawerPanel = document.querySelector('.mobile-drawer__panel');
+    function updateDrawerTop() {
+      if (drawerPanel) {
+        const headerBottom = header.getBoundingClientRect().bottom;
+        drawerPanel.style.top = headerBottom + 'px';
+        drawerPanel.style.height = 'calc(100% - ' + headerBottom + 'px)';
+      }
+    }
+
     // Estado inicial
     onScroll();
+    updateDrawerTop();
 
     // Close mega menus when clicking outside
     document.addEventListener('click', function(e) {
@@ -843,7 +901,13 @@
       drawer.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('drawer-open');
     }
-    if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+    if (toggleBtn) toggleBtn.addEventListener('click', function() {
+      if (drawer && drawer.classList.contains('is-open')) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
     closeBtns.forEach(btn => btn.addEventListener('click', closeDrawer));
     // Fechar com ESC
     document.addEventListener('keydown', (e) => {
