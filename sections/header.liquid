@@ -253,7 +253,7 @@
     background-color: transparent;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    border-bottom: 1px solid transparent;
+    border-bottom: none;
     position: fixed;
     top: 39px;
     left: 0;
@@ -398,7 +398,7 @@
     transition: filter 0.35s ease;
   }
   /* Logo branco no estado translúcido (home, sem hover, sem scroll) */
-  .site-header:not(.is-scrolled) .site-header__logo-img {
+  .site-header:not(.is-scrolled):not(:hover) .site-header__logo-img {
     filter: brightness(0) invert(1);
   }
   body:not(.template-index) .site-header .site-header__logo-img {
