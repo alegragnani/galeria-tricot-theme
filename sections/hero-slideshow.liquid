@@ -115,22 +115,33 @@
     }
   }
 
-  /* Mobile — imagem determina a altura naturalmente */
+  /* Mobile — imagem determina a altura, sem posicao absoluta */
   @media (max-width: 749px) {
     .hero-slideshow__slides {
       height: auto !important;
       max-height: none !important;
       padding-bottom: 0 !important;
     }
-    .hero-slideshow__slide:first-child {
+    .hero-slideshow__slide {
       position: relative !important;
-    }
-    .hero-slideshow__slide picture {
+      width: 100% !important;
       height: auto !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
     }
+    .hero-slideshow__slide:not(.active) {
+      display: none !important;
+    }
+    .hero-slideshow__slide.active {
+      display: block !important;
+      opacity: 1 !important;
+    }
+    .hero-slideshow__slide picture,
     .hero-slideshow__image {
+      width: 100% !important;
       height: auto !important;
-      object-fit: contain !important;
     }
   }
 
