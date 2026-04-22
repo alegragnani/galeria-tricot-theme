@@ -334,10 +334,13 @@
     color: #ffffff;
   }
 
-  /* Páginas que não são home: header sólido desde o início */
+  /* Páginas que não são home: header sólido branco, sem gradiente, sem blur */
   body:not(.template-index) .site-header {
     position: sticky;
+    background: #ffffff;
     background-color: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom-color: #E8DED1;
   }
   body:not(.template-index) .site-header .site-header__logo-text,
@@ -719,7 +722,7 @@
   .mobile-drawer__link:hover,
   .mobile-drawer__link:active {
     color: #2B1810;
-    background: #FAF6F1;
+    background: #F5F3EF;
   }
   .mobile-drawer__submenu {
     list-style: none;
