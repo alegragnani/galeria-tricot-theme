@@ -194,8 +194,17 @@
       <ul class="mobile-drawer__menu">
         {% if menu_links and menu_links.size > 0 %}
           {% for link in menu_links %}
-            <li class="mobile-drawer__item">
-              <a href="{{ link.url }}" class="mobile-drawer__link">{{ link.title }}</a>
+            <li class="mobile-drawer__item{% if link.links.size > 0 %} has-submenu{% endif %}">
+              <div class="mobile-drawer__link-row">
+                <a href="{{ link.url }}" class="mobile-drawer__link">{{ link.title }}</a>
+                {% if link.links.size > 0 %}
+                  <button class="mobile-drawer__expand" aria-label="Expandir" data-submenu-toggle>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                {% endif %}
+              </div>
               {% if link.links.size > 0 %}
                 <ul class="mobile-drawer__submenu">
                   {% for child in link.links %}
@@ -216,7 +225,9 @@
         {% endif %}
       </ul>
       <div class="mobile-drawer__footer">
-        <a href="{{ routes.account_url }}" class="mobile-drawer__footer-link">Minha conta</a>
+        <a href="/pages/wishlist" class="mobile-drawer__footer-link">Favoritos</a>
+        <a href="{{ routes.account_login_url }}" class="mobile-drawer__footer-link">Fazer login</a>
+        <a href="/pages/fale-conosco" class="mobile-drawer__footer-link">Fale Conosco</a>
       </div>
     </nav>
   </aside>
@@ -235,7 +246,7 @@
     top: 39px;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 10000;
     transition: background 0.35s ease, background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease, backdrop-filter 0.35s ease;
     font-family: 'Raleway', -apple-system, sans-serif;
   }
@@ -606,9 +617,9 @@
   }
   .mobile-drawer__panel {
     position: absolute;
-    top: 0;
+    top: 106px; /* abaixo do announcement bar (39px) + header (67px) */
     left: 0;
-    height: 100%;
+    height: calc(100% - 106px);
     width: 400px;
     max-width: 85vw;
     background: #ffffff;
@@ -623,10 +634,7 @@
     transform: translateX(0);
   }
   .mobile-drawer__header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 20px;
-    border-bottom: 1px solid #E8DED1;
+    display: none; /* header real fica visivel por cima */
   }
   .mobile-drawer__close {
     background: none;
@@ -650,7 +658,7 @@
     flex: 1;
   }
   .mobile-drawer__item {
-    border-bottom: 1px solid #F0EDE8;
+    border-bottom: none;
   }
   .mobile-drawer__link {
     display: block;
@@ -662,7 +670,28 @@
     text-transform: uppercase;
     color: #545454;
     text-decoration: none;
+    text-align: center;
     transition: color 0.2s ease, background 0.2s ease;
+  }
+  .mobile-drawer__link-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobile-drawer__link-row .mobile-drawer__link {
+    flex: 1;
+    border-bottom: none;
+  }
+  .mobile-drawer__expand {
+    background: none;
+    border: none;
+    padding: 20px 24px 20px 12px;
+    cursor: pointer;
+    color: #545454;
+    transition: transform 0.3s ease;
+  }
+  .mobile-drawer__item.is-open .mobile-drawer__expand {
+    transform: rotate(180deg);
   }
   .mobile-drawer__link:hover,
   .mobile-drawer__link:active {
@@ -673,34 +702,45 @@
     list-style: none;
     margin: 0;
     padding: 0 0 12px 0;
-    background: #FAF6F1;
+    background: transparent;
+    display: none;
+  }
+  .mobile-drawer__item.is-open .mobile-drawer__submenu {
+    display: block;
   }
   .mobile-drawer__sublink {
     display: block;
-    padding: 12px 24px 12px 40px;
+    padding: 12px 24px;
     font-family: 'Raleway', -apple-system, sans-serif;
     font-size: 14px;
     font-weight: 400;
     letter-spacing: 0.4px;
     color: #7A7A7A;
     text-decoration: none;
+    text-align: center;
   }
   .mobile-drawer__sublink:hover {
     color: #2B1810;
   }
   .mobile-drawer__footer {
-    padding: 24px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 24px 16px;
     border-top: 1px solid #E8DED1;
+    gap: 8px;
   }
   .mobile-drawer__footer-link {
-    display: block;
     font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: #545454;
+    letter-spacing: 0.3px;
+    color: #7A7A7A;
     text-decoration: none;
+    text-transform: none;
+  }
+  .mobile-drawer__footer-link:hover {
+    color: #2B1810;
   }
   /* Quando drawer abre, travar scroll do body */
   body.drawer-open {
@@ -807,6 +847,15 @@
     // Fechar com ESC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDrawer();
+    });
+
+    // ===== Submenu toggle (seta pra expandir/colapsar) =====
+    document.querySelectorAll('[data-submenu-toggle]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var item = btn.closest('.mobile-drawer__item');
+        item.classList.toggle('is-open');
+      });
     });
   });
 </script>
