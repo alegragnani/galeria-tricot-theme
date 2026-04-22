@@ -1,801 +1,736 @@
 {% comment %}
-  Product page (PDP) - main-product.liquid
-  Product details with gallery, variants, and recommendations
+  Product page (PDP) – estilo BP
+  Layout: galeria à esquerda (scroll vertical de imagens grandes) + info à direita (sticky)
+  Medidas conferidas na BP via getComputedStyle em 22/abr/2026
 {% endcomment %}
 
-<div class="product-page">
+<div class="pdp">
   {% comment %} Breadcrumb {% endcomment %}
-  <nav class="breadcrumb" aria-label="breadcrumb">
-    <ul class="breadcrumb__list">
-      <li><a href="/">Inicio</a></li>
-      {% if collection %}
-        <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
-      {% endif %}
-      <li><span aria-current="page">{{ product.title }}</span></li>
-    </ul>
+  <nav class="pdp__breadcrumb" aria-label="breadcrumb">
+    <a href="/">Início</a>
+    <span class="pdp__breadcrumb-sep">›</span>
+    {% if collection %}
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+      <span class="pdp__breadcrumb-sep">›</span>
+    {% endif %}
+    <span>{{ product.title }}</span>
   </nav>
 
-  <div class="product__container">
-    {% comment %} Product Gallery (Left - 60%) {% endcomment %}
-    <div class="product__gallery">
-      <div class="gallery__main">
-        <div class="gallery__image-container">
-          {% if product.featured_image %}
-            <img
-              src="{{ product.featured_image | image_url: width: 800 }}"
-              alt="{{ product.featured_image.alt }}"
-              class="gallery__image"
-              id="main-image"
-            />
-          {% endif %}
-
-          {% comment %} Gallery Navigation Arrows {% endcomment %}
-          {% if product.images.size > 1 %}
-            <button class="gallery__arrow gallery__arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" fill="none"/>
-              </svg>
-            </button>
-            <button class="gallery__arrow gallery__arrow--next" id="gallery-next" aria-label="Próxima imagem">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" fill="none"/>
-              </svg>
-            </button>
-          {% endif %}
+  <div class="pdp__container">
+    {% comment %} ===== GALERIA (esquerda, 50%) ===== {% endcomment %}
+    <div class="pdp__gallery">
+      {% for image in product.images %}
+        <div class="pdp__gallery-item">
+          <img
+            src="{{ image | image_url: width: 900 }}"
+            alt="{{ image.alt | default: product.title }}"
+            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            class="pdp__gallery-img"
+          />
         </div>
-
-        {% comment %} Wishlist and Share Buttons {% endcomment %}
-        <div class="gallery__actions">
-          <button class="btn--icon" id="wishlist-btn" aria-label="Adicionar aos favoritos">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 18L1.5 9C0 7.5 0 5 2 3C3.5 1.5 5 1 6.5 3L10 6.5L13.5 3C15 1.5 16.5 1.5 18 3C20 5 20 7.5 18.5 9L10 18Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            </svg>
-          </button>
-          <button class="btn--icon" id="share-btn" aria-label="Compartilhar produto">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 9C16.1 9 17 8.1 17 7C17 5.9 16.1 5 15 5C13.9 5 13 5.9 13 7M5 13C6.1 13 7 12.1 7 11C7 9.9 6.1 9 5 9C3.9 9 3 9.9 3 11M15 15C16.1 15 17 14.1 17 13C17 11.9 16.1 11 15 11M7 12L13 8" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            </svg>
-          </button>
-        </div>
-
-        {% comment %} Image Dots/Thumbnails {% endcomment %}
-        {% if product.images.size > 1 %}
-          <div class="gallery__dots">
-            {% for image in product.images %}
-              <button
-                class="gallery__dot {% if forloop.first %}active{% endif %}"
-                data-image="{{ image | image_url: width: 800 }}"
-                data-index="{{ forloop.index0 }}"
-                aria-label="Foto {{ forloop.index }}"
-              ></button>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-
-      {% comment %} Thumbnail Carousel {% endcomment %}
-      {% if product.images.size > 1 %}
-        <div class="gallery__thumbnails">
-          {% for image in product.images %}
-            <button
-              class="gallery__thumbnail {% if forloop.first %}active{% endif %}"
-              data-image="{{ image | image_url: width: 800 }}"
-              data-index="{{ forloop.index0 }}"
-            >
-              <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt }}" />
-            </button>
-          {% endfor %}
-        </div>
-      {% endif %}
+      {% endfor %}
     </div>
 
-    {% comment %} Product Info (Right - 40%) {% endcomment %}
-    <div class="product__info">
-      {% comment %} Brand and Collection {% endcomment %}
-      {% if product.vendor %}
-        <div class="product__vendor">{{ product.vendor }}</div>
-      {% endif %}
+    {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
+    <div class="pdp__info-wrapper">
+      <div class="pdp__info">
 
-      {% comment %} Product Title {% endcomment %}
-      <h1 class="product__title">{{ product.title }}</h1>
-
-      {% comment %} Reference Code {% endcomment %}
-      {% if product.barcode %}
-        <div class="product__ref">REF: {{ product.barcode }}</div>
-      {% endif %}
-
-      {% comment %} Price {% endcomment %}
-      <div class="product__price">
-        {% if product.selected_or_first_available_variant %}
-          {% assign variant = product.selected_or_first_available_variant %}
-          <span class="product__price-amount">{{ variant.price | money_with_currency }}</span>
-          {% if variant.compared_at_price %}
-            <span class="product__price-original">{{ variant.compared_at_price | money_with_currency }}</span>
-          {% endif %}
+        {% comment %} Vendor {% endcomment %}
+        {% if product.vendor %}
+          <div class="pdp__vendor">{{ product.vendor }}</div>
         {% endif %}
-      </div>
 
-      <form class="product__form" id="product-form">
-        {% comment %} Color Swatches {% endcomment %}
-        {% if product.available %}
-          {% assign color_option_index = 0 %}
+        {% comment %} Título {% endcomment %}
+        <h1 class="pdp__title">{{ product.title }}</h1>
+
+        {% comment %} Preço {% endcomment %}
+        <div class="pdp__price">
+          {% assign variant = product.selected_or_first_available_variant %}
+          {% if variant.compare_at_price > variant.price %}
+            <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
+          {% endif %}
+          <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
+            {{ variant.price | money }}
+          </span>
+        </div>
+
+        {% comment %} Parcelamento {% endcomment %}
+        {% assign installment_value = variant.price | divided_by: 6 %}
+        <div class="pdp__installments">
+          ou 6x de {{ installment_value | money }} sem juros
+        </div>
+
+        {% comment %} Formulário de variantes {% endcomment %}
+        <form class="pdp__form" id="product-form" action="/cart/add" method="post">
+          <input type="hidden" name="id" id="variant-id" value="{{ variant.id }}" />
+
           {% for option in product.options_with_values %}
-            {% if option.name == 'Color' or option.name == 'Cor' %}
-              {% assign color_option_index = forloop.index0 %}
-              <fieldset class="product__option">
-                <legend class="product__option-label">{{ option.name }}</legend>
-                <div class="product__swatches">
+            {% assign option_name_down = option.name | downcase %}
+
+            {% if option_name_down == 'cor' or option_name_down == 'color' %}
+              {% comment %} Cor – swatches {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}: <span class="pdp__option-value" data-option-index="{{ forloop.index0 }}">{{ option.selected_value | default: option.values.first }}</span></legend>
+                <div class="pdp__swatches">
                   {% for value in option.values %}
-                    <label class="swatch">
-                      <input
-                        type="radio"
-                        name="options[{{ option.name }}]"
-                        value="{{ value }}"
-                        class="swatch__input"
-                        {% if forloop.first %}checked{% endif %}
-                      />
-                      <span class="swatch__color" style="background-color: {{ value | downcase }};" title="{{ value }}"></span>
+                    <label class="pdp__swatch" title="{{ value }}">
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
+                      <span class="pdp__swatch-circle" style="background-color: {{ value | downcase | replace: ' ', '' }};"></span>
                     </label>
                   {% endfor %}
                 </div>
               </fieldset>
-            {% endif %}
-          {% endfor %}
 
-          {% comment %} Size Selector (Numeric Grid) {% endcomment %}
-          {% assign size_option_index = 0 %}
-          {% for option in product.options_with_values %}
-            {% if option.name == 'Size' or option.name == 'Tamanho' %}
-              {% assign size_option_index = forloop.index0 %}
-              <fieldset class="product__option">
-                <legend class="product__option-label">{{ option.name }}</legend>
-                <div class="product__sizes">
+            {% elsif option_name_down == 'tamanho' or option_name_down == 'size' %}
+              {% comment %} Tamanho – pills {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <div class="pdp__sizes">
                   {% for value in option.values %}
-                    <label class="size-option">
-                      <input
-                        type="radio"
-                        name="options[{{ option.name }}]"
-                        value="{{ value }}"
-                        class="size-option__input"
-                        {% if forloop.first %}checked{% endif %}
-                      />
-                      <span class="size-option__label">{{ value }}</span>
+                    <label class="pdp__size-pill">
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
+                      <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
                 </div>
               </fieldset>
-            {% endif %}
-          {% endfor %}
 
-          {% comment %} Other Options {% endcomment %}
-          {% for option in product.options_with_values %}
-            {% unless option.name == 'Color' or option.name == 'Cor' or option.name == 'Size' or option.name == 'Tamanho' %}
-              <fieldset class="product__option">
-                <legend class="product__option-label">{{ option.name }}</legend>
-                <select name="options[{{ option.name }}]" class="product__select">
+            {% else %}
+              {% comment %} Outras opções – select {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <select name="options[{{ option.name }}]" class="pdp__select">
                   {% for value in option.values %}
                     <option value="{{ value }}" {% if forloop.first %}selected{% endif %}>{{ value }}</option>
                   {% endfor %}
                 </select>
               </fieldset>
-            {% endunless %}
+            {% endif %}
           {% endfor %}
-        {% endif %}
 
-        {% comment %} Add to Cart Button {% endcomment %}
-        <button
-          type="submit"
-          class="btn btn--primary btn--add-to-cart"
-          id="add-to-cart-btn"
-          {% unless product.available %}disabled{% endunless %}
-        >
-          {% if product.available %}
-            ADICIONAR À SACOLA
-          {% else %}
-            FORA DE ESTOQUE
-          {% endif %}
-        </button>
-      </form>
+          {% comment %} Botão comprar {% endcomment %}
+          <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
+            {% unless product.available %}disabled{% endunless %}>
+            {% if product.available %}
+              ADICIONAR À SACOLA
+            {% else %}
+              ESGOTADO
+            {% endif %}
+          </button>
+        </form>
 
-      {% comment %} Additional Links {% endcomment %}
-      <div class="product__links">
-        <a href="#" class="link-text">Lojas disponíveis para retirada</a>
-        <a href="#" class="link-text">Tabela de Medidas</a>
-      </div>
-
-      {% comment %} Accordions {% endcomment %}
-      <div class="product__accordions">
-        <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">SOBRE A PEÇA</button>
-          <div class="accordion-content" hidden>
-            <div class="accordion-text">
-              {{ product.description }}
-            </div>
-          </div>
+        {% comment %} Links auxiliares {% endcomment %}
+        <div class="pdp__aux-links">
+          <a href="#" class="pdp__aux-link">Tabela de Medidas</a>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">COMPOSIÇÃO</button>
-          <div class="accordion-content" hidden>
-            <div class="accordion-text">
+        {% comment %} Acordeões {% endcomment %}
+        <div class="pdp__accordions">
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Sobre a peça</summary>
+            <div class="pdp__accordion-body">
+              {{ product.description }}
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Composição</summary>
+            <div class="pdp__accordion-body">
               {% if product.metafields.custom.composition %}
                 {{ product.metafields.custom.composition }}
               {% else %}
-                100% Algodão
+                Consulte a descrição do produto.
               {% endif %}
             </div>
-          </div>
-        </div>
-      </div>
+          </details>
 
-      {% comment %} WhatsApp Personal Shopper Button {% endcomment %}
-      <div class="product__whatsapp">
-        <a href="https://wa.me/551133334444?text=Preciso de ajuda com o produto: {{ product.title }}" class="btn btn--whatsapp" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.6915026,13.4744748 C17.4702128,13.3535721 16.2563168,12.7905979 16.0274522,12.6997056 C15.7985875,12.6088134 15.6191645,12.5633495 15.4397416,12.784509 C15.2603187,13.0056685 14.8881191,13.4744748 14.7229899,13.6538967 C14.5578607,13.8333186 14.3927314,13.8787825 14.1714416,13.7578798 C13.9501518,13.636977 13.3150899,13.4314651 12.5468385,12.7631841 C11.9565769,12.2372506 11.5745495,11.5903641 11.4094203,11.3691505 C11.2442911,11.148037 11.3939969,11.0010821 11.5145615,10.8801793 C11.6274171,10.7718976 11.7631019,10.6039262 11.8837665,10.4393699 C12.0044311,10.2748136 12.053895,10.0956205 12.1447873,10.0956205 C12.2356796,10.0956205 12.3810914,10.0956205 12.4719832,10.0956205 C12.6468766,10.0903051 12.8177356,10.0370858 13.2949903,10.0370858 C13.4340304,10.0370858 13.5885926,10.0101816 13.7695166,10.3516659 C14.0152525,10.8318018 14.6547969,12.1107454 14.7795221,12.3318625 C14.9042473,12.55298 14.9042473,12.7264747 14.7795221,12.9473975 C14.6547969,13.1683204 14.2181255,13.5968725 13.9994237,13.8213083 C13.9102443,13.917161 13.8314898,14.0138598 13.8314898,14.1308604 C13.8314898,14.2478611 14.0152525,14.5130104 14.3121358,15.0375623 C14.7619903,15.8080969 15.4421659,16.6685848 16.4032191,17.3105535 C16.8055266,17.6289697 17.1372624,17.8189227 17.439833,17.953844 C17.9215505,18.1974832 18.2887742,18.1630957 18.5345101,17.9445618 C18.8314098,17.6557156 19.4043577,16.8765206 19.5897504,16.5386005 C19.7751431,16.2006804 19.9605358,16.2461443 20.2063716,16.3670471 C20.4522074,16.48795 21.6669387,17.0994919 21.8958033,17.1962531 C22.124668,17.2930144 22.2835344,17.3433929 22.3744267,17.4576614 C22.4653189,17.5881237 22.4653189,18.0563053 22.2893504,18.4338638 C22.1133819,18.8114224 21.3498599,19.5408675 20.5946275,19.9757099 C20.0193387,20.2917527 19.4546154,20.4559025 18.8896934,20.4559025 C18.1260717,20.4559025 17.3624498,20.2321159 15.5384689,19.5625243 C12.1039316,18.2068311 9.82644186,15.2735599 8.91275982,13.1816954 C8.33068477,11.8549652 8.06309602,10.5489987 8.06309602,9.18872475 C8.06309602,5.33202597 11.1436316,2.21511151 15.0461635,2.21511151 C16.9876936,2.21511151 18.8339312,2.99911178 20.1313979,4.32046848 C21.4288646,5.64182519 22.1837449,7.53406375 22.1837449,9.5185384 C22.1837449,11.4688234 21.3498599,13.2702494 19.9605358,14.5031752 C19.5897504,14.8509769 19.1131179,15.073138 18.6364854,15.073138"/>
-          </svg>
-          Precisa de ajuda? PERSONAL SHOPPER
-        </a>
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Envio e Trocas</summary>
+            <div class="pdp__accordion-body">
+              <p>Frete grátis para compras acima de R$ 499. Trocas em até 30 dias.</p>
+            </div>
+          </details>
+        </div>
+
+        {% comment %} Compartilhar {% endcomment %}
+        <div class="pdp__share">
+          <button class="pdp__share-btn" id="share-btn" aria-label="Compartilhar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            <span>Compartilhar</span>
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
 
-  {% comment %} Product Recommendations {% endcomment %}
-  {% if product.metafields.custom.recommendations %}
-    <section class="product__recommendations">
-      <h2 class="section__title">RECOMENDADOS PARA VOCÊ</h2>
-      <div class="recommendations__grid">
-        {% for recommended in product.metafields.custom.recommendations %}
-          {% render 'product-card', product: recommended %}
-        {% endfor %}
-      </div>
-    </section>
-  {% endif %}
+  {% comment %} Recomendações {% endcomment %}
+  <section class="pdp__recommendations">
+    <h2 class="pdp__recommendations-title">VOCÊ TAMBÉM VAI AMAR</h2>
+    <div class="pdp__recommendations-grid">
+      {% assign rec_collection = collections['all'] %}
+      {% for p in rec_collection.products limit: 8 %}
+        {% if p.id != product.id %}
+          {% render 'product-card', product: p %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
 </div>
 
 <style>
-  .product-page {
-    padding: 40px 20px;
+  /* ========================================
+     PDP – Página de Produto (estilo BP)
+     Medidas conferidas via getComputedStyle
+     ======================================== */
+
+  .pdp {
+    background: #ffffff;
+    padding: 0;
   }
 
-  .breadcrumb {
-    margin-bottom: 40px;
+  /* --- Breadcrumb --- */
+  .pdp__breadcrumb {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #545454;
+    padding: 12px 40px;
+    letter-spacing: 0.3px;
+  }
+  .pdp__breadcrumb a {
+    color: #545454;
+    text-decoration: none;
+  }
+  .pdp__breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  .pdp__breadcrumb-sep {
+    margin: 0 6px;
+    color: #999;
   }
 
-  .product__container {
-    display: grid;
-    grid-template-columns: 60% 40%;
-    gap: 60px;
-    margin-bottom: 80px;
+  /* --- Container principal: 50/50 flex --- */
+  .pdp__container {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
   }
 
-  .product__gallery {
+  /* --- Galeria (esquerda 50%) --- */
+  .pdp__gallery {
+    width: 50%;
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .pdp__gallery-item {
+    width: 100%;
+  }
+  .pdp__gallery-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    aspect-ratio: 2 / 3;
+  }
+
+  /* --- Info (direita 50%, sticky) --- */
+  .pdp__info-wrapper {
+    width: 50%;
+    flex: 0 0 50%;
+    position: relative;
+  }
+  .pdp__info {
+    position: sticky;
+    top: 100px; /* abaixo do header fixo */
+    padding: 30px 50px 60px 50px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  /* Esconder scrollbar do info quando rola */
+  .pdp__info::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+
+  /* --- Vendor --- */
+  .pdp__vendor {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 8px;
+  }
+
+  /* --- Título --- BP: Raleway 16px, 400, uppercase, 0.6px, #545454 --- */
+  .pdp__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+  }
+
+  /* --- Preço --- BP: Raleway 16px, 400, #545454 --- */
+  .pdp__price {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .pdp__price-current {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+  }
+  .pdp__price-current--sale {
+    color: #c0392b;
+  }
+  .pdp__price-original {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  /* --- Parcelamento --- */
+  .pdp__installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #999;
+    margin-bottom: 28px;
+  }
+
+  /* --- Formulário --- */
+  .pdp__form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-
-  .gallery__main {
-    position: relative;
-  }
-
-  .gallery__image-container {
-    position: relative;
-    overflow: hidden;
-    background: #f5f5f5;
-    aspect-ratio: 1;
-  }
-
-  .gallery__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .gallery__arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-  }
-
-  .gallery__arrow--prev {
-    left: 10px;
-  }
-
-  .gallery__arrow--next {
-    right: 10px;
-  }
-
-  .gallery__arrow:hover {
-    background: rgba(255, 255, 255, 1);
-  }
-
-  .gallery__actions {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    display: flex;
-    gap: 10px;
-    z-index: 5;
-  }
-
-  .btn--icon {
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-  }
-
-  .btn--icon:hover {
-    background: #fff;
-    transform: scale(1.1);
-  }
-
-  .gallery__dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .gallery__dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #d0d0d0;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .gallery__dot.active {
-    background: #000;
-  }
-
-  .gallery__thumbnails {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-  }
-
-  .gallery__thumbnail {
-    aspect-ratio: 1;
-    border: 1px solid #e0e0e0;
-    background: #f5f5f5;
-    cursor: pointer;
-    padding: 0;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-
-  .gallery__thumbnail:hover,
-  .gallery__thumbnail.active {
-    border-color: #000;
-  }
-
-  .gallery__thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .product__info {
-    padding-top: 20px;
-  }
-
-  .product__vendor {
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: #666;
-    margin-bottom: 10px;
-  }
-
-  .product__title {
-    font-family: 'Raleway', -apple-system, sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin: 15px 0;
-  }
-
-  .product__ref {
-    font-size: 12px;
-    color: #999;
     margin-bottom: 20px;
   }
 
-  .product__price {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    margin-bottom: 30px;
-    font-size: 18px;
-    font-weight: 500;
-  }
-
-  .product__price-original {
-    text-decoration: line-through;
-    color: #999;
-    font-size: 14px;
-  }
-
-  .product__form {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    margin-bottom: 30px;
-  }
-
-  .product__option {
+  /* --- Option label --- */
+  .pdp__option {
     border: none;
     padding: 0;
     margin: 0;
   }
-
-  .product__option-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .pdp__option-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    color: #545454;
+    margin-bottom: 12px;
     display: block;
-    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+  .pdp__option-value {
+    font-weight: 400;
+    text-transform: none;
   }
 
-  .product__swatches {
+  /* --- Color swatches --- */
+  .pdp__swatches {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
   }
-
-  .swatch {
+  .pdp__swatch {
     cursor: pointer;
     display: block;
   }
-
-  .swatch__input {
+  .pdp__swatch input {
     display: none;
   }
-
-  .swatch__color {
+  .pdp__swatch-circle {
     display: block;
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     border: 2px solid transparent;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s;
+  }
+  .pdp__swatch input:checked + .pdp__swatch-circle {
+    border-color: #545454;
   }
 
-  .swatch__input:checked + .swatch__color {
-    border-color: #000;
+  /* --- Size pills --- BP: clean pill style --- */
+  .pdp__sizes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
   }
-
-  .product__sizes {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-
-  .size-option {
+  .pdp__size-pill {
     cursor: pointer;
-    position: relative;
+    display: block;
   }
-
-  .size-option__input {
+  .pdp__size-pill input {
     display: none;
   }
-
-  .size-option__label {
-    display: block;
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-
-  .size-option__input:checked + .size-option__label {
-    background: #000;
-    color: #fff;
-    border-color: #000;
-  }
-
-  .product__select {
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    font-size: 14px;
-    background: #fff;
-  }
-
-  .btn--primary {
-    background: #c9a961;
-    color: #fff;
-    border: none;
-    padding: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .btn--primary:hover:not(:disabled) {
-    background: #b8944f;
-  }
-
-  .btn--primary:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-
-  .product__links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 20px 0;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .link-text {
-    font-size: 12px;
-    color: #000;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  .product__accordions {
-    display: flex;
-    flex-direction: column;
-    margin: 30px 0;
-  }
-
-  .accordion-item {
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .accordion-trigger {
-    width: 100%;
-    padding: 20px 0;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .accordion-trigger::after {
-    content: '+';
-    font-size: 18px;
-    transition: transform 0.3s ease;
-  }
-
-  .accordion-trigger[aria-expanded="true"]::after {
-    transform: rotate(45deg);
-  }
-
-  .accordion-content {
-    padding: 15px 0 20px;
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease;
-  }
-
-  .accordion-content:not([hidden]) {
-    max-height: 500px;
-  }
-
-  .accordion-text {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #555;
-  }
-
-  .product__whatsapp {
-    margin-top: 30px;
-  }
-
-  .btn--whatsapp {
+  .pdp__size-label {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    background: #25d366;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-decoration: none;
+    min-width: 52px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(84, 84, 84, 0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    background: #ffffff;
+  }
+  .pdp__size-pill input:checked + .pdp__size-label {
+    border-color: #545454;
+    background: #545454;
+    color: #ffffff;
+  }
+  .pdp__size-label:hover {
+    border-color: #545454;
+  }
+
+  /* --- Select (outras opções) --- */
+  .pdp__select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(84, 84, 84, 0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #545454;
+    background: #ffffff;
+    appearance: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+  }
+
+  /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px --- */
+  .pdp__add-to-cart {
+    width: 100%;
+    height: 47px;
+    background: rgb(217, 200, 158);
+    color: #545454;
+    border: none;
+    border-radius: 0;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .pdp__add-to-cart:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+  .pdp__add-to-cart:disabled {
+    background: #e0dcd4;
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  /* --- Links auxiliares --- */
+  .pdp__aux-links {
+    padding: 16px 0;
+  }
+  .pdp__aux-link {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #545454;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .pdp__aux-link:hover {
+    color: #333;
+  }
+
+  /* --- Acordeões --- BP: borda top rgba(84,84,84,0.2), summary 16px Raleway --- */
+  .pdp__accordions {
+    margin-top: 24px;
+  }
+  .pdp__accordion {
+    border-top: 1px solid rgba(84, 84, 84, 0.2);
+  }
+  .pdp__accordion:last-child {
+    border-bottom: 1px solid rgba(84, 84, 84, 0.2);
+  }
+  .pdp__accordion-trigger {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    color: #545454;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
   }
-
-  .btn--whatsapp:hover {
-    background: #1fb958;
+  .pdp__accordion-trigger::-webkit-details-marker {
+    display: none;
   }
-
-  .product__recommendations {
-    margin-top: 80px;
-    padding-top: 40px;
-    border-top: 1px solid #e0e0e0;
+  .pdp__accordion-trigger::after {
+    content: '+';
+    font-size: 20px;
+    font-weight: 300;
+    color: #545454;
+    transition: transform 0.25s;
   }
-
-  .section__title {
-    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
-    font-size: 26px;
+  details[open] > .pdp__accordion-trigger::after {
+    content: '−';
+  }
+  .pdp__accordion-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
     font-weight: 400;
-    letter-spacing: 2px;
-    margin: 0 0 40px 0;
+    line-height: 1.7;
+    color: #545454;
+    padding: 0 0 20px 0;
+  }
+
+  /* --- Compartilhar --- */
+  .pdp__share {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  .pdp__share-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.3px;
+  }
+  .pdp__share-btn:hover {
+    color: #333;
+  }
+
+  /* --- Recomendações --- */
+  .pdp__recommendations {
+    padding: 60px 40px;
+    background: #ffffff;
+  }
+  .pdp__recommendations-title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
     text-align: center;
+    color: #B3883D;
+    margin: 0 0 40px 0;
+    line-height: 1.3;
   }
-
-  .recommendations__grid {
+  .pdp__recommendations-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+    gap: 24px 12px;
   }
+
+  /* ===========================
+     MOBILE / TABLET
+     =========================== */
 
   @media (max-width: 1024px) {
-    .product__container {
-      grid-template-columns: 1fr;
-      gap: 40px;
+    .pdp__container {
+      flex-direction: column;
     }
-
-    .product__sizes {
-      grid-template-columns: repeat(3, 1fr);
+    .pdp__gallery {
+      width: 100%;
+      flex: none;
+      /* No mobile, galeria vira scroll horizontal */
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 0;
     }
-
-    .gallery__thumbnails {
-      grid-template-columns: repeat(6, 1fr);
+    .pdp__gallery-item {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
     }
-
-    .recommendations__grid {
+    .pdp__gallery-img {
+      aspect-ratio: 3 / 4;
+    }
+    .pdp__info-wrapper {
+      width: 100%;
+      flex: none;
+    }
+    .pdp__info {
+      position: static;
+      padding: 24px 20px 40px;
+      max-height: none;
+      overflow-y: visible;
+    }
+    .pdp__recommendations-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 20px 8px;
+    }
+    .pdp__recommendations {
+      padding: 40px 20px;
     }
   }
 
-  @media (max-width: 768px) {
-    .product__sizes {
-      grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 480px) {
+    .pdp__breadcrumb {
+      padding: 10px 16px;
+      font-size: 12px;
     }
-
-    .gallery__thumbnails {
-      grid-template-columns: repeat(4, 1fr);
+    .pdp__info {
+      padding: 20px 16px 40px;
     }
-
-    .product__title {
-      font-size: 20px;
-    }
-
-    .recommendations__grid {
-      grid-template-columns: 1fr;
+    .pdp__recommendations-title {
+      font-size: 26px;
     }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const gallery = {
-      currentIndex: 0,
-      images: {% if product.images %}{{ product.images | json }}{% else %}[]{% endif %},
+    /* ---- Variant selection logic ---- */
+    const productJson = {{ product | json }};
+    const variantIdInput = document.getElementById('variant-id');
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const form = document.getElementById('product-form');
 
-      init: function() {
-        this.bindEvents();
-      },
+    function getSelectedOptions() {
+      const opts = {};
+      form.querySelectorAll('input[type="radio"]:checked, select').forEach(el => {
+        const name = el.name.replace('options[', '').replace(']', '');
+        opts[name] = el.value;
+      });
+      return opts;
+    }
 
-      bindEvents: function() {
-        document.getElementById('gallery-prev')?.addEventListener('click', () => this.prev());
-        document.getElementById('gallery-next')?.addEventListener('click', () => this.next());
-
-        document.querySelectorAll('.gallery__dot').forEach((dot, index) => {
-          dot.addEventListener('click', () => this.goToImage(index));
+    function findVariant(opts) {
+      return productJson.variants.find(v => {
+        return productJson.options.every((optName, i) => {
+          return v.options[i] === opts[optName];
         });
+      });
+    }
 
-        document.querySelectorAll('.gallery__thumbnail').forEach((thumb, index) => {
-          thumb.addEventListener('click', () => this.goToImage(index));
-        });
-      },
-
-      next: function() {
-        this.currentIndex = (this.currentIndex + 1) % this.images.length;
-        this.updateImage();
-      },
-
-      prev: function() {
-        this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-        this.updateImage();
-      },
-
-      goToImage: function(index) {
-        this.currentIndex = index;
-        this.updateImage();
-      },
-
-      updateImage: function() {
-        const mainImage = document.getElementById('main-image');
-        if (mainImage && this.images[this.currentIndex]) {
-          mainImage.src = this.images[this.currentIndex].src.replace('.jpg', '_800x.jpg');
+    function updateVariant() {
+      const opts = getSelectedOptions();
+      const variant = findVariant(opts);
+      if (variant) {
+        variantIdInput.value = variant.id;
+        // Update price
+        const priceEl = document.querySelector('.pdp__price-current');
+        if (priceEl) {
+          priceEl.textContent = (variant.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
-
-        document.querySelectorAll('.gallery__dot, .gallery__thumbnail').forEach((el, index) => {
-          el.classList.toggle('active', index === this.currentIndex);
-        });
+        // Update compare price
+        const origEl = document.querySelector('.pdp__price-original');
+        if (origEl) {
+          if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+            origEl.textContent = (variant.compare_at_price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            origEl.style.display = '';
+          } else {
+            origEl.style.display = 'none';
+          }
+        }
+        // Update installments
+        const instEl = document.querySelector('.pdp__installments');
+        if (instEl) {
+          const instVal = (variant.price / 100 / 6).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          instEl.textContent = 'ou 6x de ' + instVal + ' sem juros';
+        }
+        // Button state
+        if (variant.available) {
+          addBtn.disabled = false;
+          addBtn.textContent = 'ADICIONAR À SACOLA';
+        } else {
+          addBtn.disabled = true;
+          addBtn.textContent = 'ESGOTADO';
+        }
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('variant', variant.id);
+        window.history.replaceState({}, '', url);
       }
-    };
+    }
 
-    gallery.init();
-
-    {% comment %} Accordion functionality {% endcomment %}
-    document.querySelectorAll('.accordion-trigger').forEach(trigger => {
-      trigger.addEventListener('click', function() {
-        const isExpanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', !isExpanded);
-        this.nextElementSibling.toggleAttribute('hidden');
+    // Listen to option changes
+    form.querySelectorAll('input[type="radio"], select').forEach(el => {
+      el.addEventListener('change', function() {
+        updateVariant();
+        // Update option value display
+        if (this.type === 'radio') {
+          const legend = this.closest('fieldset').querySelector('.pdp__option-value');
+          if (legend) legend.textContent = this.value;
+        }
       });
     });
 
-    {% comment %} Wishlist functionality {% endcomment %}
-    document.getElementById('wishlist-btn')?.addEventListener('click', function() {
-      this.classList.toggle('active');
-    });
-
-    {% comment %} Form submission {% endcomment %}
-    document.getElementById('product-form')?.addEventListener('submit', function(e) {
+    /* ---- Add to cart ---- */
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const formData = new FormData(this);
-      const addToCartBtn = document.getElementById('add-to-cart-btn');
-      addToCartBtn.textContent = 'ADICIONANDO...';
+      addBtn.disabled = true;
+      addBtn.textContent = 'ADICIONANDO...';
 
       fetch('/cart/add.js', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-      },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: [{
-            id: {{ product.selected_or_first_available_variant.id }},
-            quantity: 1
-          }]
+          items: [{ id: parseInt(variantIdInput.value), quantity: 1 }]
         })
       })
+      .then(res => {
+        if (!res.ok) throw new Error('Erro');
+        return res.json();
+      })
       .then(() => {
-        addToCartBtn.textContent = 'ADICIONADO!';
+        addBtn.textContent = 'ADICIONADO ✓';
         setTimeout(() => {
-          window.location.href = '/cart';
-        }, 1000);
+          addBtn.disabled = false;
+          addBtn.textContent = 'ADICIONAR À SACOLA';
+        }, 2000);
       })
       .catch(() => {
-        addToCartBtn.textContent = 'ADICIONAR À SACOLA';
-        alert('Erro ao adicionar ao carrinho');
+        addBtn.disabled = false;
+        addBtn.textContent = 'ADICIONAR À SACOLA';
+        alert('Erro ao adicionar ao carrinho. Tente novamente.');
       });
+    });
+
+    /* ---- Share ---- */
+    document.getElementById('share-btn')?.addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({ title: productJson.title, url: window.location.href });
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const span = this.querySelector('span');
+          span.textContent = 'Link copiado!';
+          setTimeout(() => { span.textContent = 'Compartilhar'; }, 2000);
+        });
+      }
     });
   });
 </script>
@@ -815,12 +750,6 @@
       "id": "show_recommendations",
       "label": "Mostrar recomendações",
       "default": true
-    },
-    {
-      "type": "text",
-      "id": "whatsapp_number",
-      "label": "Número WhatsApp (com código país)",
-      "default": "551133334444"
     }
   ]
 }
