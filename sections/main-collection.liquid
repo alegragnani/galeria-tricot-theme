@@ -3,7 +3,7 @@
   Breadcrumb > Título centralizado > Filtrar e Ordenar > Grid 4 colunas
 {% endcomment %}
 
-{% paginate collection.products by 24 %}
+{% paginate collection.products by 48 %}
 
 <div class="collection-page">
   {%- comment -%} Breadcrumb {%- endcomment -%}
@@ -212,7 +212,7 @@
   .collection-page__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px 4px;
+    gap: 24px 12px;
   }
 
   .collection-page__item {
@@ -441,7 +441,7 @@
     }
     .collection-page__grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px 4px;
+      gap: 20px 8px;
     }
     .collection-page__toolbar {
       padding: 12px 0;
