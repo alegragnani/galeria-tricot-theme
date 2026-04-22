@@ -569,7 +569,15 @@
       gap: 12px;
       min-height: 67px;
     }
-    .site-header__icons { gap: 12px; }
+    .site-header__icons { gap: 14px; }
+    /* Mobile: só lupa e sacola — esconde coração e conta */
+    .site-header__icon-btn[data-wishlist-btn],
+    .site-header__icon-btn[aria-label="Conta"] {
+      display: none !important;
+    }
+    .site-header__logo-img {
+      height: 36px;
+    }
     .mega-menu { min-width: 280px; padding: 16px; }
     .mega-menu__content { grid-template-columns: 1fr; gap: 16px; }
   }
