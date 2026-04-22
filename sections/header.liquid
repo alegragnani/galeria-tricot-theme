@@ -894,9 +894,16 @@
 
     function openDrawer() {
       if (!drawer) return;
-      drawer.classList.add('is-open');
-      drawer.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('drawer-open');
+      // Forçar header visível antes de abrir o drawer
+      header.classList.remove('is-hidden');
+      header.classList.add('is-scrolled', 'is-revealing');
+      // Esperar o header se posicionar, depois abrir o drawer
+      requestAnimationFrame(function() {
+        drawer.classList.add('is-open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('drawer-open');
+        updateDrawerTop();
+      });
     }
     function closeDrawer() {
       if (!drawer) return;
