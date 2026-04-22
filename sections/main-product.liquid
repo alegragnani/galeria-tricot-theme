@@ -17,18 +17,37 @@
   </nav>
 
   <div class="pdp__container">
-    {% comment %} ===== GALERIA (esquerda, 50%) ===== {% endcomment %}
+    {% comment %} ===== GALERIA (esquerda, 50%) — carrossel horizontal como BP ===== {% endcomment %}
     <div class="pdp__gallery">
-      {% for image in product.images %}
-        <div class="pdp__gallery-item">
-          <img
-            src="{{ image | image_url: width: 900 }}"
-            alt="{{ image.alt | default: product.title }}"
-            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-            class="pdp__gallery-img"
-          />
+      <div class="pdp__gallery-track" id="gallery-track">
+        {% for image in product.images %}
+          <div class="pdp__gallery-item" data-index="{{ forloop.index0 }}">
+            <img
+              src="{{ image | image_url: width: 1200 }}"
+              alt="{{ image.alt | default: product.title }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              class="pdp__gallery-img"
+            />
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        {% comment %} Setas de navegação {% endcomment %}
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L7 10L13 16"/></svg>
+        </button>
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--next" id="gallery-next" aria-label="Próxima imagem">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4L13 10L7 16"/></svg>
+        </button>
+
+        {% comment %} Dots {% endcomment %}
+        <div class="pdp__gallery-dots" id="gallery-dots">
+          {% for image in product.images %}
+            <button class="pdp__gallery-dot {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Imagem {{ forloop.index }}"></button>
+          {% endfor %}
         </div>
-      {% endfor %}
+      {% endif %}
     </div>
 
     {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
@@ -68,14 +87,26 @@
             {% assign option_name_down = option.name | downcase %}
 
             {% if option_name_down == 'cor' or option_name_down == 'color' %}
-              {% comment %} Cor – swatches {% endcomment %}
+              {% comment %} Cor – swatches com imagem da variante {% endcomment %}
               <fieldset class="pdp__option">
                 <legend class="pdp__option-label">{{ option.name }}: <span class="pdp__option-value" data-option-index="{{ forloop.index0 }}">{{ option.selected_value | default: option.values.first }}</span></legend>
-                <div class="pdp__swatches">
+                <div class="pdp__color-swatches">
                   {% for value in option.values %}
-                    <label class="pdp__swatch" title="{{ value }}">
+                    {% comment %} Encontrar a primeira variante com essa cor para pegar a imagem {% endcomment %}
+                    {% assign swatch_image = nil %}
+                    {% for v in product.variants %}
+                      {% if v.options[forloop.parentloop.parentloop.index0] == value and v.featured_image %}
+                        {% assign swatch_image = v.featured_image %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                    <label class="pdp__color-swatch" title="{{ value }}">
                       <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
-                      <span class="pdp__swatch-circle" style="background-color: {{ value | downcase | replace: ' ', '' }};"></span>
+                      {% if swatch_image %}
+                        <img src="{{ swatch_image | image_url: width: 120 }}" alt="{{ value }}" class="pdp__color-swatch-img" />
+                      {% else %}
+                        <span class="pdp__color-swatch-fallback" style="background-color: {{ value | downcase | replace: ' ', '' }};"></span>
+                      {% endif %}
                     </label>
                   {% endfor %}
                 </div>
@@ -152,6 +183,17 @@
           </details>
         </div>
 
+        {% comment %} WhatsApp Personal Shopper — estilo BP {% endcomment %}
+        <div class="pdp__personal-shopper">
+          <h2 class="pdp__ps-title">PRECISA DE AJUDA?</h2>
+          <a href="https://wa.me/5511999999999?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8.01 12.27C8.14 12.44 9.76 14.94 12.25 16.08C14.28 16.99 14.74 16.82 15.18 16.77C15.62 16.72 16.62 16.1 16.83 15.45C17.04 14.81 17.04 14.26 16.97 14.14C16.9 14.02 16.73 13.96 16.48 13.83C16.23 13.71 15.01 13.11 14.78 13.03C14.56 12.95 14.39 12.91 14.23 13.16C14.07 13.41 13.57 13.96 13.43 14.14C13.29 14.31 13.15 14.33 12.9 14.21C12.65 14.08 11.87 13.83 10.95 13.01C10.22 12.35 9.72 11.54 9.58 11.29C9.44 11.04 9.57 10.91 9.69 10.78C9.8 10.67 9.94 10.49 10.07 10.35C10.19 10.21 10.24 10.11 10.32 9.94C10.4 9.77 10.36 9.63 10.29 9.5C10.23 9.38 9.73 8.15 9.53 7.65C9.33 7.18 9.13 7.23 8.98 7.23C8.84 7.22 8.68 7.33 8.53 7.33Z"/>
+            </svg>
+            <span>PERSONAL SHOPPER</span>
+          </a>
+        </div>
+
         {% comment %} Compartilhar {% endcomment %}
         <div class="pdp__share">
           <button class="pdp__share-btn" id="share-btn" aria-label="Compartilhar">
@@ -167,6 +209,83 @@
       </div>
     </div>
   </div>
+
+  {% comment %} ===== COMPRE O LOOK ===== {% endcomment %}
+  {% if product.metafields.custom.look_products != blank %}
+    <section class="pdp__look">
+      <h2 class="pdp__look-title">COMPRE O LOOK COMPLETO</h2>
+      <div class="pdp__look-container">
+        <div class="pdp__look-products">
+          {% comment %} Produto atual {% endcomment %}
+          <div class="pdp__look-item">
+            <div class="pdp__look-img-wrap">
+              <a href="{{ product.url }}">
+                <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title }}" class="pdp__look-img" />
+              </a>
+            </div>
+            {% comment %} Tamanhos do produto atual {% endcomment %}
+            {% for option in product.options_with_values %}
+              {% assign oname = option.name | downcase %}
+              {% if oname == 'tamanho' or oname == 'size' %}
+                <div class="pdp__look-sizes">
+                  {% for value in option.values %}
+                    <span class="pdp__look-size">{{ value }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+            <div class="pdp__look-item-name">{{ product.title }}</div>
+            <div class="pdp__look-item-price">{{ product.price | money }}</div>
+          </div>
+
+          <div class="pdp__look-plus">+</div>
+
+          {% comment %} Produto(s) complementar(es) via metafield {% endcomment %}
+          {% assign look_items = product.metafields.custom.look_products.value %}
+          {% for look_product in look_items %}
+            <div class="pdp__look-item">
+              <div class="pdp__look-img-wrap">
+                <a href="{{ look_product.url }}">
+                  <img src="{{ look_product.featured_image | image_url: width: 500 }}" alt="{{ look_product.title }}" class="pdp__look-img" />
+                </a>
+              </div>
+              {% for option in look_product.options_with_values %}
+                {% assign oname = option.name | downcase %}
+                {% if oname == 'tamanho' or oname == 'size' %}
+                  <div class="pdp__look-sizes">
+                    {% for value in option.values %}
+                      <span class="pdp__look-size">{{ value }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+              <div class="pdp__look-item-name">{{ look_product.title }}</div>
+              <div class="pdp__look-item-price">{{ look_product.price | money }}</div>
+            </div>
+            {% unless forloop.last %}<div class="pdp__look-plus">+</div>{% endunless %}
+          {% endfor %}
+        </div>
+
+        {% comment %} Resumo do look {% endcomment %}
+        <div class="pdp__look-summary">
+          <div class="pdp__look-equals">=</div>
+          <div class="pdp__look-summary-inner">
+            <div class="pdp__look-summary-label">Compre os {{ look_items.size | plus: 1 }} produtos</div>
+            <div class="pdp__look-summary-total" id="look-total">
+              {% assign look_total = product.price %}
+              {% for look_product in look_items %}
+                {% assign look_total = look_total | plus: look_product.price %}
+              {% endfor %}
+              {{ look_total | money }}
+            </div>
+            {% assign look_installment = look_total | divided_by: 6 %}
+            <div class="pdp__look-summary-installments">Em até 6x de {{ look_installment | money }}</div>
+            <button class="pdp__look-buy-btn" id="look-buy-btn">COMPRAR LOOK</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
 
   {% comment %} Recomendações {% endcomment %}
   <section class="pdp__recommendations">
@@ -214,23 +333,37 @@
     color: #999;
   }
 
-  /* --- Container principal: 50/50 flex --- */
+  /* --- Container principal: 50/50 flex --- BP: max-width 1600px, padding 0 50px --- */
   .pdp__container {
     display: flex;
     width: 100%;
-    max-width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 50px;
+    box-sizing: border-box;
   }
 
-  /* --- Galeria (esquerda 50%) --- */
+  /* --- Galeria (esquerda 50%) — carrossel horizontal como BP --- */
   .pdp__gallery {
     width: 50%;
     flex: 0 0 50%;
+    position: relative;
+    overflow: hidden;
+  }
+  .pdp__gallery-track {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+  }
+  .pdp__gallery-track::-webkit-scrollbar {
+    display: none;
   }
   .pdp__gallery-item {
-    width: 100%;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
   }
   .pdp__gallery-img {
     width: 100%;
@@ -238,6 +371,49 @@
     display: block;
     object-fit: cover;
     aspect-ratio: 2 / 3;
+  }
+  /* Setas */
+  .pdp__gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(255,255,255,0.85);
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #545454;
+    transition: opacity 0.2s;
+    border-radius: 50%;
+  }
+  .pdp__gallery-arrow:hover {
+    background: rgba(255,255,255,1);
+  }
+  .pdp__gallery-arrow--prev { left: 12px; }
+  .pdp__gallery-arrow--next { right: 12px; }
+  /* Dots */
+  .pdp__gallery-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0;
+  }
+  .pdp__gallery-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(84,84,84,0.25);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+  .pdp__gallery-dot.is-active {
+    background: #545454;
   }
 
   /* --- Info (direita 50%, sticky) --- */
@@ -248,9 +424,9 @@
   }
   .pdp__info {
     position: sticky;
-    top: 100px; /* abaixo do header fixo */
+    top: 90px; /* abaixo do header fixo (~80px) + margem */
     padding: 30px 50px 60px 50px;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 50px);
     overflow-y: auto;
   }
   /* Esconder scrollbar do info quando rola */
@@ -306,12 +482,12 @@
     text-decoration: line-through;
   }
 
-  /* --- Parcelamento --- */
+  /* --- Parcelamento --- BP: 16px --- */
   .pdp__installments {
     font-family: 'Raleway', sans-serif;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 400;
-    color: #999;
+    color: #545454;
     margin-bottom: 28px;
   }
 
@@ -344,20 +520,36 @@
     text-transform: none;
   }
 
-  /* --- Color swatches --- */
-  .pdp__swatches {
+  /* --- Color swatches (com imagem do produto) --- */
+  .pdp__color-swatches {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
   }
-  .pdp__swatch {
+  .pdp__color-swatch {
     cursor: pointer;
     display: block;
+    position: relative;
   }
-  .pdp__swatch input {
+  .pdp__color-swatch input {
     display: none;
   }
-  .pdp__swatch-circle {
+  .pdp__color-swatch-img {
+    display: block;
+    width: 56px;
+    height: 72px;
+    object-fit: cover;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .pdp__color-swatch input:checked + .pdp__color-swatch-img {
+    border-color: #545454;
+  }
+  .pdp__color-swatch:hover .pdp__color-swatch-img {
+    border-color: rgba(84, 84, 84, 0.4);
+  }
+  /* Fallback circular se não tiver imagem */
+  .pdp__color-swatch-fallback {
     display: block;
     width: 28px;
     height: 28px;
@@ -365,7 +557,7 @@
     border: 2px solid transparent;
     transition: border-color 0.2s;
   }
-  .pdp__swatch input:checked + .pdp__swatch-circle {
+  .pdp__color-swatch input:checked + .pdp__color-swatch-fallback {
     border-color: #545454;
   }
 
@@ -420,9 +612,9 @@
     cursor: pointer;
   }
 
-  /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px --- */
+  /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px, 80% da coluna --- */
   .pdp__add-to-cart {
-    width: 100%;
+    width: 80%;
     height: 47px;
     background: rgb(217, 200, 158);
     color: #545454;
@@ -507,6 +699,46 @@
     padding: 0 0 20px 0;
   }
 
+  /* --- Personal Shopper (WhatsApp) — estilo BP --- */
+  .pdp__personal-shopper {
+    margin: 24px 0 0;
+    text-align: center;
+  }
+  .pdp__ps-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    margin: 0 0 14px 0;
+  }
+  .pdp__ps-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 80%;
+    height: 47px;
+    border: 1px solid #9E885E;
+    background: #ffffff;
+    color: #9E885E;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+    box-sizing: border-box;
+  }
+  .pdp__ps-btn:hover {
+    background: #faf8f4;
+  }
+  .pdp__ps-btn svg {
+    flex-shrink: 0;
+  }
+
   /* --- Compartilhar --- */
   .pdp__share {
     margin-top: 20px;
@@ -528,6 +760,175 @@
   }
   .pdp__share-btn:hover {
     color: #333;
+  }
+
+  /* --- Compre o Look --- */
+  .pdp__look {
+    padding: 60px 40px;
+    background: #ffffff;
+  }
+  .pdp__look-title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #545454;
+    margin: 0 0 40px 0;
+    line-height: 1.3;
+  }
+  .pdp__look-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .pdp__look-products {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex: 1;
+  }
+  .pdp__look-item {
+    flex: 1;
+    max-width: 320px;
+  }
+  .pdp__look-img-wrap {
+    margin-bottom: 12px;
+  }
+  .pdp__look-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .pdp__look-sizes {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .pdp__look-size {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid rgba(84,84,84,0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #545454;
+    background: #fff;
+  }
+  .pdp__look-item-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .pdp__look-item-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+  }
+  .pdp__look-plus {
+    font-family: 'Raleway', sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: #545454;
+    padding: 0 24px;
+    align-self: center;
+    margin-top: -80px;
+  }
+  .pdp__look-summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: 10px;
+  }
+  .pdp__look-equals {
+    font-family: 'Raleway', sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: #545454;
+  }
+  .pdp__look-summary-inner {
+    text-align: center;
+  }
+  .pdp__look-summary-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 8px;
+  }
+  .pdp__look-summary-total {
+    font-family: 'Raleway', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .pdp__look-summary-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #B3883D;
+    margin-bottom: 16px;
+  }
+  .pdp__look-buy-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    background: rgb(179, 136, 61);
+    color: #ffffff;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .pdp__look-buy-btn:hover {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 1024px) {
+    .pdp__look-container {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .pdp__look-products {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pdp__look-plus {
+      margin-top: 0;
+      padding: 0 12px;
+    }
+    .pdp__look-summary {
+      margin-left: 0;
+      flex-direction: row;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pdp__look {
+      padding: 40px 16px;
+    }
+    .pdp__look-title {
+      font-size: 26px;
+    }
+    .pdp__look-item {
+      max-width: 45%;
+    }
   }
 
   /* --- Recomendações --- */
@@ -559,24 +960,24 @@
   @media (max-width: 1024px) {
     .pdp__container {
       flex-direction: column;
+      padding: 0;
     }
     .pdp__gallery {
       width: 100%;
       flex: none;
-      /* No mobile, galeria vira scroll horizontal */
-      flex-direction: row;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      gap: 0;
+    }
+    .pdp__gallery-track {
+      /* Já é carrossel no mobile por padrão */
     }
     .pdp__gallery-item {
       flex: 0 0 100%;
-      scroll-snap-align: start;
     }
     .pdp__gallery-img {
       aspect-ratio: 3 / 4;
+    }
+    .pdp__gallery-arrow {
+      width: 36px;
+      height: 36px;
     }
     .pdp__info-wrapper {
       width: 100%;
@@ -587,6 +988,10 @@
       padding: 24px 20px 40px;
       max-height: none;
       overflow-y: visible;
+    }
+    .pdp__add-to-cart,
+    .pdp__ps-btn {
+      width: 100%;
     }
     .pdp__recommendations-grid {
       grid-template-columns: repeat(2, 1fr);
@@ -686,6 +1091,22 @@
           const legend = this.closest('fieldset').querySelector('.pdp__option-value');
           if (legend) legend.textContent = this.value;
         }
+        // Se trocou cor, rolar galeria até a imagem da variante
+        if (this.closest('.pdp__color-swatches')) {
+          const opts = getSelectedOptions();
+          const variant = findVariant(opts);
+          if (variant && variant.featured_image) {
+            const galleryImgs = document.querySelectorAll('.pdp__gallery-img');
+            galleryImgs.forEach((img, idx) => {
+              // Comparar pelo src (ambos terão parte do filename)
+              if (img.src.includes(variant.featured_image.id) ||
+                  img.alt === variant.featured_image.alt) {
+                const item = img.closest('.pdp__gallery-item');
+                if (item) item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            });
+          }
+        }
       });
     });
 
@@ -719,6 +1140,50 @@
         alert('Erro ao adicionar ao carrinho. Tente novamente.');
       });
     });
+
+    /* ---- Gallery Carousel ---- */
+    const track = document.getElementById('gallery-track');
+    const prevBtn = document.getElementById('gallery-prev');
+    const nextBtn = document.getElementById('gallery-next');
+    const dots = document.querySelectorAll('.pdp__gallery-dot');
+    let currentSlide = 0;
+    const totalSlides = document.querySelectorAll('.pdp__gallery-item').length;
+
+    function goToSlide(idx) {
+      if (idx < 0) idx = totalSlides - 1;
+      if (idx >= totalSlides) idx = 0;
+      currentSlide = idx;
+      if (track) {
+        const item = track.children[idx];
+        if (item) {
+          track.scrollTo({ left: item.offsetLeft, behavior: 'smooth' });
+        }
+      }
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === currentSlide));
+    }
+
+    prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => goToSlide(parseInt(dot.dataset.index)));
+    });
+
+    // Sync dots on manual scroll
+    if (track) {
+      let scrollTimeout;
+      track.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const scrollLeft = track.scrollLeft;
+          const itemWidth = track.children[0]?.offsetWidth || 1;
+          const newIndex = Math.round(scrollLeft / itemWidth);
+          if (newIndex !== currentSlide && newIndex >= 0 && newIndex < totalSlides) {
+            currentSlide = newIndex;
+            dots.forEach((d, i) => d.classList.toggle('is-active', i === currentSlide));
+          }
+        }, 80);
+      });
+    }
 
     /* ---- Share ---- */
     document.getElementById('share-btn')?.addEventListener('click', function() {

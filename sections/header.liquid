@@ -336,13 +336,21 @@
 
   /* Páginas que não são home: header sólido branco, sem gradiente, sem blur */
   body:not(.template-index) .site-header {
-    position: sticky;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background: #ffffff;
     background-color: #ffffff;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border-bottom-color: #E8DED1;
   }
+  /* Compensar header fixed em páginas internas — empurra conteúdo pra baixo */
+  body:not(.template-index) .main-content {
+    padding-top: 80px; /* altura aproximada do header */
+  }
+
   body:not(.template-index) .site-header .site-header__logo-text,
   body:not(.template-index) .site-header .site-header__nav-link,
   body:not(.template-index) .site-header .site-header__icon-btn,
@@ -400,11 +408,13 @@
     display: block;
     transition: filter 0.35s ease;
   }
-  /* Logo branco no estado translúcido (home, sem hover, sem scroll) */
-  .site-header:not(.is-scrolled):not(:hover) .site-header__logo-img {
+  /* Logo branco no estado translúcido (APENAS home, sem hover, sem scroll) */
+  body.template-index .site-header:not(.is-scrolled):not(:hover) .site-header__logo-img {
     filter: brightness(0) invert(1);
   }
-  body:not(.template-index) .site-header .site-header__logo-img {
+  /* Páginas internas: logo sempre na cor original, NUNCA branco */
+  body:not(.template-index) .site-header .site-header__logo-img,
+  body:not(.template-index) .site-header:not(.is-scrolled):not(:hover) .site-header__logo-img {
     filter: none;
   }
 
