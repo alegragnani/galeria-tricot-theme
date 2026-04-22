@@ -1,14 +1,6 @@
 <!-- Hero Slideshow Section -->
-{%- assign fallback_slides = 'https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a63e8a86-42d4-4199-8b1b-17b00f6d37ba___b235a309973cd94d25afb7c6155996b9.jpg|https://mundodasmalhas.vtexassets.com/assets/vtex.file-manager-graphql/images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783.jpg' | split: '|' -%}
 <div class="hero-slideshow" data-slideshow>
   <div class="hero-slideshow__slides">
-    {% if section.blocks.size == 0 %}
-      {% for src in fallback_slides %}
-        <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}">
-          <img src="{{ src }}" alt="Galeria Tricot" class="hero-slideshow__image" loading="eager">
-        </div>
-      {% endfor %}
-    {% endif %}
     {% for block in section.blocks %}
       <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}">
         {% if block.settings.image %}
@@ -70,15 +62,6 @@
 
   <!-- Dot Navigation -->
   <div class="hero-slideshow__dots">
-    {% if section.blocks.size == 0 %}
-      {% for src in fallback_slides %}
-        <button
-          class="hero-slideshow__dot{% if forloop.first %} hero-slideshow__dot--active{% endif %}"
-          data-dot="{{ forloop.index0 }}"
-          aria-label="Slide {{ forloop.index }}"
-        ></button>
-      {% endfor %}
-    {% endif %}
     {% for block in section.blocks %}
       <button
         class="hero-slideshow__dot{% if forloop.first %} hero-slideshow__dot--active{% endif %}"
