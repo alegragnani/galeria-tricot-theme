@@ -31,10 +31,13 @@
       {% for block in section.blocks %}
         {% case block.type %}
           {% when 'link_list' %}
-            <div class="site-footer__col" {{ block.shopify_attributes }}>
-              <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+            <div class="site-footer__col site-footer__col--accordion" {{ block.shopify_attributes }}>
+              <button class="site-footer__accordion-toggle" aria-expanded="false">
+                <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+                <span class="site-footer__accordion-icon">+</span>
+              </button>
               {% if block.settings.menu != blank %}
-                <ul class="site-footer__links">
+                <ul class="site-footer__links site-footer__accordion-body">
                   {% for link in linklists[block.settings.menu].links %}
                     <li><a href="{{ link.url }}">{{ link.title }}</a></li>
                   {% endfor %}
@@ -42,9 +45,12 @@
               {% endif %}
             </div>
           {% when 'text' %}
-            <div class="site-footer__col" {{ block.shopify_attributes }}>
-              <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
-              <div class="site-footer__text">{{ block.settings.text }}</div>
+            <div class="site-footer__col site-footer__col--accordion" {{ block.shopify_attributes }}>
+              <button class="site-footer__accordion-toggle" aria-expanded="false">
+                <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+                <span class="site-footer__accordion-icon">+</span>
+              </button>
+              <div class="site-footer__text site-footer__accordion-body">{{ block.settings.text }}</div>
             </div>
         {% endcase %}
       {% endfor %}
@@ -383,8 +389,47 @@
     }
   }
 
+  /* ============ ACORDEAO FOOTER — desktop: sempre aberto ============ */
+  .site-footer__accordion-toggle {
+    display: none; /* escondido no desktop */
+  }
+
   /* ============ MOBILE ============ */
   @media (max-width: 749px) {
+    /* Acordeao: botao visivel, conteudo colapsado */
+    .site-footer__accordion-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 1px solid #E0DCD4;
+      padding: 18px 0;
+      cursor: pointer;
+      color: #545454;
+    }
+    .site-footer__accordion-toggle .site-footer__heading {
+      margin: 0;
+      pointer-events: none;
+    }
+    .site-footer__accordion-icon {
+      font-size: 22px;
+      font-weight: 300;
+      color: #545454;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    .site-footer__col--accordion.is-open .site-footer__accordion-icon {
+      transform: rotate(45deg);
+    }
+    .site-footer__accordion-body {
+      display: none;
+      padding: 12px 0 8px;
+    }
+    .site-footer__col--accordion.is-open .site-footer__accordion-body {
+      display: block;
+    }
     .site-footer__newsletter {
       padding: 32px 16px 28px;
     }
@@ -424,6 +469,19 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.site-footer__accordion-toggle').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var col = btn.closest('.site-footer__col--accordion');
+        var isOpen = col.classList.contains('is-open');
+        col.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', !isOpen);
+      });
+    });
+  });
+</script>
 
 {% schema %}
 {
