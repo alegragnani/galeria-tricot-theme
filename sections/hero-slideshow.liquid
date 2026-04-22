@@ -85,47 +85,20 @@
   .hero-slideshow__slides {
     position: relative;
     width: 100%;
-    height: 90vh;
-    max-height: 90vh;
   }
 
-  /* Tablet — banner proporcional (igual BP): escala com a largura, nao corta */
-  @media (max-width: 1349px) {
-    .hero-slideshow__slides {
-      height: 0;
-      max-height: none;
-      padding-bottom: 56.25%; /* 16:9 */
-    }
+  /* Primeiro slide relativo pra definir a altura do container pela imagem */
+  .hero-slideshow__slide:first-child {
+    position: relative !important;
   }
 
-  /* Mobile — imagem determina a altura, sem posicao absoluta */
-  @media (max-width: 749px) {
-    .hero-slideshow__slides {
-      height: auto !important;
-      max-height: none !important;
-      padding-bottom: 0 !important;
-    }
-    .hero-slideshow__slide {
-      position: relative !important;
-      width: 100% !important;
-      height: auto !important;
-      top: auto !important;
-      left: auto !important;
-      right: auto !important;
-      bottom: auto !important;
-    }
-    .hero-slideshow__slide:not(.active) {
-      display: none !important;
-    }
-    .hero-slideshow__slide.active {
-      display: block !important;
-      opacity: 1 !important;
-    }
-    .hero-slideshow__slide picture,
-    .hero-slideshow__image {
-      width: 100% !important;
-      height: auto !important;
-    }
+  /* Slides inativos escondidos, ativo visivel */
+  .hero-slideshow__slide:not(.active) {
+    display: none;
+  }
+  .hero-slideshow__slide.active {
+    display: block;
+    opacity: 1;
   }
 
   .hero-slideshow__slide {
@@ -148,15 +121,12 @@
   .hero-slideshow__slide picture {
     display: block;
     width: 100%;
-    height: 100%;
   }
 
   .hero-slideshow__image,
   .hero-slideshow__placeholder {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
+    height: auto;
     display: block;
   }
 
