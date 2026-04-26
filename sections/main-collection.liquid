@@ -490,6 +490,18 @@
     cursor: pointer;
   }
 
+  /* Divider infantil no filtro tamanho */
+  .filter-size-divider {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    color: #999;
+    text-transform: uppercase;
+    padding: 12px 0 4px;
+    margin-top: 8px;
+    border-top: 1px solid #E0DCD4;
+  }
+
   /* ============ TABLET ============ */
   @media (max-width: 1024px) {
     .collection-page {
@@ -557,6 +569,63 @@
         btn.closest('.filter-group').classList.toggle('is-open');
       });
     });
+
+    // Reordenar tamanhos no filtro: PP, P, M, G, U, Infantil (agrupado)
+    (function reorderSizes() {
+      var sizeOrder = { 'PP': 1, 'P': 2, 'M': 3, 'G': 4, 'GG': 5, 'U': 6 };
+      var infantilSizes = ['PPP', '8A', '10A', '12A', '34', '36', '38', '40', '42', '44', '46'];
+
+      // Achar o grupo TAMANHO
+      var groups = document.querySelectorAll('.filter-group');
+      var sizeGroup = null;
+      groups.forEach(function(g) {
+        var label = g.querySelector('.filter-group__toggle span');
+        if (label && label.textContent.trim() === 'TAMANHO') sizeGroup = g;
+      });
+      if (!sizeGroup) return;
+
+      var body = sizeGroup.querySelector('.filter-group__body');
+      if (!body) return;
+      var options = Array.from(body.querySelectorAll('.filter-option'));
+      if (options.length === 0) return;
+
+      // Agrupar infantil: renomear label e somar counts
+      var infantilOptions = [];
+      var regularOptions = [];
+      options.forEach(function(opt) {
+        var label = opt.querySelector('.filter-option__label');
+        var val = label ? label.textContent.trim() : '';
+        if (infantilSizes.indexOf(val) !== -1) {
+          infantilOptions.push(opt);
+        } else {
+          regularOptions.push(opt);
+        }
+      });
+
+      // Ordenar tamanhos regulares
+      regularOptions.sort(function(a, b) {
+        var la = a.querySelector('.filter-option__label').textContent.trim();
+        var lb = b.querySelector('.filter-option__label').textContent.trim();
+        var oa = sizeOrder[la] || 99;
+        var ob = sizeOrder[lb] || 99;
+        return oa - ob;
+      });
+
+      // Limpar e reinserir na ordem certa
+      options.forEach(function(opt) { opt.remove(); });
+
+      // Primeiro os regulares ordenados
+      regularOptions.forEach(function(opt) { body.appendChild(opt); });
+
+      // Depois os infantis agrupados sob um sub-label
+      if (infantilOptions.length > 0) {
+        var divider = document.createElement('div');
+        divider.className = 'filter-size-divider';
+        divider.textContent = 'Infantil';
+        body.appendChild(divider);
+        infantilOptions.forEach(function(opt) { body.appendChild(opt); });
+      }
+    })();
 
     // APLICAR — monta URL com todos os filtros selecionados
     var applyBtn = document.getElementById('filter-apply');
