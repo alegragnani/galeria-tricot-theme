@@ -98,14 +98,17 @@
         <label class="filter-option"><input type="radio" name="sort_by" value="price-ascending" {% if collection.sort_by == 'price-ascending' %}checked{% endif %}> Menor preço</label>
         <label class="filter-option"><input type="radio" name="sort_by" value="price-descending" {% if collection.sort_by == 'price-descending' %}checked{% endif %}> Maior preço</label>
         <label class="filter-option"><input type="radio" name="sort_by" value="title-ascending" {% if collection.sort_by == 'title-ascending' %}checked{% endif %}> A-Z</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="discount" id="sort-discount"> Maior desconto</label>
       </div>
     </div>
 
     {%- comment -%} Filtros dinâmicos do Shopify (tamanho, cor, disponibilidade, preço, etc.) {%- endcomment -%}
     {% for filter in collection.filters %}
+      {% assign filter_label = filter.label %}
+      {% if filter.label == 'Tipo de produto' %}{% assign filter_label = 'Categoria' %}{% endif %}
       <div class="filter-group">
         <button type="button" class="filter-group__toggle" data-filter-toggle>
-          <span>{{ filter.label | upcase }}</span>
+          <span>{{ filter_label | upcase }}</span>
           {% if filter.active_values.size > 0 %}<span class="filter-group__count">{{ filter.active_values.size }}</span>{% endif %}
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
@@ -559,10 +562,18 @@
     var applyBtn = document.getElementById('filter-apply');
     if (applyBtn) applyBtn.addEventListener('click', function() {
       var form = document.getElementById('filter-form');
+      var sortRadio = form.querySelector('input[name="sort_by"]:checked');
+
+      // "Maior desconto" é client-side — reordena os cards por % de desconto
+      if (sortRadio && sortRadio.value === 'discount') {
+        closeFilter();
+        sortByDiscount();
+        return;
+      }
+
       var url = new URL(window.location.pathname, window.location.origin);
 
       // Sort
-      var sortRadio = form.querySelector('input[name="sort_by"]:checked');
       if (sortRadio) url.searchParams.set('sort_by', sortRadio.value);
 
       // Filtros checkbox (tamanho, cor, disponibilidade, etc.)
@@ -581,6 +592,29 @@
 
       window.location.href = url.toString();
     });
+
+    // Ordenação por desconto — reordena visualmente os cards pelo % de desconto
+    function sortByDiscount() {
+      var grid = document.querySelector('.collection-page__grid');
+      if (!grid) return;
+      var items = Array.from(grid.querySelectorAll('.collection-page__item'));
+      items.sort(function(a, b) {
+        var discA = getDiscountPercent(a);
+        var discB = getDiscountPercent(b);
+        return discB - discA; // maior desconto primeiro
+      });
+      items.forEach(function(item) { grid.appendChild(item); });
+    }
+
+    function getDiscountPercent(el) {
+      var compareEl = el.querySelector('.product-card__price--compare');
+      var priceEl = el.querySelector('.product-card__price--sale');
+      if (!compareEl || !priceEl) return 0;
+      var compare = parseFloat(compareEl.textContent.replace(/[^\d,\.]/g, '').replace(',', '.'));
+      var price = parseFloat(priceEl.textContent.replace(/[^\d,\.]/g, '').replace(',', '.'));
+      if (!compare || !price || compare <= price) return 0;
+      return Math.round(((compare - price) / compare) * 100);
+    }
   });
 </script>
 
