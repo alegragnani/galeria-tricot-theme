@@ -1,1 +1,58 @@
-{"type":"header","name":"Header Group","sections":{"announcement-bar":{"type":"announcement-bar","blocks":{"block_1":{"type":"message","settings":{"message":"GANHE BRINDE NAS COMPRAS ACIMA DE R$2.500"}}},"block_order":["block_1"],"settings":{}},"header":{"type":"header","settings":{"menu":"main-menu","sticky_header":true}}},"order":["announcement-bar","header"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header Group",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "block_1": {
+          "type": "message",
+          "settings": {
+            "message": "GANHE BRINDE NAS COMPRAS ACIMA DE R$2.500"
+          }
+        }
+      },
+      "block_order": [
+        "block_1"
+      ],
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "sticky_header": true
+      }
+    },
+    "image_banner_FRL4tN": {
+      "type": "image-banner",
+      "name": "Image Banner",
+      "settings": {
+        "image": "shopify://shop_images/WhatsApp_Image_2026-04-22_at_21.34.46.jpg",
+        "subtitle": "CONFIRA",
+        "subtitle_size": 14,
+        "heading": "NOVA COLEÇÃO",
+        "heading_size": 48,
+        "link_text": "SHOP NOW",
+        "link": "",
+        "text_position": "left",
+        "text_vertical": "middle",
+        "text_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header",
+    "image_banner_FRL4tN"
+  ]
+}
