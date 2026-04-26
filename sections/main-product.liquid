@@ -210,8 +210,57 @@
     </div>
   </div>
 
-  {% comment %} ===== COMPRE O LOOK ===== {% endcomment %}
-  {% if product.metafields.custom.look_products != blank %}
+  {% comment %} ===== COMPRE O LOOK (automático por nome base) =====
+    Lógica: tira o tipo da peça (Blusa, Saia, Shorts, etc.) do início do nome
+    e procura outros produtos na mesma coleção com o mesmo nome base.
+    Ex: "Casaco Tricot Melissa Azul" encontra "Shorts Tricot Melissa Azul"
+  {% endcomment %}
+
+  {% comment %} Extrair nome base do produto atual {% endcomment %}
+  {% assign current_title = product.title %}
+  {% assign title_words = current_title | split: ' ' %}
+  {% assign first_word = title_words[0] | downcase %}
+
+  {% comment %} Lista de tipos de peça para remover {% endcomment %}
+  {% assign tipos = 'blusa,saia,calca,calça,shorts,short,vestido,casaco,cardigan,jaqueta,top,cropped,regata,body,macacao,macacão,conjunto,bolsa,cinto,cachecol,gorro,luva,meia,pantufa,kimono,poncho,colete,camisa,blazer,sobretudo' | split: ',' %}
+
+  {% assign base_name = current_title %}
+  {% for tipo in tipos %}
+    {% if first_word == tipo %}
+      {% comment %} Remover a primeira palavra (tipo da peça) {% endcomment %}
+      {% assign base_name = current_title | remove_first: title_words[0] | strip %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% comment %} Remover "Tricot " do início se sobrou {% endcomment %}
+  {% assign base_words = base_name | split: ' ' %}
+  {% assign base_first = base_words[0] | downcase %}
+  {% if base_first == 'tricot' %}
+    {% assign base_name = base_name | remove_first: base_words[0] | strip %}
+  {% endif %}
+
+  {% comment %} Procurar produtos com mesmo nome base na coleção "all" {% endcomment %}
+  {% assign look_matches = '' %}
+  {% assign look_count = 0 %}
+  {% assign look_total = product.price %}
+
+  {% for p in collections.all.products limit: 200 %}
+    {% if p.id != product.id %}
+      {% assign p_title = p.title %}
+      {% if p_title contains base_name and base_name.size > 3 %}
+        {% comment %} Verificar se NÃO é o mesmo tipo de peça (evitar 2 blusas iguais) {% endcomment %}
+        {% assign p_words = p_title | split: ' ' %}
+        {% assign p_first = p_words[0] | downcase %}
+        {% if p_first != first_word %}
+          {% assign look_count = look_count | plus: 1 %}
+          {% assign look_total = look_total | plus: p.price %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if look_count > 0 %}
     <section class="pdp__look">
       <h2 class="pdp__look-title">COMPRE O LOOK COMPLETO</h2>
       <div class="pdp__look-container">
@@ -223,7 +272,6 @@
                 <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title }}" class="pdp__look-img" />
               </a>
             </div>
-            {% comment %} Tamanhos do produto atual {% endcomment %}
             {% for option in product.options_with_values %}
               {% assign oname = option.name | downcase %}
               {% if oname == 'tamanho' or oname == 'size' %}
@@ -238,46 +286,46 @@
             <div class="pdp__look-item-price">{{ product.price | money }}</div>
           </div>
 
-          <div class="pdp__look-plus">+</div>
-
-          {% comment %} Produto(s) complementar(es) via metafield {% endcomment %}
-          {% assign look_items = product.metafields.custom.look_products.value %}
-          {% for look_product in look_items %}
-            <div class="pdp__look-item">
-              <div class="pdp__look-img-wrap">
-                <a href="{{ look_product.url }}">
-                  <img src="{{ look_product.featured_image | image_url: width: 500 }}" alt="{{ look_product.title }}" class="pdp__look-img" />
-                </a>
-              </div>
-              {% for option in look_product.options_with_values %}
-                {% assign oname = option.name | downcase %}
-                {% if oname == 'tamanho' or oname == 'size' %}
-                  <div class="pdp__look-sizes">
-                    {% for value in option.values %}
-                      <span class="pdp__look-size">{{ value }}</span>
+          {% comment %} Produtos complementares (mesmo nome base, tipo diferente) {% endcomment %}
+          {% for p in collections.all.products limit: 200 %}
+            {% if p.id != product.id %}
+              {% assign p_title = p.title %}
+              {% if p_title contains base_name and base_name.size > 3 %}
+                {% assign p_words = p_title | split: ' ' %}
+                {% assign p_first = p_words[0] | downcase %}
+                {% if p_first != first_word %}
+                  <div class="pdp__look-plus">+</div>
+                  <div class="pdp__look-item">
+                    <div class="pdp__look-img-wrap">
+                      <a href="{{ p.url }}">
+                        <img src="{{ p.featured_image | image_url: width: 500 }}" alt="{{ p.title }}" class="pdp__look-img" />
+                      </a>
+                    </div>
+                    {% for option in p.options_with_values %}
+                      {% assign oname = option.name | downcase %}
+                      {% if oname == 'tamanho' or oname == 'size' %}
+                        <div class="pdp__look-sizes">
+                          {% for value in option.values %}
+                            <span class="pdp__look-size">{{ value }}</span>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
                     {% endfor %}
+                    <div class="pdp__look-item-name">{{ p.title }}</div>
+                    <div class="pdp__look-item-price">{{ p.price | money }}</div>
                   </div>
                 {% endif %}
-              {% endfor %}
-              <div class="pdp__look-item-name">{{ look_product.title }}</div>
-              <div class="pdp__look-item-price">{{ look_product.price | money }}</div>
-            </div>
-            {% unless forloop.last %}<div class="pdp__look-plus">+</div>{% endunless %}
+              {% endif %}
+            {% endif %}
           {% endfor %}
         </div>
 
-        {% comment %} Resumo do look {% endcomment %}
+        {% comment %} Resumo {% endcomment %}
         <div class="pdp__look-summary">
           <div class="pdp__look-equals">=</div>
           <div class="pdp__look-summary-inner">
-            <div class="pdp__look-summary-label">Compre os {{ look_items.size | plus: 1 }} produtos</div>
-            <div class="pdp__look-summary-total" id="look-total">
-              {% assign look_total = product.price %}
-              {% for look_product in look_items %}
-                {% assign look_total = look_total | plus: look_product.price %}
-              {% endfor %}
-              {{ look_total | money }}
-            </div>
+            <div class="pdp__look-summary-label">Compre os {{ look_count | plus: 1 }} produtos</div>
+            <div class="pdp__look-summary-total">{{ look_total | money }}</div>
             {% assign look_installment = look_total | divided_by: 6 %}
             <div class="pdp__look-summary-installments">Em até 6x de {{ look_installment | money }}</div>
             <button class="pdp__look-buy-btn" id="look-buy-btn">COMPRAR LOOK</button>

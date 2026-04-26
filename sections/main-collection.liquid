@@ -85,52 +85,81 @@
     </button>
   </div>
 
-  <div class="filter-drawer__body">
+  <form id="filter-form" class="filter-drawer__body">
     {%- comment -%} Ordenar {%- endcomment -%}
     <div class="filter-group">
-      <button class="filter-group__toggle" data-filter-toggle>
+      <button type="button" class="filter-group__toggle" data-filter-toggle>
         <span>ORDENAR</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
       <div class="filter-group__body">
-        <label class="filter-option"><input type="radio" name="sort_by" value="best-selling" checked> Mais vendidos</label>
-        <label class="filter-option"><input type="radio" name="sort_by" value="created-descending"> Mais recentes</label>
-        <label class="filter-option"><input type="radio" name="sort_by" value="price-ascending"> Menor preço</label>
-        <label class="filter-option"><input type="radio" name="sort_by" value="price-descending"> Maior preço</label>
-        <label class="filter-option"><input type="radio" name="sort_by" value="title-ascending"> A-Z</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="best-selling" {% if collection.sort_by == 'best-selling' or collection.sort_by == blank %}checked{% endif %}> Mais vendidos</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="created-descending" {% if collection.sort_by == 'created-descending' %}checked{% endif %}> Mais recentes</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="price-ascending" {% if collection.sort_by == 'price-ascending' %}checked{% endif %}> Menor preço</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="price-descending" {% if collection.sort_by == 'price-descending' %}checked{% endif %}> Maior preço</label>
+        <label class="filter-option"><input type="radio" name="sort_by" value="title-ascending" {% if collection.sort_by == 'title-ascending' %}checked{% endif %}> A-Z</label>
       </div>
     </div>
 
-    {%- comment -%} Filtro por disponibilidade {%- endcomment -%}
-    <div class="filter-group">
-      <button class="filter-group__toggle" data-filter-toggle>
-        <span>DISPONIBILIDADE</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </button>
-      <div class="filter-group__body">
-        <label class="filter-option"><input type="checkbox" name="availability" value="in-stock"> Em estoque</label>
-      </div>
-    </div>
+    {%- comment -%} Filtros dinâmicos do Shopify (tamanho, cor, disponibilidade, preço, etc.) {%- endcomment -%}
+    {% for filter in collection.filters %}
+      <div class="filter-group">
+        <button type="button" class="filter-group__toggle" data-filter-toggle>
+          <span>{{ filter.label | upcase }}</span>
+          {% if filter.active_values.size > 0 %}<span class="filter-group__count">{{ filter.active_values.size }}</span>{% endif %}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="filter-group__body">
+          {% case filter.type %}
+            {% when 'list' %}
+              {% for value in filter.values %}
+                <label class="filter-option">
+                  <input type="checkbox"
+                    name="{{ value.param_name }}"
+                    value="{{ value.value }}"
+                    {% if value.active %}checked{% endif %}
+                    {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                  >
+                  <span class="filter-option__label">{{ value.label }}</span>
+                  <span class="filter-option__count">({{ value.count }})</span>
+                </label>
+              {% endfor %}
 
-    {%- comment -%} Filtro por preço {%- endcomment -%}
-    <div class="filter-group">
-      <button class="filter-group__toggle" data-filter-toggle>
-        <span>PREÇO</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </button>
-      <div class="filter-group__body">
-        <div class="filter-price-range">
-          <input type="number" placeholder="Mín" class="filter-price-input" />
-          <span>—</span>
-          <input type="number" placeholder="Máx" class="filter-price-input" />
+            {% when 'price_range' %}
+              <div class="filter-price-range">
+                <div class="filter-price-field">
+                  <span class="filter-price-prefix">R$</span>
+                  <input type="number"
+                    name="{{ filter.min_value.param_name }}"
+                    placeholder="Mín"
+                    class="filter-price-input"
+                    {% if filter.min_value.value %}value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"{% endif %}
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                  >
+                </div>
+                <span class="filter-price-sep">—</span>
+                <div class="filter-price-field">
+                  <span class="filter-price-prefix">R$</span>
+                  <input type="number"
+                    name="{{ filter.max_value.param_name }}"
+                    placeholder="Máx"
+                    class="filter-price-input"
+                    {% if filter.max_value.value %}value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"{% endif %}
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                  >
+                </div>
+              </div>
+          {% endcase %}
         </div>
       </div>
-    </div>
-  </div>
+    {% endfor %}
+  </form>
 
   <div class="filter-drawer__footer">
     <button class="filter-drawer__apply" id="filter-apply">APLICAR</button>
-    <button class="filter-drawer__clear" id="filter-clear">Limpar filtros</button>
+    <a href="{{ collection.url }}" class="filter-drawer__clear" id="filter-clear">Limpar filtros</a>
   </div>
 </aside>
 
@@ -367,21 +396,59 @@
     cursor: pointer;
     accent-color: #B3883D;
   }
+  .filter-option__count {
+    color: #999;
+    font-size: 12px;
+    margin-left: auto;
+  }
+  .filter-option input:disabled + .filter-option__label,
+  .filter-option input:disabled ~ .filter-option__count {
+    opacity: 0.4;
+  }
+  .filter-group__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #B3883D;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
   .filter-price-range {
     display: flex;
     align-items: center;
     gap: 12px;
   }
+  .filter-price-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    border: 1px solid #E0DCD4;
+    padding: 0 0 0 10px;
+  }
+  .filter-price-field:focus-within {
+    border-color: #B3883D;
+  }
+  .filter-price-prefix {
+    font-size: 13px;
+    color: #999;
+    margin-right: 4px;
+  }
+  .filter-price-sep {
+    color: #999;
+  }
   .filter-price-input {
     flex: 1;
-    padding: 10px 12px;
-    border: 1px solid #E0DCD4;
+    padding: 10px 12px 10px 0;
+    border: none;
     font-family: 'Raleway', sans-serif;
     font-size: 14px;
     outline: none;
-  }
-  .filter-price-input:focus {
-    border-color: #B3883D;
+    width: 100%;
   }
 
   .filter-drawer__footer {
@@ -488,21 +555,31 @@
       });
     });
 
-    // Sort functionality
-    document.querySelectorAll('input[name="sort_by"]').forEach(function(radio) {
-      radio.addEventListener('change', function() {
-        var url = new URL(window.location);
-        url.searchParams.set('sort_by', this.value);
-        window.location.href = url.toString();
-      });
-    });
-
-    // Apply / Clear
+    // APLICAR — monta URL com todos os filtros selecionados
     var applyBtn = document.getElementById('filter-apply');
-    var clearBtn = document.getElementById('filter-clear');
-    if (applyBtn) applyBtn.addEventListener('click', closeFilter);
-    if (clearBtn) clearBtn.addEventListener('click', function() {
-      window.location.href = window.location.pathname;
+    if (applyBtn) applyBtn.addEventListener('click', function() {
+      var form = document.getElementById('filter-form');
+      var url = new URL(window.location.pathname, window.location.origin);
+
+      // Sort
+      var sortRadio = form.querySelector('input[name="sort_by"]:checked');
+      if (sortRadio) url.searchParams.set('sort_by', sortRadio.value);
+
+      // Filtros checkbox (tamanho, cor, disponibilidade, etc.)
+      form.querySelectorAll('input[type="checkbox"]:checked').forEach(function(cb) {
+        url.searchParams.append(cb.name, cb.value);
+      });
+
+      // Filtro de preço
+      form.querySelectorAll('.filter-price-input').forEach(function(inp) {
+        if (inp.value && inp.name) {
+          // Shopify espera preço em centavos
+          var cents = Math.round(parseFloat(inp.value) * 100);
+          if (!isNaN(cents) && cents > 0) url.searchParams.set(inp.name, cents);
+        }
+      });
+
+      window.location.href = url.toString();
     });
   });
 </script>
