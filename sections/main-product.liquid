@@ -139,6 +139,31 @@
             {% endif %}
           {% endfor %}
 
+          {% comment %} Aviso de pré-venda / prazo de envio {% endcomment %}
+          {% assign is_pre_venda = false %}
+          {% assign data_envio = '' %}
+          {% for tag in product.tags %}
+            {% assign tag_up = tag | upcase %}
+            {% if tag_up == 'PRE-VENDA' or tag_up == 'PRÉ-VENDA' or tag_up == 'PREVENDA' %}
+              {% assign is_pre_venda = true %}
+            {% endif %}
+            {% assign tag_prefix = tag | slice: 0, 6 | upcase %}
+            {% if tag_prefix == 'ENVIO:' %}
+              {% assign data_envio = tag | split: ':' | last | strip %}
+            {% endif %}
+          {% endfor %}
+
+          {% if is_pre_venda %}
+            <div class="pdp__pre-venda">
+              <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+              {% if data_envio != '' %}
+                <div class="pdp__pre-venda-date">Disponível para envio dia {{ data_envio }}</div>
+              {% else %}
+                <div class="pdp__pre-venda-date">Prazo de envio será informado após a compra</div>
+              {% endif %}
+            </div>
+          {% endif %}
+
           {% comment %} Botão comprar {% endcomment %}
           <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
             {% unless product.available %}disabled{% endunless %}>
@@ -360,25 +385,29 @@
     padding: 0;
   }
 
-  /* --- Breadcrumb --- */
+  /* --- Breadcrumb --- BP: Raleway 14px links, rgba(84,84,84,0.5) links, #545454 current --- */
   .pdp__breadcrumb {
     font-family: 'Raleway', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
     color: #545454;
-    padding: 12px 40px;
-    letter-spacing: 0.3px;
+    padding: 12px 50px;
+    letter-spacing: 0.6px;
   }
   .pdp__breadcrumb a {
+    color: rgba(84, 84, 84, 0.5);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    transition: color 0.2s;
+  }
+  .pdp__breadcrumb a:hover {
     color: #545454;
     text-decoration: none;
   }
-  .pdp__breadcrumb a:hover {
-    text-decoration: underline;
-  }
   .pdp__breadcrumb-sep {
-    margin: 0 6px;
-    color: #999;
+    margin: 0 8px;
+    color: rgba(84, 84, 84, 0.5);
   }
 
   /* --- Container principal: 50/50 flex --- BP: max-width 1600px, padding 0 50px --- */
@@ -568,7 +597,7 @@
     text-transform: none;
   }
 
-  /* --- Color swatches (com imagem do produto) --- */
+  /* --- Color swatches (mini-imagem do produto por variante) --- */
   .pdp__color-swatches {
     display: flex;
     gap: 10px;
@@ -584,29 +613,33 @@
   }
   .pdp__color-swatch-img {
     display: block;
-    width: 56px;
-    height: 72px;
+    width: 60px;
+    height: 78px;
     object-fit: cover;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
+    border: 1.5px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s;
   }
   .pdp__color-swatch input:checked + .pdp__color-swatch-img {
     border-color: #545454;
   }
   .pdp__color-swatch:hover .pdp__color-swatch-img {
-    border-color: rgba(84, 84, 84, 0.4);
+    border-color: rgba(84, 84, 84, 0.5);
   }
-  /* Fallback circular se não tiver imagem */
+  /* Fallback: bolinha com nome da cor abaixo */
   .pdp__color-swatch-fallback {
     display: block;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    border: 2px solid transparent;
-    transition: border-color 0.2s;
+    border: 2px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s, box-shadow 0.25s;
+    box-shadow: inset 0 0 0 2px #fff;
   }
   .pdp__color-swatch input:checked + .pdp__color-swatch-fallback {
     border-color: #545454;
+  }
+  .pdp__color-swatch:hover .pdp__color-swatch-fallback {
+    border-color: rgba(84, 84, 84, 0.5);
   }
 
   /* --- Size pills --- BP: clean pill style --- */
@@ -658,6 +691,30 @@
     background: #ffffff;
     appearance: none;
     cursor: pointer;
+  }
+
+  /* --- Aviso de pré-venda --- */
+  .pdp__pre-venda {
+    background: #FAF6F1;
+    border: 1px solid rgba(179, 136, 61, 0.3);
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .pdp__pre-venda-badge {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #B3883D;
+    margin-bottom: 6px;
+  }
+  .pdp__pre-venda-date {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    line-height: 1.4;
   }
 
   /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px, 80% da coluna --- */
@@ -822,7 +879,7 @@
     letter-spacing: 0.6px;
     text-transform: uppercase;
     text-align: center;
-    color: #545454;
+    color: #B3883D;
     margin: 0 0 40px 0;
     line-height: 1.3;
   }
@@ -1053,6 +1110,10 @@
   @media (max-width: 480px) {
     .pdp__breadcrumb {
       padding: 10px 16px;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+    .pdp__breadcrumb a {
       font-size: 12px;
     }
     .pdp__info {
