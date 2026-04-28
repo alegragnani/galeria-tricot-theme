@@ -521,35 +521,32 @@
   .pdp__color-swatch input:checked + .pdp__color-swatch-fallback { border-color: #545454; }
   .pdp__color-swatch:hover .pdp__color-swatch-fallback { border-color: rgba(84, 84, 84, 0.5); }
 
-  /* --- Sibling colors (cada cor é produto separado) --- */
+  /* --- Sibling colors (bolinhas coloridas — cada cor é produto separado) --- */
   .pdp__siblings {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .pdp__sibling-swatches {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
     margin-top: 10px;
   }
   .pdp__sibling-link {
     display: block;
-    width: 60px;
-    height: 78px;
-    border: 1.5px solid rgba(84, 84, 84, 0.15);
-    overflow: hidden;
-    transition: border-color 0.25s;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(84, 84, 84, 0.2);
+    transition: border-color 0.25s, box-shadow 0.25s;
+    box-shadow: inset 0 0 0 2px #fff;
+    text-decoration: none;
   }
   .pdp__sibling-link.is-current {
     border-color: #545454;
+    box-shadow: inset 0 0 0 2px #fff;
   }
   .pdp__sibling-link:hover {
-    border-color: rgba(84, 84, 84, 0.5);
-  }
-  .pdp__sibling-link img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    border-color: #545454;
   }
 
   /* --- Size pills --- BP: clean pill style --- */
@@ -1251,15 +1248,59 @@
       } catch(e) { return []; }
     }
 
+    // Mapa de cores em português → código CSS
+    const MAPA_CORES = {
+      'preto': '#1a1a1a', 'black': '#1a1a1a',
+      'branco': '#ffffff', 'white': '#ffffff',
+      'off': '#f5f0e8', 'off-white': '#f5f0e8', 'offwhite': '#f5f0e8',
+      'cru': '#f5f0e8', 'natural': '#f0ead6',
+      'bege': '#d4b896', 'nude': '#d4b896', 'areia': '#d4b896',
+      'cobre': '#b87333', 'caramelo': '#c68e4e', 'ferrugem': '#b7410e',
+      'marrom': '#6b3a2a', 'chocolate': '#5c3317', 'cacau': '#6b3a2a', 'cafe': '#6b3a2a',
+      'cinza': '#999999', 'mescla': '#b0b0b0', 'chumbo': '#666666', 'grafite': '#4a4a4a',
+      'azul': '#3a6ea5', 'marinho': '#1b2a4a', 'navy': '#1b2a4a', 'royal': '#2850a8',
+      'celeste': '#87ceeb', 'baby': '#89cff0', 'turquesa': '#40e0d0',
+      'verde': '#2e7d32', 'militar': '#4a5d23', 'musgo': '#6b705c', 'oliva': '#808000',
+      'pistache': '#93c572', 'menta': '#98fb98', 'esmeralda': '#046307',
+      'vermelho': '#c41e3a', 'rubi': '#9b111e', 'cereja': '#de3163',
+      'vinho': '#722f37', 'burgundy': '#722f37', 'marsala': '#8e4a49', 'bordo': '#722f37',
+      'rosa': '#f4a7bb', 'pink': '#ff69b4', 'blush': '#f0c8c8', 'chiclete': '#ff66b2',
+      'magenta': '#c20078', 'fuchsia': '#ff00ff',
+      'coral': '#ff7f50', 'salmon': '#fa8072', 'salmao': '#fa8072',
+      'laranja': '#e67e22', 'tangerina': '#ff9944', 'terracota': '#cc5533',
+      'amarelo': '#f1c40f', 'mostarda': '#c7a93e', 'ouro': '#c7a93e', 'dourado': '#c7a93e',
+      'lilas': '#c8a2c8', 'lavanda': '#b57edc', 'roxo': '#6a0dad', 'uva': '#6a0040',
+      'violeta': '#7f00ff', 'ameixa': '#673147',
+      'prata': '#c0c0c0', 'silver': '#c0c0c0',
+      'neon': '#39ff14', 'limao': '#bfff00', 'lima': '#bfff00',
+      'rost': '#b7410e', 'tijolo': '#cb4154',
+      'multicolor': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+      'colorido': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+      'estampado': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+    };
+
+    function corParaCSS(nomeCor) {
+      const lower = nomeCor.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '') // Remove acentos
+        .replace(/\s+/g, '');
+      // Tentar match direto
+      if (MAPA_CORES[lower]) return MAPA_CORES[lower];
+      // Tentar match parcial (ex: "Cinza Mescla" → "cinza")
+      for (const [key, val] of Object.entries(MAPA_CORES)) {
+        if (lower.includes(key) || key.includes(lower)) return val;
+      }
+      // Fallback: cinza neutro
+      return '#cccccc';
+    }
+
     async function carregarCoresIrmas() {
       const title = productJson.title;
       const { base, cor, tipo } = extrairNomeBase(title);
       if (!base || base.length < 2) return;
 
       const results = await buscarProdutos(base);
-      // Filtrar: mesmo tipo de peça + mesmo base name
       const siblings = results.filter(p => {
-        if (p.url === window.location.pathname) return false; // Excluir o próprio
+        if (p.url === window.location.pathname) return false;
         const { base: pBase, tipo: pTipo } = extrairNomeBase(p.title);
         return pBase === base && pTipo === tipo;
       });
@@ -1270,17 +1311,14 @@
       const section = document.getElementById('color-siblings');
       const colorLabel = document.getElementById('current-color-name');
 
-      // Produto atual como primeiro swatch
-      let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '">' +
-        '<img src="' + productJson.featured_image + '" alt="' + cor + '" />' +
-        '</a>';
+      // Produto atual como primeiro swatch (bolinha)
+      const corAtualCSS = corParaCSS(cor);
+      let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '" style="background:' + corAtualCSS + ';"></a>';
 
       siblings.forEach(p => {
         const { cor: pCor } = extrairNomeBase(p.title);
-        const imgSrc = p.featured_image?.url || p.image || '';
-        html += '<a class="pdp__sibling-link" href="' + p.url + '" title="' + pCor + '">' +
-          '<img src="' + imgSrc + '" alt="' + pCor + '" />' +
-          '</a>';
+        const corCSS = corParaCSS(pCor);
+        html += '<a class="pdp__sibling-link" href="' + p.url + '" title="' + pCor + '" style="background:' + corCSS + ';"></a>';
       });
 
       container.innerHTML = html;
