@@ -1,0 +1,294 @@
+{% comment %}
+  Página de resultados de busca — layout vitrine (grid de cards)
+  Usa o snippet product-card para manter visual consistente com PLP
+{% endcomment %}
+
+<div class="search-results">
+  <div class="search-results__header">
+    <h1 class="search-results__title">
+      {% if search.performed %}
+        {% if search.results_count > 0 %}
+          {{ search.results_count }} resultado{{ search.results_count | pluralize: '', 's' }} para "{{ search.terms }}"
+        {% else %}
+          Nenhum resultado para "{{ search.terms }}"
+        {% endif %}
+      {% else %}
+        Buscar
+      {% endif %}
+    </h1>
+
+    {% comment %} Barra de busca persistente {% endcomment %}
+    <form action="/search" method="get" class="search-results__form">
+      <input type="hidden" name="type" value="product" />
+      <div class="search-results__input-wrap">
+        <input
+          type="text"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="O que você procura?"
+          class="search-results__input"
+          autocomplete="off"
+        />
+        <button type="submit" class="search-results__submit" aria-label="Buscar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if search.performed %}
+    {% if search.results_count > 0 %}
+      <div class="search-results__grid">
+        {% for item in search.results %}
+          {% if item.object_type == 'product' %}
+            {% render 'product-card', product: item %}
+          {% else %}
+            {% comment %} Artigos, páginas, etc. {% endcomment %}
+            <a href="{{ item.url }}" class="search-results__page-item">
+              <h3 class="search-results__page-title">{{ item.title }}</h3>
+              <p class="search-results__page-excerpt">{{ item.content | strip_html | truncatewords: 30 }}</p>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% comment %} Paginação {% endcomment %}
+      {% if paginate %}
+        {% if paginate.pages > 1 %}
+          <nav class="search-results__pagination">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="search-results__page-link">&laquo; Anterior</a>
+            {% endif %}
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
+              {% else %}
+                <span class="search-results__page-link is-current">{{ part.title }}</span>
+              {% endif %}
+            {% endfor %}
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="search-results__page-link">Próxima &raquo;</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% endif %}
+    {% else %}
+      {% comment %} Sem resultados — sugestões {% endcomment %}
+      <div class="search-results__empty">
+        <p class="search-results__empty-text">Não encontramos produtos para essa busca. Tente outro termo ou navegue pelas categorias:</p>
+        <div class="search-results__suggestions">
+          <a href="/collections/novidades" class="search-results__suggestion">Novidades</a>
+          <a href="/collections/roupas" class="search-results__suggestion">Roupas</a>
+          <a href="/collections/sale-ver26" class="search-results__suggestion">Sale</a>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+
+<style>
+  /* ===== Página de Resultados de Busca — vitrine ===== */
+
+  .search-results {
+    background: #ffffff;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 30px 50px 60px;
+    box-sizing: border-box;
+  }
+
+  /* --- Header --- */
+  .search-results__header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .search-results__title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #B3883D;
+    margin: 0 0 24px 0;
+    line-height: 1.3;
+  }
+
+  /* --- Barra de busca --- */
+  .search-results__form {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .search-results__input-wrap {
+    display: flex;
+    border-bottom: 1px solid rgba(84, 84, 84, 0.3);
+  }
+  .search-results__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    padding: 12px 0;
+    outline: none;
+    letter-spacing: 0.3px;
+  }
+  .search-results__input::placeholder {
+    color: rgba(84, 84, 84, 0.4);
+  }
+  .search-results__submit {
+    background: none;
+    border: none;
+    color: #545454;
+    cursor: pointer;
+    padding: 12px 4px;
+    transition: opacity 0.2s;
+  }
+  .search-results__submit:hover {
+    opacity: 0.6;
+  }
+
+  /* --- Grid de produtos (vitrine) --- */
+  .search-results__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px 12px;
+  }
+
+  /* --- Item de página/artigo (não-produto) --- */
+  .search-results__page-item {
+    display: block;
+    text-decoration: none;
+    padding: 20px;
+    border: 1px solid rgba(84, 84, 84, 0.1);
+    transition: border-color 0.2s;
+  }
+  .search-results__page-item:hover {
+    border-color: rgba(84, 84, 84, 0.3);
+  }
+  .search-results__page-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #545454;
+    margin: 0 0 8px 0;
+  }
+  .search-results__page-excerpt {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(84, 84, 84, 0.7);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* --- Paginação --- */
+  .search-results__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 48px;
+  }
+  .search-results__page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid rgba(84, 84, 84, 0.2);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #545454;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .search-results__page-link:hover {
+    border-color: #545454;
+  }
+  .search-results__page-link.is-current {
+    background: #545454;
+    color: #ffffff;
+    border-color: #545454;
+  }
+
+  /* --- Sem resultados --- */
+  .search-results__empty {
+    text-align: center;
+    padding: 40px 0;
+  }
+  .search-results__empty-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    color: #545454;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+  }
+  .search-results__suggestions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .search-results__suggestion {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid rgba(84, 84, 84, 0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .search-results__suggestion:hover {
+    border-color: #545454;
+    background: #545454;
+    color: #ffffff;
+  }
+
+  /* --- Responsivo --- */
+  @media (max-width: 1024px) {
+    .search-results {
+      padding: 24px 20px 40px;
+    }
+    .search-results__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px 10px;
+    }
+    .search-results__title {
+      font-size: 26px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .search-results__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .search-results {
+      padding: 16px 16px 40px;
+    }
+    .search-results__title {
+      font-size: 22px;
+    }
+    .search-results__input {
+      font-size: 14px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Busca",
+  "settings": []
+}
+{% endschema %}
