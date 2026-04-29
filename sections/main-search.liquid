@@ -40,12 +40,12 @@
 
   {% if search.performed %}
     {% if search.results_count > 0 %}
+      {% paginate search.results by 48 %}
       <div class="search-results__grid">
         {% for item in search.results %}
           {% if item.object_type == 'product' %}
             {% render 'product-card', product: item %}
           {% else %}
-            {% comment %} Artigos, páginas, etc. {% endcomment %}
             <a href="{{ item.url }}" class="search-results__page-item">
               <h3 class="search-results__page-title">{{ item.title }}</h3>
               <p class="search-results__page-excerpt">{{ item.content | strip_html | truncatewords: 30 }}</p>
@@ -54,26 +54,24 @@
         {% endfor %}
       </div>
 
-      {% comment %} Paginação {% endcomment %}
-      {% if paginate %}
-        {% if paginate.pages > 1 %}
-          <nav class="search-results__pagination">
-            {% if paginate.previous %}
-              <a href="{{ paginate.previous.url }}" class="search-results__page-link">&laquo; Anterior</a>
+      {% if paginate.pages > 1 %}
+        <nav class="search-results__pagination">
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}" class="search-results__page-link">&laquo; Anterior</a>
+          {% endif %}
+          {% for part in paginate.parts %}
+            {% if part.is_link %}
+              <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
+            {% else %}
+              <span class="search-results__page-link is-current">{{ part.title }}</span>
             {% endif %}
-            {% for part in paginate.parts %}
-              {% if part.is_link %}
-                <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
-              {% else %}
-                <span class="search-results__page-link is-current">{{ part.title }}</span>
-              {% endif %}
-            {% endfor %}
-            {% if paginate.next %}
-              <a href="{{ paginate.next.url }}" class="search-results__page-link">Próxima &raquo;</a>
-            {% endif %}
-          </nav>
-        {% endif %}
+          {% endfor %}
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}" class="search-results__page-link">Próxima &raquo;</a>
+          {% endif %}
+        </nav>
       {% endif %}
+      {% endpaginate %}
     {% else %}
       {% comment %} Sem resultados — sugestões {% endcomment %}
       <div class="search-results__empty">
