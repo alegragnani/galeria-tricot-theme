@@ -20,7 +20,6 @@
     {% comment %} Barra de busca persistente {% endcomment %}
     <form action="/search" method="get" class="search-results__form">
       <input type="hidden" name="type" value="product" />
-      <input type="hidden" name="sort_by" value="published-descending" />
       <div class="search-results__input-wrap">
         <input
           type="text"
@@ -42,8 +41,9 @@
   {% if search.performed %}
     {% if search.results_count > 0 %}
       {% paginate search.results by 48 %}
+      {% assign sorted_results = search.results | sort: 'published_at' | reverse %}
       <div class="search-results__grid">
-        {% for item in search.results %}
+        {% for item in sorted_results %}
           {% if item.object_type == 'product' %}
             {% render 'product-card', product: item %}
           {% else %}
