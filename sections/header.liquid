@@ -212,6 +212,7 @@
     </div>
     <form action="/search" method="get" class="search-bar__form" role="search">
       <input type="hidden" name="type" value="product">
+      <input type="hidden" name="sort_by" value="created-descending">
       <input
         type="text"
         name="q"
@@ -858,7 +859,7 @@
   .search-bar {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 2147483647;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
