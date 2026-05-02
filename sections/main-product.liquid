@@ -50,6 +50,13 @@
       {% endif %}
     </div>
 
+    {% comment %} Detectar se é Conjunto {% endcomment %}
+    {% assign is_conjunto = false %}
+    {% assign title_first_word = product.title | split: ' ' | first | downcase %}
+    {% if title_first_word == 'conjunto' %}
+      {% assign is_conjunto = true %}
+    {% endif %}
+
     {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
     <div class="pdp__info-wrapper">
       <div class="pdp__info">
@@ -62,30 +69,50 @@
         {% comment %} Título {% endcomment %}
         <h1 class="pdp__title">{{ product.title }}</h1>
 
-        {% comment %} Cores (produtos irmãos — carregado via JS) {% endcomment %}
-        <div class="pdp__siblings" id="color-siblings" style="display:none;">
-          <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name"></span></div>
-          <div class="pdp__sibling-swatches" id="sibling-swatches"></div>
-        </div>
+        {% if is_conjunto %}
+          {% comment %} ===== MODO CONJUNTO — layout bundle ===== {% endcomment %}
+          <div class="conjunto" id="conjunto-section">
+            <div class="conjunto__header">
+              <div class="conjunto__total-label">Total Conjunto:</div>
+              <div class="conjunto__total-price" id="conjunto-total">Carregando...</div>
+            </div>
+            <div class="conjunto__items" id="conjunto-items">
+              <div class="conjunto__loading">Buscando peças do conjunto...</div>
+            </div>
+            <button class="conjunto__add-btn" id="conjunto-add-btn" disabled>
+              ADICIONAR CONJUNTO À SACOLA
+            </button>
+            <div class="conjunto__installments" id="conjunto-installments"></div>
+          </div>
+        {% else %}
+          {% comment %} ===== MODO NORMAL ===== {% endcomment %}
 
-        {% comment %} Preço {% endcomment %}
-        <div class="pdp__price">
-          {% assign variant = product.selected_or_first_available_variant %}
-          {% if variant.compare_at_price > variant.price %}
-            <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
-          {% endif %}
-          <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
-            {{ variant.price | money }}
-          </span>
-        </div>
+          {% comment %} Cores (produtos irmãos — carregado via JS) {% endcomment %}
+          <div class="pdp__siblings" id="color-siblings" style="display:none;">
+            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name"></span></div>
+            <div class="pdp__sibling-swatches" id="sibling-swatches"></div>
+          </div>
 
-        {% comment %} Parcelamento {% endcomment %}
-        {% assign installment_value = variant.price | divided_by: 6 %}
-        <div class="pdp__installments">
-          ou 6x de {{ installment_value | money }} sem juros
-        </div>
+          {% comment %} Preço {% endcomment %}
+          <div class="pdp__price">
+            {% assign variant = product.selected_or_first_available_variant %}
+            {% if variant.compare_at_price > variant.price %}
+              <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
+            {% endif %}
+            <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
+              {{ variant.price | money }}
+            </span>
+          </div>
 
-        {% comment %} Formulário de variantes {% endcomment %}
+          {% comment %} Parcelamento {% endcomment %}
+          {% assign installment_value = variant.price | divided_by: 6 %}
+          <div class="pdp__installments">
+            ou 6x de {{ installment_value | money }} sem juros
+          </div>
+        {% endif %}
+
+        {% unless is_conjunto %}
+        {% comment %} Formulário de variantes (só produto normal, não conjunto) {% endcomment %}
         <form class="pdp__form" id="product-form" action="/cart/add" method="post">
           <input type="hidden" name="id" id="variant-id" value="{{ variant.id }}" />
 
@@ -185,6 +212,7 @@
         <div class="pdp__aux-links">
           <a href="#" class="pdp__aux-link">Tabela de Medidas</a>
         </div>
+        {% endunless %}
 
         {% comment %} Acordeões {% endcomment %}
         <div class="pdp__accordions">
@@ -772,6 +800,134 @@
   }
   .pdp__share-btn:hover {
     color: #333;
+  }
+
+  /* ===== CONJUNTO (bundle) ===== */
+  .conjunto { margin-top: 8px; }
+  .conjunto__header { margin-bottom: 20px; }
+  .conjunto__total-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-style: italic;
+    color: #545454;
+    margin-bottom: 4px;
+  }
+  .conjunto__total-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #545454;
+  }
+  .conjunto__items { display: flex; flex-direction: column; }
+  .conjunto__item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid #f0ede8;
+    align-items: flex-start;
+  }
+  .conjunto__item:last-child { border-bottom: 1px solid #f0ede8; }
+  .conjunto__item-check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 4px;
+    accent-color: #B3883D;
+    cursor: pointer;
+  }
+  .conjunto__item-img {
+    flex-shrink: 0;
+    width: 100px;
+    height: 130px;
+    object-fit: cover;
+  }
+  .conjunto__item-info { flex: 1; min-width: 0; }
+  .conjunto__item-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .conjunto__item-name a { color: inherit; text-decoration: none; }
+  .conjunto__item-name a:hover { text-decoration: underline; }
+  .conjunto__item-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    color: #545454;
+    margin-bottom: 4px;
+  }
+  .conjunto__item-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3883D;
+    margin-bottom: 10px;
+  }
+  .conjunto__item-sizes-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #545454;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .conjunto__item-sizes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .conjunto__size-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid rgba(84,84,84,0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #545454;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .conjunto__size-pill:hover:not(.is-soldout) { border-color: #545454; }
+  .conjunto__size-pill.is-selected {
+    background: #545454;
+    color: #fff;
+    border-color: #545454;
+  }
+  .conjunto__size-pill.is-soldout {
+    opacity: 0.35;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+  .conjunto__add-btn {
+    width: 100%;
+    padding: 16px 0;
+    margin-top: 20px;
+    background: #B3883D;
+    color: #fff;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .conjunto__add-btn:hover:not(:disabled) { opacity: 0.85; }
+  .conjunto__add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .conjunto__installments {
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3883D;
+    margin-top: 8px;
+  }
+  .conjunto__loading {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: rgba(84,84,84,0.5);
+    padding: 20px 0;
   }
 
   /* --- Compre o Look --- */
@@ -1416,9 +1572,200 @@
       });
     }
 
-    // Executar ambas as buscas
-    carregarCoresIrmas();
-    carregarCompreOLook();
+    /* ====================================================
+       CONJUNTO (bundle) — busca peças pelo nome base+cor
+       Ex: "Conjunto Tricot Leila Cinza Mescla" busca
+       Calça/Blusa/Regata Tricot Leila Cinza Mescla
+       ==================================================== */
+
+    const isConjunto = productJson.title.toLowerCase().startsWith('conjunto');
+
+    async function carregarConjunto() {
+      const { base, cor } = extrairNomeBase(productJson.title);
+      if (!base || base.length < 2) return;
+
+      const container = document.getElementById('conjunto-items');
+      const totalEl = document.getElementById('conjunto-total');
+      const addBtn = document.getElementById('conjunto-add-btn');
+      const instEl = document.getElementById('conjunto-installments');
+      if (!container) return;
+
+      // Buscar peças com mesmo nome base + cor
+      const query = base + ' ' + cor;
+      const searchResults = await buscarProdutos(query);
+
+      // Filtrar: mesmo base+cor, tipo diferente de "conjunto"
+      const pecas = searchResults.filter(function(p) {
+        var parsed = extrairNomeBase(p.title);
+        return parsed.base === base && parsed.cor === cor && parsed.tipo !== 'conjunto';
+      });
+
+      if (pecas.length === 0) {
+        container.innerHTML = '<div class="conjunto__loading">Nenhuma peca encontrada para este conjunto.</div>';
+        return;
+      }
+
+      // Buscar dados completos de cada peca (precisamos das variantes/tamanhos)
+      var pecasCompletas = [];
+      for (var i = 0; i < pecas.length; i++) {
+        try {
+          var handle = pecas[i].url.split('/products/')[1].split('?')[0];
+          var resp = await fetch('/products/' + handle + '.json');
+          var data = await resp.json();
+          if (data.product) pecasCompletas.push(data.product);
+        } catch(e) { /* ignorar */ }
+      }
+
+      if (pecasCompletas.length === 0) {
+        container.innerHTML = '<div class="conjunto__loading">Erro ao carregar pecas.</div>';
+        return;
+      }
+
+      var fmt = function(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
+
+      // Estado do conjunto
+      var conjuntoState = [];
+      pecasCompletas.forEach(function(peca) {
+        var sizes = [];
+        var sizeOption = null;
+        peca.options.forEach(function(opt, idx) {
+          if (opt.toLowerCase() === 'tamanho' || opt.toLowerCase() === 'size') sizeOption = idx;
+        });
+
+        // Extrair tamanhos unicos e verificar disponibilidade
+        var seenSizes = {};
+        peca.variants.forEach(function(v) {
+          var sizeName = sizeOption !== null ? v.options[sizeOption] : v.title;
+          if (!seenSizes[sizeName]) {
+            seenSizes[sizeName] = true;
+            sizes.push({ name: sizeName, available: v.available, variantId: v.id, price: v.price });
+          }
+        });
+
+        // Encontrar variante por tamanho
+        function findVariantBySize(sizeName) {
+          return peca.variants.find(function(v) {
+            var vSize = sizeOption !== null ? v.options[sizeOption] : v.title;
+            return vSize === sizeName;
+          });
+        }
+
+        var firstAvailable = sizes.find(function(s) { return s.available; });
+        conjuntoState.push({
+          product: peca,
+          checked: true,
+          selectedSize: firstAvailable ? firstAvailable.name : sizes[0].name,
+          sizes: sizes,
+          findVariant: findVariantBySize
+        });
+      });
+
+      // Renderizar
+      function renderConjunto() {
+        var html = '';
+        var total = 0;
+
+        conjuntoState.forEach(function(item, idx) {
+          var peca = item.product;
+          var variant = item.findVariant(item.selectedSize);
+          var price = variant ? variant.price / 100 : 0;
+          if (item.checked) total += price;
+
+          var imgSrc = peca.image ? peca.image.src : '';
+          var instVal = price > 0 ? fmt(price / 5) : '';
+
+          html += '<div class="conjunto__item">';
+          html += '<input type="checkbox" class="conjunto__item-check" data-idx="' + idx + '" ' + (item.checked ? 'checked' : '') + '>';
+          html += '<img src="' + imgSrc + '" alt="' + peca.title + '" class="conjunto__item-img">';
+          html += '<div class="conjunto__item-info">';
+          html += '<div class="conjunto__item-name"><a href="/products/' + peca.handle + '">' + peca.title + '</a></div>';
+          html += '<div class="conjunto__item-price">' + fmt(price) + '</div>';
+          if (instVal) html += '<div class="conjunto__item-installments">ou 5x de ' + instVal + '</div>';
+          html += '<div class="conjunto__item-sizes-label">Tamanho</div>';
+          html += '<div class="conjunto__item-sizes">';
+          item.sizes.forEach(function(s) {
+            var cls = 'conjunto__size-pill';
+            if (s.name === item.selectedSize) cls += ' is-selected';
+            if (!s.available) cls += ' is-soldout';
+            html += '<button class="' + cls + '" data-idx="' + idx + '" data-size="' + s.name + '">' + s.name + '</button>';
+          });
+          html += '</div></div></div>';
+        });
+
+        container.innerHTML = html;
+        totalEl.textContent = fmt(total);
+
+        var parcela = total / 6;
+        instEl.textContent = total > 0 ? 'ou 6x de ' + fmt(parcela) + ' sem juros' : '';
+
+        // Habilitar/desabilitar botao
+        var anyChecked = conjuntoState.some(function(it) { return it.checked; });
+        addBtn.disabled = !anyChecked;
+
+        // Eventos: checkboxes
+        container.querySelectorAll('.conjunto__item-check').forEach(function(cb) {
+          cb.addEventListener('change', function() {
+            var i = parseInt(this.getAttribute('data-idx'));
+            conjuntoState[i].checked = this.checked;
+            renderConjunto();
+          });
+        });
+
+        // Eventos: tamanhos
+        container.querySelectorAll('.conjunto__size-pill').forEach(function(pill) {
+          pill.addEventListener('click', function() {
+            if (this.classList.contains('is-soldout')) return;
+            var i = parseInt(this.getAttribute('data-idx'));
+            conjuntoState[i].selectedSize = this.getAttribute('data-size');
+            renderConjunto();
+          });
+        });
+      }
+
+      renderConjunto();
+
+      // Botao adicionar conjunto ao carrinho
+      addBtn.addEventListener('click', async function() {
+        addBtn.disabled = true;
+        addBtn.textContent = 'ADICIONANDO...';
+
+        var items = [];
+        conjuntoState.forEach(function(item) {
+          if (!item.checked) return;
+          var variant = item.findVariant(item.selectedSize);
+          if (variant && variant.available) {
+            items.push({ id: variant.id, quantity: 1 });
+          }
+        });
+
+        if (items.length === 0) {
+          addBtn.textContent = 'SELECIONE PELO MENOS 1 ITEM';
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO A SACOLA'; addBtn.disabled = false; }, 2000);
+          return;
+        }
+
+        try {
+          await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: items })
+          });
+          addBtn.textContent = 'ADICIONADO!';
+          setTimeout(function() { window.location.href = '/cart'; }, 500);
+        } catch(e) {
+          addBtn.textContent = 'ERRO - TENTE NOVAMENTE';
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO A SACOLA'; addBtn.disabled = false; }, 2000);
+        }
+      });
+    }
+
+    // Executar buscas conforme tipo de produto
+    if (isConjunto) {
+      carregarConjunto();
+    } else {
+      carregarCoresIrmas();
+      carregarCompreOLook();
+    }
   });
 </script>
 
