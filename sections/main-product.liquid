@@ -1198,6 +1198,7 @@
 
     function getSelectedOptions() {
       const opts = {};
+      if (!form) return opts;
       form.querySelectorAll('input[type="radio"]:checked, select').forEach(el => {
         const name = el.name.replace('options[', '').replace(']', '');
         opts[name] = el.value;
@@ -1254,8 +1255,8 @@
       }
     }
 
-    // Listen to option changes
-    form.querySelectorAll('input[type="radio"], select').forEach(el => {
+    // Listen to option changes (form pode ser null em conjuntos)
+    if (form) form.querySelectorAll('input[type="radio"], select').forEach(el => {
       el.addEventListener('change', function() {
         updateVariant();
         // Update option value display
@@ -1283,7 +1284,7 @@
     });
 
     /* ---- Add to cart ---- */
-    form.addEventListener('submit', function(e) {
+    if (form) form.addEventListener('submit', function(e) {
       e.preventDefault();
       addBtn.disabled = true;
       addBtn.textContent = 'ADICIONANDO...';
