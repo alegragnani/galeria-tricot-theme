@@ -70,20 +70,70 @@
         <h1 class="pdp__title">{{ product.title }}</h1>
 
         {% if is_conjunto %}
-          {% comment %} ===== MODO CONJUNTO — layout bundle ===== {% endcomment %}
-          <div class="conjunto" id="conjunto-section">
-            <div class="conjunto__header">
-              <div class="conjunto__total-label">Total Conjunto:</div>
-              <div class="conjunto__total-price" id="conjunto-total">Carregando...</div>
+          {% comment %} ===== MODO CONJUNTO — layout bundle (server-side via metafield) ===== {% endcomment %}
+          {% assign conjunto_pecas = product.metafields.custom.conjunto_pecas.value %}
+
+          {% if conjunto_pecas and conjunto_pecas.size > 0 %}
+            {% comment %} Calcular total das pecas {% endcomment %}
+            {% assign conjunto_total = 0 %}
+            {% for peca in conjunto_pecas %}
+              {% assign conjunto_total = conjunto_total | plus: peca.price %}
+            {% endfor %}
+
+            <div class="conjunto" id="conjunto-section">
+              <div class="conjunto__header">
+                <div class="conjunto__total-label">Total Conjunto:</div>
+                <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
+              </div>
+
+              <div class="conjunto__items" id="conjunto-items">
+                {% for peca in conjunto_pecas %}
+                  {% assign peca_variant = peca.selected_or_first_available_variant %}
+                  {% assign peca_price = peca_variant.price %}
+                  {% assign peca_installment = peca_price | divided_by: 500 | times: 100 %}
+                  <div class="conjunto__item" data-product-id="{{ peca.id }}" data-handle="{{ peca.handle }}">
+                    <input type="checkbox" class="conjunto__item-check" data-idx="{{ forloop.index0 }}" checked>
+                    <a href="/products/{{ peca.handle }}">
+                      <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
+                    </a>
+                    <div class="conjunto__item-info">
+                      <div class="conjunto__item-name">
+                        <a href="/products/{{ peca.handle }}">{{ peca.title }}</a>
+                      </div>
+                      <div class="conjunto__item-price">{{ peca_price | money }}</div>
+                      <div class="conjunto__item-installments">ou 5x de {{ peca_installment | money }}</div>
+                      <div class="conjunto__item-sizes-label">Tamanho</div>
+                      <div class="conjunto__item-sizes">
+                        {% for variant in peca.variants %}
+                          <button type="button"
+                            class="conjunto__size-pill {% if variant == peca_variant %}is-selected{% endif %} {% unless variant.available %}is-soldout{% endunless %}"
+                            data-variant-id="{{ variant.id }}"
+                            data-price="{{ variant.price }}"
+                            data-available="{{ variant.available }}"
+                            {% unless variant.available %}disabled{% endunless %}>
+                            {{ variant.title | split: ' / ' | last }}
+                          </button>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <button class="conjunto__add-btn" id="conjunto-add-btn" type="button">
+                ADICIONAR CONJUNTO À SACOLA
+              </button>
+              {% assign inst_total = conjunto_total | divided_by: 500 | times: 100 %}
+              <div class="conjunto__installments" id="conjunto-installments">
+                ou 5x de {{ inst_total | money }}
+              </div>
             </div>
-            <div class="conjunto__items" id="conjunto-items">
-              <div class="conjunto__loading">Buscando peças do conjunto...</div>
+          {% else %}
+            {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
+            <div class="conjunto" id="conjunto-section">
+              <p class="conjunto__loading">Este conjunto ainda não tem peças associadas. Entre em contato.</p>
             </div>
-            <button class="conjunto__add-btn" id="conjunto-add-btn" disabled>
-              ADICIONAR CONJUNTO À SACOLA
-            </button>
-            <div class="conjunto__installments" id="conjunto-installments"></div>
-          </div>
+          {% endif %}
         {% else %}
           {% comment %} ===== MODO NORMAL ===== {% endcomment %}
 
@@ -1609,157 +1659,56 @@
     }
 
     /* ====================================================
-       CONJUNTO (bundle) — busca peças pelo nome base+cor
-       Ex: "Conjunto Tricot Leila Cinza Mescla" busca
-       Calça/Blusa/Regata Tricot Leila Cinza Mescla
+       CONJUNTO (bundle) — interacao (checkbox, tamanho, add to cart)
+       As pecas ja vem renderizadas server-side via metafield.
        ==================================================== */
 
     const isConjunto = productJson.title.toLowerCase().startsWith('conjunto');
 
-    async function carregarConjunto() {
-      const { base, cor } = extrairNomeBase(productJson.title);
-      if (!base || base.length < 2) return;
-
+    function iniciarConjunto() {
       const container = document.getElementById('conjunto-items');
       const totalEl = document.getElementById('conjunto-total');
       const addBtn = document.getElementById('conjunto-add-btn');
       const instEl = document.getElementById('conjunto-installments');
-      if (!container) return;
+      if (!container || !addBtn) return;
 
-      // Buscar peças com mesmo nome base + cor
-      const query = base + ' ' + cor;
-      const searchResults = await buscarProdutos(query);
+      var fmt = function(v) { return (v / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
 
-      // Filtrar: mesmo base+cor, tipo diferente de "conjunto"
-      const pecas = searchResults.filter(function(p) {
-        var parsed = extrairNomeBase(p.title);
-        return parsed.base === base && parsed.cor === cor && parsed.tipo !== 'conjunto';
-      });
-
-      if (pecas.length === 0) {
-        container.innerHTML = '<div class="conjunto__loading">Nenhuma peca encontrada para este conjunto.</div>';
-        return;
-      }
-
-      // Buscar dados completos de cada peca (precisamos das variantes/tamanhos)
-      var pecasCompletas = [];
-      for (var i = 0; i < pecas.length; i++) {
-        try {
-          var handle = pecas[i].url.split('/products/')[1].split('?')[0];
-          var resp = await fetch('/products/' + handle + '.json');
-          var data = await resp.json();
-          if (data.product) pecasCompletas.push(data.product);
-        } catch(e) { /* ignorar */ }
-      }
-
-      if (pecasCompletas.length === 0) {
-        container.innerHTML = '<div class="conjunto__loading">Erro ao carregar pecas.</div>';
-        return;
-      }
-
-      var fmt = function(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
-
-      // Estado do conjunto
-      var conjuntoState = [];
-      pecasCompletas.forEach(function(peca) {
-        var sizes = [];
-        var sizeOption = null;
-        peca.options.forEach(function(opt, idx) {
-          var optName = (typeof opt === 'string') ? opt : (opt.name || '');
-          if (optName.toLowerCase() === 'tamanho' || optName.toLowerCase() === 'size') sizeOption = idx;
-        });
-
-        // Extrair tamanhos unicos e verificar disponibilidade
-        var seenSizes = {};
-        peca.variants.forEach(function(v) {
-          var sizeName = sizeOption !== null ? v.options[sizeOption] : v.title;
-          if (!seenSizes[sizeName]) {
-            seenSizes[sizeName] = true;
-            sizes.push({ name: sizeName, available: v.available, variantId: v.id, price: v.price });
-          }
-        });
-
-        // Encontrar variante por tamanho
-        function findVariantBySize(sizeName) {
-          return peca.variants.find(function(v) {
-            var vSize = sizeOption !== null ? v.options[sizeOption] : v.title;
-            return vSize === sizeName;
-          });
-        }
-
-        var firstAvailable = sizes.find(function(s) { return s.available; });
-        conjuntoState.push({
-          product: peca,
-          checked: true,
-          selectedSize: firstAvailable ? firstAvailable.name : sizes[0].name,
-          sizes: sizes,
-          findVariant: findVariantBySize
-        });
-      });
-
-      // Renderizar
-      function renderConjunto() {
-        var html = '';
+      function atualizarTotal() {
         var total = 0;
-
-        conjuntoState.forEach(function(item, idx) {
-          var peca = item.product;
-          var variant = item.findVariant(item.selectedSize);
-          var price = variant ? variant.price / 100 : 0;
-          if (item.checked) total += price;
-
-          var imgSrc = peca.image ? peca.image.src : '';
-          var instVal = price > 0 ? fmt(price / 5) : '';
-
-          html += '<div class="conjunto__item">';
-          html += '<input type="checkbox" class="conjunto__item-check" data-idx="' + idx + '" ' + (item.checked ? 'checked' : '') + '>';
-          html += '<img src="' + imgSrc + '" alt="' + peca.title + '" class="conjunto__item-img">';
-          html += '<div class="conjunto__item-info">';
-          html += '<div class="conjunto__item-name"><a href="/products/' + peca.handle + '">' + peca.title + '</a></div>';
-          html += '<div class="conjunto__item-price">' + fmt(price) + '</div>';
-          if (instVal) html += '<div class="conjunto__item-installments">ou 5x de ' + instVal + '</div>';
-          html += '<div class="conjunto__item-sizes-label">Tamanho</div>';
-          html += '<div class="conjunto__item-sizes">';
-          item.sizes.forEach(function(s) {
-            var cls = 'conjunto__size-pill';
-            if (s.name === item.selectedSize) cls += ' is-selected';
-            if (!s.available) cls += ' is-soldout';
-            html += '<button class="' + cls + '" data-idx="' + idx + '" data-size="' + s.name + '">' + s.name + '</button>';
-          });
-          html += '</div></div></div>';
+        container.querySelectorAll('.conjunto__item').forEach(function(item) {
+          var cb = item.querySelector('.conjunto__item-check');
+          if (!cb || !cb.checked) return;
+          var selected = item.querySelector('.conjunto__size-pill.is-selected');
+          if (selected) total += parseInt(selected.getAttribute('data-price') || '0');
         });
+        if (totalEl) totalEl.textContent = fmt(total);
+        if (instEl) instEl.textContent = total > 0 ? 'ou 5x de ' + fmt(Math.round(total / 5)) : '';
 
-        container.innerHTML = html;
-        totalEl.textContent = fmt(total);
-
-        var parcela = total / 6;
-        instEl.textContent = total > 0 ? 'ou 6x de ' + fmt(parcela) + ' sem juros' : '';
-
-        // Habilitar/desabilitar botao
-        var anyChecked = conjuntoState.some(function(it) { return it.checked; });
+        var anyChecked = container.querySelector('.conjunto__item-check:checked');
         addBtn.disabled = !anyChecked;
-
-        // Eventos: checkboxes
-        container.querySelectorAll('.conjunto__item-check').forEach(function(cb) {
-          cb.addEventListener('change', function() {
-            var i = parseInt(this.getAttribute('data-idx'));
-            conjuntoState[i].checked = this.checked;
-            renderConjunto();
-          });
-        });
-
-        // Eventos: tamanhos
-        container.querySelectorAll('.conjunto__size-pill').forEach(function(pill) {
-          pill.addEventListener('click', function() {
-            if (this.classList.contains('is-soldout')) return;
-            var i = parseInt(this.getAttribute('data-idx'));
-            conjuntoState[i].selectedSize = this.getAttribute('data-size');
-            renderConjunto();
-          });
-        });
       }
 
-      renderConjunto();
+      // Eventos: checkboxes
+      container.querySelectorAll('.conjunto__item-check').forEach(function(cb) {
+        cb.addEventListener('change', atualizarTotal);
+      });
+
+      // Eventos: tamanhos
+      container.querySelectorAll('.conjunto__size-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          if (this.classList.contains('is-soldout')) return;
+          // Desmarcar pills do mesmo item
+          this.closest('.conjunto__item-sizes').querySelectorAll('.conjunto__size-pill').forEach(function(p) {
+            p.classList.remove('is-selected');
+          });
+          this.classList.add('is-selected');
+          // Atualizar preco do item
+          var priceEl = this.closest('.conjunto__item').querySelector('.conjunto__item-price');
+          if (priceEl) priceEl.textContent = fmt(parseInt(this.getAttribute('data-price') || '0'));
+          atualizarTotal();
+        });
+      });
 
       // Botao adicionar conjunto ao carrinho
       addBtn.addEventListener('click', async function() {
@@ -1767,11 +1716,12 @@
         addBtn.textContent = 'ADICIONANDO...';
 
         var items = [];
-        conjuntoState.forEach(function(item) {
-          if (!item.checked) return;
-          var variant = item.findVariant(item.selectedSize);
-          if (variant && variant.available) {
-            items.push({ id: variant.id, quantity: 1 });
+        container.querySelectorAll('.conjunto__item').forEach(function(item) {
+          var cb = item.querySelector('.conjunto__item-check');
+          if (!cb || !cb.checked) return;
+          var selected = item.querySelector('.conjunto__size-pill.is-selected');
+          if (selected && selected.getAttribute('data-available') === 'true') {
+            items.push({ id: parseInt(selected.getAttribute('data-variant-id')), quantity: 1 });
           }
         });
 
@@ -1796,9 +1746,9 @@
       });
     }
 
-    // Executar buscas conforme tipo de produto
+    // Executar conforme tipo de produto
     if (isConjunto) {
-      carregarConjunto();
+      iniciarConjunto();
     } else {
       carregarCoresIrmas();
       carregarCompreOLook();
