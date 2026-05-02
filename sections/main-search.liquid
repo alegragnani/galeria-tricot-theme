@@ -20,6 +20,7 @@
     {% comment %} Barra de busca persistente {% endcomment %}
     <form action="/search" method="get" class="search-results__form">
       <input type="hidden" name="type" value="product" />
+      <input type="hidden" name="sort_by" value="created-descending" />
       <div class="search-results__input-wrap">
         <input
           type="text"
