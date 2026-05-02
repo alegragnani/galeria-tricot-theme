@@ -1385,15 +1385,50 @@
 
     function extrairNomeBase(title) {
       const words = title.trim().split(/\s+/);
-      let start = 0;
-      // Remove tipo da peça
-      if (TIPOS_PECA.includes(words[0].toLowerCase())) start = 1;
-      // Remove "Tricot"
-      if (words[start] && words[start].toLowerCase() === 'tricot') start++;
-      // Nome base = do start até o penúltimo (último geralmente é a cor)
-      const base = words.slice(start, -1).join(' ');
-      const cor = words[words.length - 1];
-      return { base, cor, tipo: words[0].toLowerCase() };
+      const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
+        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo']);
+
+      /* Se tem "+" no meio, pode ser 2 formatos:
+         A) "Conjunto Colete + Saia Curta Celina Marinho" (tipo+tipo antes do nome)
+         B) "Conjunto Tricot Bertha Casaco + Bermuda Preto" (nome antes do +)
+         Pra B: pegar tudo DEPOIS do último "+" e filtrar tipos, o resto é nome+cor
+         Pra A: pular tipos do inicio ate achar nome */
+      var plusIdx = words.lastIndexOf('+');
+      var remaining;
+
+      if (plusIdx > 1) {
+        /* Tem "+": tentar extrair do trecho DEPOIS do "+" */
+        var afterPlus = words.slice(plusIdx + 1);
+        /* Pular tipos/modificadores depois do + */
+        var s = 0;
+        while (s < afterPlus.length && SKIP.has(afterPlus[s].toLowerCase())) s++;
+        var namePart = afterPlus.slice(s);
+
+        if (namePart.length >= 2) {
+          remaining = namePart;
+        } else {
+          /* Formato B: nome está ANTES do "+", cor está DEPOIS
+             Ex: "Conjunto Tricot Bertha Casaco + Bermuda Preto"
+             beforePlus: Conjunto Tricot Bertha Casaco → filtrar SKIP de ambos os lados → Bertha */
+          var beforePlus = words.slice(0, plusIdx);
+          var sb = 0;
+          while (sb < beforePlus.length && SKIP.has(beforePlus[sb].toLowerCase())) sb++;
+          var eb = beforePlus.length;
+          while (eb > sb && SKIP.has(beforePlus[eb - 1].toLowerCase())) eb--;
+          var nameBeforePlus = beforePlus.slice(sb, eb); /* ex: ["Bertha"] */
+          var corWord = afterPlus.length > 0 ? afterPlus[afterPlus.length - 1] : '';
+          remaining = nameBeforePlus.concat([corWord]);
+        }
+      } else {
+        /* Sem "+": pular tipos/tricot do inicio */
+        var start = 0;
+        while (start < words.length && SKIP.has(words[start].toLowerCase())) start++;
+        remaining = words.slice(start);
+      }
+
+      var base = remaining.slice(0, -1).join(' ');
+      var cor = remaining.length > 0 ? remaining[remaining.length - 1] : '';
+      return { base: base, cor: cor, tipo: words[0].toLowerCase() };
     }
 
     async function buscarProdutos(query) {
