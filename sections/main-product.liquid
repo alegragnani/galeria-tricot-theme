@@ -1665,7 +1665,8 @@
         var sizes = [];
         var sizeOption = null;
         peca.options.forEach(function(opt, idx) {
-          if (opt.toLowerCase() === 'tamanho' || opt.toLowerCase() === 'size') sizeOption = idx;
+          var optName = (typeof opt === 'string') ? opt : (opt.name || '');
+          if (optName.toLowerCase() === 'tamanho' || optName.toLowerCase() === 'size') sizeOption = idx;
         });
 
         // Extrair tamanhos unicos e verificar disponibilidade
