@@ -41,11 +41,12 @@
   {% if search.performed %}
     {% if search.results_count > 0 %}
       {% paginate search.results by 48 %}
-      {% assign sorted_results = search.results | sort: 'published_at' | reverse %}
-      <div class="search-results__grid">
-        {% for item in sorted_results %}
+      <div class="search-results__grid" id="search-grid">
+        {% for item in search.results %}
           {% if item.object_type == 'product' %}
-            {% render 'product-card', product: item %}
+            <div class="search-results__card-wrap" data-published="{{ item.published_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
+              {% render 'product-card', product: item %}
+            </div>
           {% else %}
             <a href="{{ item.url }}" class="search-results__page-item">
               <h3 class="search-results__page-title">{{ item.title }}</h3>
@@ -54,6 +55,26 @@
           {% endif %}
         {% endfor %}
       </div>
+
+      <script>
+        /* Ordena cards por data — mais recente primeiro */
+        (function() {
+          var grid = document.getElementById('search-grid');
+          if (!grid) return;
+          var cards = Array.from(grid.querySelectorAll('.search-results__card-wrap'));
+          if (cards.length < 2) return;
+          cards.sort(function(a, b) {
+            var pa = parseInt(a.dataset.published || '0', 10);
+            var pb = parseInt(b.dataset.published || '0', 10);
+            /* Se published_at diferente, usa ele; senão usa created_at */
+            if (pa !== pb) return pb - pa;
+            var ca = parseInt(a.dataset.created || '0', 10);
+            var cb = parseInt(b.dataset.created || '0', 10);
+            return cb - ca;
+          });
+          cards.forEach(function(c) { grid.appendChild(c); });
+        })();
+      </script>
 
       {% if paginate.pages > 1 %}
         <nav class="search-results__pagination">
