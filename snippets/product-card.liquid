@@ -32,6 +32,25 @@
     {%- if product.compare_at_price > product.price -%}
       {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
       <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
+    {%- elsif product.metafields.custom.conjunto_pecas != blank -%}
+      {%- comment -%} Conjunto: verificar se as pecas estao em sale {%- endcomment -%}
+      {%- assign conj_pecas = product.metafields.custom.conjunto_pecas.value -%}
+      {%- assign conj_compare_total = 0 -%}
+      {%- assign conj_price_total = 0 -%}
+      {%- assign conj_has_sale = false -%}
+      {%- for peca in conj_pecas -%}
+        {%- if peca.compare_at_price > peca.price -%}
+          {%- assign conj_has_sale = true -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.compare_at_price -%}
+        {%- else -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.price -%}
+        {%- endif -%}
+        {%- assign conj_price_total = conj_price_total | plus: peca.price -%}
+      {%- endfor -%}
+      {%- if conj_has_sale and conj_compare_total > conj_price_total -%}
+        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100 | divided_by: conj_compare_total -%}
+        <span class="product-card__badge product-card__badge--sale">- {{ conj_discount }}%</span>
+      {%- endif -%}
     {%- endif -%}
 
     <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
@@ -40,9 +59,23 @@
       </svg>
     </button>
 
-    <!-- Botao "Adicionar a sacola" no hover (estilo BP) -->
-    <div class="product-card__quick-add">
-      <span class="product-card__quick-add-text">ADICIONAR À SACOLA</span>
+    <!-- Seletor de tamanho rapido — hover mostra tamanhos, clica e adiciona ao cart -->
+    <div class="product-card__quick-sizes">
+      <span class="product-card__sizes-label">Selecionar tamanho</span>
+      <div class="product-card__sizes-row">
+        {%- for variant in product.variants -%}
+          {%- assign size_label = variant.title -%}
+          {%- if variant.available -%}
+            <button
+              class="product-card__size-btn"
+              data-variant-id="{{ variant.id }}"
+              onclick="quickAddSize(this, event)"
+            >{{ size_label }}</button>
+          {%- else -%}
+            <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
     </div>
   </div>
 
@@ -58,6 +91,13 @@
         </span>
         <span class="product-card__price--sale">
           {{ product.price | money }}
+        </span>
+      {%- elsif conj_has_sale and conj_compare_total > conj_price_total -%}
+        <span class="product-card__price--compare">
+          {{ conj_compare_total | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ conj_price_total | money }}
         </span>
       {%- else -%}
         {{ product.price | money }}
@@ -148,32 +188,66 @@
     color: #545454;
   }
 
-  /* Botao "ADICIONAR À SACOLA" — aparece no hover (BP style) */
-  .product-card__quick-add {
+  /* Seletor de tamanho rapido — transparente sobre a imagem */
+  .product-card__quick-sizes {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 3;
     display: flex;
-    justify-content: center;
-    padding: 12px;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 12px 16px;
     background: rgba(255, 255, 255, 0.92);
     opacity: 0;
-    cursor: pointer;
+    transition: opacity 0.25s ease;
   }
 
-  .product-card__image-wrapper:hover .product-card__quick-add {
+  .product-card__image-wrapper:hover .product-card__quick-sizes {
     opacity: 1;
   }
 
-  .product-card__quick-add-text {
+  .product-card__sizes-label {
     font-family: 'Raleway', sans-serif;
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: #4a4a4a;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #545454;
+    margin-bottom: 10px;
+  }
+
+  .product-card__sizes-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .product-card__size-btn {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #121212;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    min-width: 32px;
+    text-align: center;
+    transition: color 0.15s ease;
+    position: relative;
+  }
+
+  .product-card__size-btn:hover {
+    color: #B3883D;
+  }
+
+  /* Tamanho esgotado — riscado */
+  .product-card__size-btn--sold-out {
+    color: #c0c0c0;
+    cursor: default;
+    text-decoration: line-through;
   }
 
   /* Info: titulo + preco (BP specs) */
@@ -215,4 +289,49 @@
   .product-card__price--sale {
     color: #c1673a;
   }
+
+  /* Mobile: tamanhos sempre visiveis (sem hover) */
+  @media (max-width: 768px) {
+    .product-card__quick-sizes {
+      opacity: 1;
+    }
+  }
 </style>
+
+<script>
+function quickAddSize(btn, e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  var variantId = btn.getAttribute('data-variant-id');
+  if (!variantId) return;
+
+  /* Feedback visual */
+  var original = btn.textContent;
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: parseInt(variantId), quantity: 1 })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.textContent = '✓';
+    /* Abre o mini cart */
+    if (typeof openCartDrawer === 'function') {
+      openCartDrawer();
+    }
+    /* Restaura o texto depois de 1.5s */
+    setTimeout(function() {
+      btn.textContent = original;
+      btn.disabled = false;
+    }, 1500);
+  })
+  .catch(function() {
+    btn.textContent = original;
+    btn.disabled = false;
+  });
+}
+</script>

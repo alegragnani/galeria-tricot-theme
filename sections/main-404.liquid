@@ -1,25 +1,27 @@
 {% comment %}
-  404 page section - main-404.liquid
+  404 page section - main-404.liquid — Galeria Tricot (estilo BP)
 {% endcomment %}
 
 <div class="page-404">
   <div class="error-container">
     <h1 class="error-code">404</h1>
-    <h2 class="error-title">Página não encontrada</h2>
+    <h2 class="error-title">PÁGINA NÃO ENCONTRADA</h2>
     <p class="error-message">Desculpe, a página que você está procurando não existe ou foi movida.</p>
 
     <div class="error-actions">
-      <a href="/" class="btn btn--primary">VOLTAR À PÁGINA INICIAL</a>
-      <a href="/collections/all" class="btn btn--secondary">EXPLORAR COLEÇÕES</a>
+      <a href="/" class="error-btn error-btn--primary">VOLTAR À PÁGINA INICIAL</a>
+      <a href="/collections/all" class="error-btn error-btn--secondary">EXPLORAR COLEÇÕES</a>
     </div>
+  </div>
 
-    {% comment %} Suggested Products {% endcomment %}
-    <div class="error-suggestions">
-      <h3>TALVEZ VOCÊ PROCURE POR:</h3>
-      <div class="suggestions-grid">
-        {% for product in collections.featured-products.products limit: 4 %}
+  <div class="error-suggestions">
+    <div class="error-suggestions__inner">
+      <h3 class="error-suggestions__title">TALVEZ VOCÊ PROCURE POR:</h3>
+      <div class="error-suggestions__grid">
+        {%- assign suggestion_collection = collections['best-sellers'] | default: collections['all'] -%}
+        {%- for product in suggestion_collection.products limit: 4 -%}
           {% render 'product-card', product: product %}
-        {% endfor %}
+        {%- endfor -%}
       </div>
     </div>
   </div>
@@ -27,130 +29,155 @@
 
 <style>
   .page-404 {
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    background: #f9f9f9;
+    background: #ffffff;
   }
 
   .error-container {
     text-align: center;
-    max-width: 600px;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 80px 24px 60px;
   }
 
   .error-code {
-    font-size: 120px;
-    font-weight: 700;
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 140px;
+    font-weight: 400;
     margin: 0;
-    color: #000;
+    color: #121212;
     line-height: 1;
+    letter-spacing: 8px;
   }
 
   .error-title {
     font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 400;
-    letter-spacing: 2px;
-    margin: 20px 0 15px 0;
+    letter-spacing: 4px;
+    margin: 16px 0 20px 0;
     text-transform: uppercase;
+    color: #121212;
   }
 
   .error-message {
-    font-size: 16px;
-    color: #666;
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #888888;
     margin: 0 0 40px 0;
     line-height: 1.6;
   }
 
   .error-actions {
     display: flex;
-    gap: 15px;
+    gap: 16px;
     justify-content: center;
-    margin-bottom: 60px;
     flex-wrap: wrap;
   }
 
-  .btn--primary,
-  .btn--secondary {
-    padding: 12px 30px;
+  .error-btn {
+    font-family: 'Raleway', sans-serif;
+    padding: 14px 36px;
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-decoration: none;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.25s ease, color 0.25s ease;
   }
 
-  .btn--primary {
-    background: #000;
-    color: #fff;
-    border: 1px solid #000;
+  .error-btn--primary {
+    background: #B3883D;
+    color: #ffffff;
+    border: 1px solid #B3883D;
   }
 
-  .btn--primary:hover {
-    background: #333;
-    border-color: #333;
+  .error-btn--primary:hover {
+    background: #9a7534;
+    border-color: #9a7534;
   }
 
-  .btn--secondary {
+  .error-btn--secondary {
     background: transparent;
-    color: #000;
-    border: 1px solid #000;
+    color: #121212;
+    border: 1px solid #121212;
   }
 
-  .btn--secondary:hover {
-    background: #000;
-    color: #fff;
+  .error-btn--secondary:hover {
+    background: #121212;
+    color: #ffffff;
   }
 
+  /* Sugestoes de produtos */
   .error-suggestions {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 60px;
-    margin-top: 60px;
+    border-top: 1px solid #f0ede8;
+    background: #ffffff;
+    padding: 50px 24px 70px;
   }
 
-  .error-suggestions h3 {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin: 0 0 30px 0;
+  .error-suggestions__inner {
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .suggestions-grid {
+  .error-suggestions__title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #B3883D;
+    text-align: center;
+    margin: 0 0 36px 0;
+  }
+
+  .error-suggestions__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+    gap: 24px;
   }
 
   @media (max-width: 1024px) {
-    .suggestions-grid {
+    .error-suggestions__grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
   }
 
   @media (max-width: 768px) {
+    .error-container {
+      padding: 60px 20px 40px;
+    }
+
     .error-code {
-      font-size: 80px;
+      font-size: 100px;
+      letter-spacing: 4px;
     }
 
     .error-title {
-      font-size: 28px;
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+
+    .error-message {
+      font-size: 14px;
     }
 
     .error-actions {
       flex-direction: column;
+      align-items: center;
     }
 
-    .btn--primary,
-    .btn--secondary {
+    .error-btn {
       width: 100%;
+      max-width: 300px;
+      text-align: center;
     }
 
-    .suggestions-grid {
-      grid-template-columns: 1fr;
+    .error-suggestions__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
     }
   }
 </style>
