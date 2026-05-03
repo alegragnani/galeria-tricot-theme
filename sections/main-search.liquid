@@ -8,7 +8,7 @@
     <h1 class="search-results__title">
       {% if search.performed %}
         {% if search.results_count > 0 %}
-          {{ search.results_count }} resultado{{ search.results_count | pluralize: '', 's' }} para "{{ search.terms }}"
+          Resultados para "{{ search.terms }}"
         {% else %}
           Nenhum resultado para "{{ search.terms }}"
         {% endif %}
