@@ -94,7 +94,13 @@
                   <div class="conjunto__item" data-product-id="{{ peca.id }}" data-handle="{{ peca.handle }}">
                     <input type="checkbox" class="conjunto__item-check" data-idx="{{ forloop.index0 }}" checked>
                     <a href="/products/{{ peca.handle }}">
-                      <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
+                      {% if peca.featured_image %}
+                        <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
+                      {% else %}
+                        <div class="conjunto__item-img conjunto__item-img--placeholder">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                      {% endif %}
                     </a>
                     <div class="conjunto__item-info">
                       <div class="conjunto__item-name">
@@ -254,18 +260,38 @@
         {% endunless %}
 
         {% comment %} Acordeões {% endcomment %}
+        {% comment %} Separar descrição e composição — muitos produtos têm "COMPOSIÇÃO:" dentro do body {% endcomment %}
+        {% assign desc_full = product.description %}
+        {% assign desc_only = desc_full %}
+        {% assign comp_from_desc = '' %}
+        {% if desc_full contains 'COMPOSIÇÃO:' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'COMPOSIÇÃO :' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO :' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'Composição:' %}
+          {% assign desc_parts = desc_full | split: 'Composição:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% endif %}
+
         <div class="pdp__accordions">
           <details class="pdp__accordion">
             <summary class="pdp__accordion-trigger">Sobre a peça</summary>
             <div class="pdp__accordion-body">
-              {{ product.description }}
+              {{ desc_only }}
             </div>
           </details>
 
           <details class="pdp__accordion">
             <summary class="pdp__accordion-trigger">Composição</summary>
             <div class="pdp__accordion-body">
-              {% if product.metafields.custom.composition %}
+              {% if comp_from_desc != blank %}
+                {{ comp_from_desc | strip }}
+              {% elsif product.metafields.custom.composition %}
                 {{ product.metafields.custom.composition }}
               {% else %}
                 Consulte a descrição do produto.
@@ -1341,6 +1367,7 @@
       })
       .then(() => {
         addBtn.textContent = 'ADICIONADO ✓';
+        if (typeof openCartDrawer === 'function') openCartDrawer();
         setTimeout(() => {
           addBtn.disabled = false;
           addBtn.textContent = 'ADICIONAR À SACOLA';
@@ -1730,7 +1757,8 @@
             body: JSON.stringify({ items: items })
           });
           addBtn.textContent = 'ADICIONADO!';
-          setTimeout(function() { window.location.href = '/cart'; }, 500);
+          if (typeof openCartDrawer === 'function') openCartDrawer();
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO À SACOLA'; addBtn.disabled = false; }, 2000);
         } catch(e) {
           addBtn.textContent = 'ERRO - TENTE NOVAMENTE';
           setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO A SACOLA'; addBtn.disabled = false; }, 2000);
