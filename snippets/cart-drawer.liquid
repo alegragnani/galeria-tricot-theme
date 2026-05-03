@@ -20,12 +20,19 @@
   </div>
 
   <div class="cart-drawer__footer" id="cart-drawer-footer" style="display:none;">
+    <div class="cart-drawer__coupon" id="cart-coupon-section">
+      <div class="cart-drawer__coupon-row">
+        <input type="text" id="cart-coupon-input" class="cart-drawer__coupon-input" placeholder="Cupom de desconto" autocomplete="off">
+        <button type="button" id="cart-coupon-btn" class="cart-drawer__coupon-btn" onclick="applyCoupon()">APLICAR</button>
+      </div>
+      <p class="cart-drawer__coupon-msg" id="cart-coupon-msg"></p>
+    </div>
     <div class="cart-drawer__subtotal">
       <span>SUBTOTAL</span>
       <span id="cart-drawer-total"></span>
     </div>
+    <p class="cart-drawer__shipping-note">Frete calculado no checkout</p>
     <a href="/checkout" class="cart-drawer__checkout-btn">FINALIZAR COMPRA</a>
-    <p class="cart-drawer__shipping-note">*Cupons e frete serão adicionados no checkout.</p>
   </div>
 </aside>
 
@@ -124,7 +131,7 @@
   .cart-drawer-item__title {
     font-family: 'Raleway', sans-serif;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     color: #121212;
@@ -217,11 +224,64 @@
     padding: 20px 24px;
     border-top: 1px solid #f0ede8;
   }
+
+  /* Coupon */
+  .cart-drawer__coupon {
+    margin-bottom: 16px;
+  }
+  .cart-drawer__coupon-row {
+    display: flex;
+    gap: 8px;
+  }
+  .cart-drawer__coupon-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #e0ddd8;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #121212;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .cart-drawer__coupon-input::placeholder {
+    color: #aaaaaa;
+    text-transform: none;
+  }
+  .cart-drawer__coupon-input:focus {
+    border-color: #B3883D;
+  }
+  .cart-drawer__coupon-btn {
+    padding: 10px 16px;
+    background: none;
+    border: 1px solid #121212;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #121212;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .cart-drawer__coupon-btn:hover {
+    background: #121212;
+    color: #ffffff;
+  }
+  .cart-drawer__coupon-msg {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    margin: 6px 0 0 0;
+    min-height: 16px;
+  }
+  .cart-drawer__coupon-msg.success { color: #2e7d32; }
+  .cart-drawer__coupon-msg.error { color: #c62828; }
+
   .cart-drawer__subtotal {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
   .cart-drawer__subtotal span {
     font-family: 'Raleway', sans-serif;
@@ -230,6 +290,13 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     color: #121212;
+  }
+  .cart-drawer__shipping-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #aaaaaa;
+    text-align: center;
+    margin: 0 0 16px 0;
   }
   .cart-drawer__checkout-btn {
     display: block;
@@ -249,13 +316,6 @@
     transition: opacity 0.2s;
   }
   .cart-drawer__checkout-btn:hover { opacity: 0.85; }
-  .cart-drawer__shipping-note {
-    font-family: 'Raleway', sans-serif;
-    font-size: 12px;
-    color: #aaaaaa;
-    text-align: center;
-    margin: 12px 0 0 0;
-  }
 </style>
 
 <script>
@@ -367,5 +427,43 @@
 
   /* Carregar na abertura inicial se já tem itens */
   window.refreshCartDrawer = renderCart;
+
+  /* ---- Cupom de desconto ---- */
+  window.applyCoupon = function() {
+    var input = document.getElementById('cart-coupon-input');
+    var msg = document.getElementById('cart-coupon-msg');
+    var btn = document.getElementById('cart-coupon-btn');
+    var code = (input.value || '').trim();
+
+    if (!code) {
+      msg.textContent = 'Digite um código de cupom';
+      msg.className = 'cart-drawer__coupon-msg error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    /* Shopify aplica cupons via /discount/{code} — redireciona e salva no checkout */
+    fetch('/discount/' + encodeURIComponent(code), { method: 'GET', redirect: 'follow' })
+      .then(function() {
+        msg.textContent = 'Cupom "' + code + '" será aplicado no checkout';
+        msg.className = 'cart-drawer__coupon-msg success';
+        input.value = '';
+      })
+      .catch(function() {
+        msg.textContent = 'Não foi possível aplicar. Tente no checkout.';
+        msg.className = 'cart-drawer__coupon-msg error';
+      })
+      .finally(function() {
+        btn.disabled = false;
+        btn.textContent = 'APLICAR';
+      });
+  };
+
+  /* Enter no input aplica o cupom */
+  document.getElementById('cart-coupon-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); }
+  });
 })();
 </script>
