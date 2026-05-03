@@ -137,10 +137,20 @@
         {% else %}
           {% comment %} ===== MODO NORMAL ===== {% endcomment %}
 
-          {% comment %} Cores (produtos irmãos — carregado via JS) {% endcomment %}
-          <div class="pdp__siblings" id="color-siblings" style="display:none;">
-            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name"></span></div>
-            <div class="pdp__sibling-swatches" id="sibling-swatches"></div>
+          {% comment %} Cores (produtos irmãos — mesmo nome, cores diferentes) {% endcomment %}
+          {% comment %} Sempre mostra a cor atual; JS adiciona as outras cores se existirem {% endcomment %}
+          {% assign cor_atual = '' %}
+          {% for option in product.options_with_values %}
+            {% assign opt_down = option.name | downcase %}
+            {% if opt_down == 'cor' or opt_down == 'color' %}
+              {% assign cor_atual = option.selected_value | default: option.values.first %}
+            {% endif %}
+          {% endfor %}
+          <div class="pdp__siblings" id="color-siblings">
+            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name">{{ cor_atual }}</span></div>
+            <div class="pdp__sibling-swatches" id="sibling-swatches">
+              {% comment %} Swatch do produto atual renderizado server-side; JS adiciona irmãos {% endcomment %}
+            </div>
           </div>
 
           {% comment %} Preço {% endcomment %}
@@ -170,30 +180,9 @@
             {% assign option_name_down = option.name | downcase %}
 
             {% if option_name_down == 'cor' or option_name_down == 'color' %}
-              {% comment %} Cor – swatches com imagem da variante {% endcomment %}
-              <fieldset class="pdp__option">
-                <legend class="pdp__option-label">{{ option.name }}: <span class="pdp__option-value" data-option-index="{{ forloop.index0 }}">{{ option.selected_value | default: option.values.first }}</span></legend>
-                <div class="pdp__color-swatches">
-                  {% for value in option.values %}
-                    {% comment %} Encontrar a primeira variante com essa cor para pegar a imagem {% endcomment %}
-                    {% assign swatch_image = nil %}
-                    {% for v in product.variants %}
-                      {% if v.options[forloop.parentloop.parentloop.index0] == value and v.featured_image %}
-                        {% assign swatch_image = v.featured_image %}
-                        {% break %}
-                      {% endif %}
-                    {% endfor %}
-                    <label class="pdp__color-swatch" title="{{ value }}">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
-                      {% if swatch_image %}
-                        <img src="{{ swatch_image | image_url: width: 120 }}" alt="{{ value }}" class="pdp__color-swatch-img" />
-                      {% else %}
-                        <span class="pdp__color-swatch-fallback" style="background-color: {{ value | downcase | replace: ' ', '' }};"></span>
-                      {% endif %}
-                    </label>
-                  {% endfor %}
-                </div>
-              </fieldset>
+              {% comment %} Cor — NÃO mostra swatches aqui (a seção siblings já cuida)
+                   Apenas mantém hidden input pro formulário funcionar {% endcomment %}
+              <input type="hidden" name="options[{{ option.name }}]" value="{{ option.selected_value | default: option.values.first }}" />
 
             {% elsif option_name_down == 'tamanho' or option_name_down == 'size' %}
               {% comment %} Tamanho – pills {% endcomment %}
@@ -1540,22 +1529,26 @@
       const { base, cor, tipo } = extrairNomeBase(title);
       if (!base || base.length < 2) return;
 
-      const results = await buscarProdutos(base);
-      const siblings = results.filter(p => {
-        if (p.url === window.location.pathname) return false;
-        const { base: pBase, tipo: pTipo } = extrairNomeBase(p.title);
-        return pBase === base && pTipo === tipo;
-      });
-
-      if (siblings.length === 0) return;
-
       const container = document.getElementById('sibling-swatches');
-      const section = document.getElementById('color-siblings');
       const colorLabel = document.getElementById('current-color-name');
 
-      // Produto atual como primeiro swatch (bolinha)
+      // Produto atual como primeiro swatch (bolinha) — sempre aparece
       const corAtualCSS = corParaCSS(cor);
       let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '" style="background:' + corAtualCSS + ';"></a>';
+
+      // Buscar produtos irmãos (mesmo nome base e tipo, cor diferente)
+      const results = await buscarProdutos(base);
+      const coresVistas = new Set([cor.toLowerCase()]);
+      const siblings = results.filter(p => {
+        if (p.url === window.location.pathname) return false;
+        const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
+        if (pBase !== base || pTipo !== tipo) return false;
+        // Evitar duplicar mesma cor
+        const pCorLower = (pCor || '').toLowerCase();
+        if (coresVistas.has(pCorLower)) return false;
+        coresVistas.add(pCorLower);
+        return true;
+      });
 
       siblings.forEach(p => {
         const { cor: pCor } = extrairNomeBase(p.title);
@@ -1564,8 +1557,7 @@
       });
 
       container.innerHTML = html;
-      colorLabel.textContent = cor;
-      section.style.display = '';
+      if (colorLabel) colorLabel.textContent = cor;
     }
 
     async function carregarCompreOLook() {
