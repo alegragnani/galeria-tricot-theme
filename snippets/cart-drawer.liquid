@@ -34,7 +34,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.4);
-    z-index: 9998;
+    z-index: 10001;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.35s ease, visibility 0.35s ease;
@@ -52,7 +52,7 @@
     width: 420px;
     max-width: 90vw;
     background: #ffffff;
-    z-index: 9999;
+    z-index: 10002;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -304,12 +304,22 @@
         var html = '';
         cart.items.forEach(function(item) {
           var variantText = item.variant_title && item.variant_title !== 'Default Title' ? item.variant_title : '';
-          var imgSrc = item.image ? item.image.replace(/(\.\w+)\?/, '_180x$1?') : '';
+          /* Shopify CDN: trocar tamanho na URL ou usar param &width= */
+          var imgSrc = item.image || '';
+          if (imgSrc) {
+            /* Tentar Shopify CDN format: adicionar width via query param */
+            if (imgSrc.indexOf('cdn.shopify.com') > -1) {
+              imgSrc = imgSrc.replace(/&?width=\d+/, '') + (imgSrc.indexOf('?') > -1 ? '&' : '?') + 'width=180';
+            }
+          }
 
           html += '<div class="cart-drawer-item">';
-          html += '<a href="' + item.url + '"><img src="' + imgSrc + '" alt="" class="cart-drawer-item__img"></a>';
+          if (imgSrc) {
+            html += '<a href="' + item.url + '"><img src="' + imgSrc + '" alt="" class="cart-drawer-item__img"></a>';
+          } else {
+            html += '<a href="' + item.url + '"><div class="cart-drawer-item__img" style="background:#f5f5f5;display:flex;align-items:center;justify-content:center;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></a>';
+          }
           html += '<div class="cart-drawer-item__info">';
-          html += '<span class="cart-drawer-item__vendor">GALERIA TRICOT</span>';
           html += '<a href="' + item.url + '" class="cart-drawer-item__title">' + item.product_title + '</a>';
           html += '<span class="cart-drawer-item__price">' + fmt(item.final_line_price) + '</span>';
           if (variantText) {
