@@ -1,0 +1,21 @@
+{% comment %}
+  Video Stories Widget — Galeria Tricot
+  Carrega o widget de vídeos nas páginas de produto.
+  O widget tem um master switch no admin — se desligado, não aparece.
+  Para REMOVER completamente: apagar a linha {% render 'video-stories' %} do theme.liquid
+{% endcomment %}
+
+{% if template.name == 'product' %}
+  <style>
+    /* Widget de video stories — NUNCA pode ficar em cima do menu/header (z-index 10000) */
+    [id*="stories"], [class*="stories-widget"], [class*="video-stories"],
+    [class*="widde"], [id*="widde"], [data-stories] {
+      z-index: 9000 !important;
+    }
+    /* Fullscreen do video pode ficar acima de tudo */
+    [class*="stories-modal"], [class*="stories-fullscreen"], [class*="stories-overlay"] {
+      z-index: 10001 !important;
+    }
+  </style>
+  <script src="https://admin-videos-87c119.netlify.app/widget-shopify.js" defer></script>
+{% endif %}

@@ -79,8 +79,9 @@
 
             <div class="conjunto" id="conjunto-section">
               <div class="conjunto__header">
-                <div class="conjunto__total-label">Total Conjunto:</div>
                 <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
+                {% assign inst_total_header = conjunto_total | divided_by: 600 | times: 100 %}
+                <div class="conjunto__header-installments">ou 6x de {{ inst_total_header | money }} sem juros</div>
               </div>
 
               <div class="conjunto__items" id="conjunto-items">
@@ -126,10 +127,7 @@
               <button class="conjunto__add-btn" id="conjunto-add-btn" type="button">
                 ADICIONAR CONJUNTO À SACOLA
               </button>
-              {% assign inst_total = conjunto_total | divided_by: 500 | times: 100 %}
-              <div class="conjunto__installments" id="conjunto-installments">
-                ou 5x de {{ inst_total | money }}
-              </div>
+              <div class="conjunto__installments" id="conjunto-installments" style="display:none;"></div>
             </div>
           {% else %}
             {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
@@ -503,10 +501,10 @@
     margin-bottom: 8px;
   }
 
-  /* --- Título --- BP: Raleway 16px, 400, uppercase, 0.6px, #545454 --- */
+  /* --- Título --- Raleway 20px, 400, uppercase, 0.6px, #545454 --- */
   .pdp__title {
     font-family: 'Raleway', sans-serif;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 400;
     letter-spacing: 0.6px;
     text-transform: uppercase;
@@ -866,19 +864,22 @@
 
   /* ===== CONJUNTO (bundle) ===== */
   .conjunto { margin-top: 8px; }
-  .conjunto__header { margin-bottom: 20px; }
-  .conjunto__total-label {
-    font-family: 'Raleway', sans-serif;
-    font-size: 14px;
-    font-style: italic;
-    color: #545454;
-    margin-bottom: 4px;
+  .conjunto__header {
+    margin-bottom: 20px;
   }
   .conjunto__total-price {
     font-family: 'Raleway', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 400;
     color: #545454;
+    margin-bottom: 6px;
+  }
+  .conjunto__header-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 28px;
   }
   .conjunto__items { display: flex; flex-direction: column; }
   .conjunto__item {
@@ -1686,6 +1687,7 @@
       const totalEl = document.getElementById('conjunto-total');
       const addBtn = document.getElementById('conjunto-add-btn');
       const instEl = document.getElementById('conjunto-installments');
+      const headerInstEl = document.querySelector('.conjunto__header-installments');
       if (!container || !addBtn) return;
 
       var fmt = function(v) { return (v / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
@@ -1699,7 +1701,9 @@
           if (selected) total += parseInt(selected.getAttribute('data-price') || '0');
         });
         if (totalEl) totalEl.textContent = fmt(total);
-        if (instEl) instEl.textContent = total > 0 ? 'ou 5x de ' + fmt(Math.round(total / 5)) : '';
+        var instText = total > 0 ? 'ou 6x de ' + fmt(Math.round(total / 6)) + ' sem juros' : '';
+        if (instEl) instEl.textContent = instText;
+        if (headerInstEl) headerInstEl.textContent = instText;
 
         var anyChecked = container.querySelector('.conjunto__item-check:checked');
         addBtn.disabled = !anyChecked;
