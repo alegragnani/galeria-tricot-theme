@@ -171,11 +171,12 @@
         </svg>
       </a>
 
-      <!-- Cart -->
+      <!-- Cart — abre mini cart; link pra /cart fica dentro do drawer -->
       <a
         href="{{ routes.cart_url }}"
         class="site-header__icon-btn site-header__cart-btn"
         aria-label="Sacola"
+        onclick="event.preventDefault(); if(typeof openCartDrawer==='function') openCartDrawer();"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 25" fill="none" width="22" height="22">
           <path d="M6.99316 8.98838V4.81625C6.99316 2.71705 8.79633 1 11.0008 1C13.2044 1 15.008 2.71705 15.008 4.81625V8.988" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linejoin="round"/>
