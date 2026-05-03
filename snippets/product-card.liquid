@@ -59,24 +59,38 @@
       </svg>
     </button>
 
-    <!-- Seletor de tamanho rapido — hover mostra tamanhos, clica e adiciona ao cart -->
-    <div class="product-card__quick-sizes">
-      <span class="product-card__sizes-label">Selecionar tamanho</span>
-      <div class="product-card__sizes-row">
-        {%- for variant in product.variants -%}
-          {%- assign size_label = variant.title -%}
-          {%- if variant.available -%}
-            <button
-              class="product-card__size-btn"
-              data-variant-id="{{ variant.id }}"
-              onclick="quickAddSize(this, event)"
-            >{{ size_label }}</button>
-          {%- else -%}
-            <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
-          {%- endif -%}
-        {%- endfor -%}
+    <!-- Seletor de tamanho rapido — hover -->
+    {%- assign is_conjunto = false -%}
+    {%- assign title_lower = product.title | downcase -%}
+    {%- if product.type == 'Conjuntos' or title_lower contains 'conjunto' or title_lower contains 'twin' -%}
+      {%- assign is_conjunto = true -%}
+    {%- endif -%}
+
+    {%- if is_conjunto -%}
+      {%- comment -%} Conjunto: botao que leva pra pagina do produto {%- endcomment -%}
+      <a href="{{ product.url }}" class="product-card__quick-sizes product-card__quick-sizes--link">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+      </a>
+    {%- else -%}
+      {%- comment -%} Peça avulsa: tamanhos direto no card {%- endcomment -%}
+      <div class="product-card__quick-sizes">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+        <div class="product-card__sizes-row">
+          {%- for variant in product.variants -%}
+            {%- assign size_label = variant.title -%}
+            {%- if variant.available -%}
+              <button
+                class="product-card__size-btn"
+                data-variant-id="{{ variant.id }}"
+                onclick="quickAddSize(this, event)"
+              >{{ size_label }}</button>
+            {%- else -%}
+              <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
       </div>
-    </div>
+    {%- endif -%}
   </div>
 
   <div class="product-card__info">
@@ -248,6 +262,26 @@
     color: #c0c0c0;
     cursor: default;
     text-decoration: line-through;
+  }
+
+  /* Conjunto: botao unico que leva pra PDP */
+  .product-card__quick-sizes--link {
+    text-decoration: none;
+    cursor: pointer;
+    padding: 16px 12px;
+  }
+
+  .product-card__quick-sizes--link .product-card__sizes-label {
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #121212;
+    transition: color 0.15s ease;
+  }
+
+  .product-card__quick-sizes--link:hover .product-card__sizes-label {
+    color: #B3883D;
   }
 
   /* Info: titulo + preco (BP specs) */
