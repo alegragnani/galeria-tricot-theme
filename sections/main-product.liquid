@@ -1448,10 +1448,25 @@
       'kaftan','túnica','camiseta','moletom','t-shirt','pullover','maxpull','cachequer','corselet',
       'suéter','embalagem','vale'];
 
+    /* Cores compostas (2 palavras) — checar ANTES de assumir cor = última palavra */
+    const CORES_COMPOSTAS = [
+      'off white', 'dark brown', 'dark blue', 'dark green', 'dark grey',
+      'cinza mescla', 'cinza claro', 'cinza escuro', 'cinza chumbo',
+      'azul claro', 'azul escuro', 'azul marinho', 'azul celeste', 'azul royal',
+      'verde claro', 'verde escuro', 'verde militar', 'verde musgo', 'verde oliva', 'verde pistache',
+      'rosa claro', 'rosa escuro', 'rosa pink', 'rosa blush', 'rosa chiclete',
+      'marrom claro', 'marrom escuro', 'marrom cafe',
+      'vermelho escuro', 'vermelho vivo',
+      'amarelo claro', 'amarelo ouro',
+      'bege claro', 'bege escuro',
+      'nude rose', 'old rose',
+      'new off', 'light pink', 'light blue', 'light grey'
+    ];
+
     function extrairNomeBase(title) {
       const words = title.trim().split(/\s+/);
       const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
-        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo']);
+        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga']);
 
       /* Se tem "+" no meio, pode ser 2 formatos:
          A) "Conjunto Colete + Saia Curta Celina Marinho" (tipo+tipo antes do nome)
@@ -1472,15 +1487,13 @@
         if (namePart.length >= 2) {
           remaining = namePart;
         } else {
-          /* Formato B: nome está ANTES do "+", cor está DEPOIS
-             Ex: "Conjunto Tricot Bertha Casaco + Bermuda Preto"
-             beforePlus: Conjunto Tricot Bertha Casaco → filtrar SKIP de ambos os lados → Bertha */
+          /* Formato B: nome está ANTES do "+", cor está DEPOIS */
           var beforePlus = words.slice(0, plusIdx);
           var sb = 0;
           while (sb < beforePlus.length && SKIP.has(beforePlus[sb].toLowerCase())) sb++;
           var eb = beforePlus.length;
           while (eb > sb && SKIP.has(beforePlus[eb - 1].toLowerCase())) eb--;
-          var nameBeforePlus = beforePlus.slice(sb, eb); /* ex: ["Bertha"] */
+          var nameBeforePlus = beforePlus.slice(sb, eb);
           var corWord = afterPlus.length > 0 ? afterPlus[afterPlus.length - 1] : '';
           remaining = nameBeforePlus.concat([corWord]);
         }
@@ -1491,14 +1504,21 @@
         remaining = words.slice(start);
       }
 
-      var base = remaining.slice(0, -1).join(' ');
-      var cor = remaining.length > 0 ? remaining[remaining.length - 1] : '';
+      /* Checar se as últimas 2 palavras formam uma cor composta (ex: "Off White", "Dark Brown") */
+      var corWords = 1;
+      if (remaining.length >= 3) {
+        var last2 = (remaining[remaining.length - 2] + ' ' + remaining[remaining.length - 1]).toLowerCase();
+        if (CORES_COMPOSTAS.includes(last2)) corWords = 2;
+      }
+
+      var base = remaining.slice(0, remaining.length - corWords).join(' ');
+      var cor = remaining.slice(remaining.length - corWords).join(' ');
       return { base: base, cor: cor, tipo: words[0].toLowerCase() };
     }
 
     async function buscarProdutos(query) {
       try {
-        const resp = await fetch('/search/suggest.json?q=' + encodeURIComponent(query) + '&resources[type]=product&resources[limit]=20');
+        const resp = await fetch('/search/suggest.json?q=' + encodeURIComponent(query) + '&resources[type]=product&resources[limit]=50');
         const data = await resp.json();
         return data.resources?.results?.products || [];
       } catch(e) { return []; }
@@ -1530,17 +1550,22 @@
       'prata': '#c0c0c0', 'silver': '#c0c0c0',
       'neon': '#39ff14', 'limao': '#bfff00', 'lima': '#bfff00',
       'rost': '#b7410e', 'tijolo': '#cb4154',
+      'darkbrown': '#4a2c17', 'dark brown': '#4a2c17',
+      'darkblue': '#1b2a4a', 'dark blue': '#1b2a4a',
+      'cinzamescla': '#b0b0b0', 'cinza mescla': '#b0b0b0',
+      'offwhite': '#f5f0e8', 'off white': '#f5f0e8',
       'multicolor': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
       'colorido': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
       'estampado': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
     };
 
     function corParaCSS(nomeCor) {
-      const lower = nomeCor.toLowerCase()
-        .normalize('NFD').replace(/[̀-ͯ]/g, '') // Remove acentos
-        .replace(/\s+/g, '');
-      // Tentar match direto
+      const lowerSpaced = nomeCor.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const lower = lowerSpaced.replace(/\s+/g, '');
+      // Tentar match direto (com e sem espaço)
       if (MAPA_CORES[lower]) return MAPA_CORES[lower];
+      if (MAPA_CORES[lowerSpaced.trim()]) return MAPA_CORES[lowerSpaced.trim()];
       // Tentar match parcial (ex: "Cinza Mescla" → "cinza")
       for (const [key, val] of Object.entries(MAPA_CORES)) {
         if (lower.includes(key) || key.includes(lower)) return val;
