@@ -33,12 +33,19 @@
 
   {%- comment -%} Product Grid {%- endcomment -%}
   {% if collection.products_count > 0 %}
-    {% comment %} Ordenar por published_at quando sort = created-descending ou sem sort {% endcomment %}
-    {% assign current_sort = collection.sort_by | default: collection.default_sort_by %}
-    {% if current_sort == 'created-descending' or current_sort == blank %}
+    {% comment %} Padrao: ordenar por published_at (lancamento mais recente primeiro)
+         So usa outra ordem se o usuario escolheu explicitamente via filtro {% endcomment %}
+    {% assign user_sort = collection.sort_by %}
+    {% if user_sort == blank or user_sort == 'created-descending' or user_sort == 'best-selling' %}
       {% assign sorted_products = collection.products | sort: 'published_at' | reverse %}
+    {% elsif user_sort == 'price-ascending' %}
+      {% assign sorted_products = collection.products | sort: 'price' %}
+    {% elsif user_sort == 'price-descending' %}
+      {% assign sorted_products = collection.products | sort: 'price' | reverse %}
+    {% elsif user_sort == 'title-ascending' %}
+      {% assign sorted_products = collection.products | sort: 'title' %}
     {% else %}
-      {% assign sorted_products = collection.products %}
+      {% assign sorted_products = collection.products | sort: 'published_at' | reverse %}
     {% endif %}
 
     <div class="collection-page__grid">
