@@ -9,7 +9,9 @@
   <div class="featured-collection__carousel" data-carousel>
     <div class="featured-collection__track">
       {% if section.settings.collection != blank %}
-        {% for product in section.settings.collection.products limit: 12 %}
+        {% comment %} Ordenar por published_at desc (data de lancamento da VTEX) {% endcomment %}
+        {% assign sorted_products = section.settings.collection.products | sort: 'published_at' | reverse %}
+        {% for product in sorted_products limit: 12 %}
           <div class="featured-collection__item">
             {% render 'product-card', product: product %}
           </div>
