@@ -1479,7 +1479,11 @@
       'amarelo claro', 'amarelo ouro',
       'bege claro', 'bege escuro',
       'nude rose', 'old rose',
-      'new off', 'light pink', 'light blue', 'light grey'
+      'new off', 'light pink', 'light blue', 'light grey',
+      'marsala dark', 'vinho dark', 'bordo dark', 'cobre dark', 'nude dark',
+      'bege dark', 'caramelo dark', 'chocolate dark', 'terracota dark',
+      'preto mescla', 'marinho mescla', 'azul mescla',
+      'coral dark', 'areia dark', 'ferrugem dark'
     ];
 
     function extrairNomeBase(title) {
@@ -1571,6 +1575,7 @@
       'rost': '#b7410e', 'tijolo': '#cb4154',
       'darkbrown': '#4a2c17', 'dark brown': '#4a2c17',
       'darkblue': '#1b2a4a', 'dark blue': '#1b2a4a',
+      'marsaladark': '#6b3040', 'marsala dark': '#6b3040',
       'cinzamescla': '#b0b0b0', 'cinza mescla': '#b0b0b0',
       'offwhite': '#f5f0e8', 'off white': '#f5f0e8',
       'multicolor': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
@@ -1593,10 +1598,29 @@
       return '#cccccc';
     }
 
+    /* ---- Extrair modelo + cor DIRETO do título (sem depender de lista de cores) ----
+       Lógica: tipo e "tricot" e modificadores ficam no início.
+       A PRIMEIRA palavra significativa = nome do modelo (Raquel, Eva, Adelina...).
+       TUDO depois do modelo = cor (1, 2 ou 3 palavras — não importa).
+       Ex: "Calça Tricot Raquel Marsala Dark" → modelo=Raquel, cor=Marsala Dark
+       Ex: "Blusa Tricot Adelina Cobre" → modelo=Adelina, cor=Cobre
+    */
+    function extrairModeloCor(title) {
+      const words = title.trim().split(/\s+/);
+      const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
+        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga']);
+      let i = 0;
+      while (i < words.length && SKIP.has(words[i].toLowerCase())) i++;
+      if (i >= words.length) return { modelo: '', cor: '', tipo: words[0] ? words[0].toLowerCase() : '' };
+      const modelo = words[i];
+      const cor = words.slice(i + 1).join(' ');
+      return { modelo: modelo, cor: cor, tipo: words[0] ? words[0].toLowerCase() : '' };
+    }
+
     async function carregarCoresIrmas() {
       const title = productJson.title;
-      const { base, cor, tipo } = extrairNomeBase(title);
-      if (!base || base.length < 2) return;
+      const { modelo, cor, tipo } = extrairModeloCor(title);
+      if (!modelo || modelo.length < 2) return;
 
       const container = document.getElementById('sibling-swatches');
       const colorLabel = document.getElementById('current-color-name');
@@ -1604,7 +1628,6 @@
       // Gerar URL menor para thumbnail (300px de largura)
       function thumbUrl(src) {
         if (!src) return '';
-        // Shopify CDN: inserir _300x antes da extensão
         return src.replace(/(\.\w+)(\?|$)/, '_300x$1$2');
       }
 
@@ -1628,22 +1651,23 @@
         '<img src="' + thumbUrl(currentImgSrc) + '" alt="' + cor + '" loading="lazy" />' +
         '</a>';
 
-      // Buscar produtos irmãos (mesmo nome base e tipo, cor diferente)
-      const results = await buscarProdutos(base);
+      // Buscar produtos irmãos: mesmo modelo + mesmo tipo, cor diferente
+      const results = await buscarProdutos(modelo);
       const coresVistas = new Set([cor.toLowerCase()]);
       const siblings = results.filter(p => {
         if (p.url === window.location.pathname) return false;
-        const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
-        if (pBase !== base || pTipo !== tipo) return false;
+        const { modelo: pModelo, cor: pCor, tipo: pTipo } = extrairModeloCor(p.title);
+        if (pTipo !== tipo) return false;
+        if (pModelo.toLowerCase() !== modelo.toLowerCase()) return false;
         const pCorLower = (pCor || '').toLowerCase();
-        if (coresVistas.has(pCorLower)) return false;
+        if (!pCorLower || coresVistas.has(pCorLower)) return false;
         coresVistas.add(pCorLower);
         return true;
       });
 
       // Buscar última imagem (still) de cada irmão em paralelo
       const siblingData = await Promise.all(siblings.map(async p => {
-        const { cor: pCor } = extrairNomeBase(p.title);
+        const { cor: pCor } = extrairModeloCor(p.title);
         const handle = p.url.replace('/products/', '').replace(/\/$/, '');
         const stillImg = await buscarUltimaImagem(handle);
         const fallbackImg = (p.featured_image && p.featured_image.url) || p.image || '';
