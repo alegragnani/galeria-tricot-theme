@@ -285,7 +285,22 @@
             <summary class="pdp__accordion-trigger">Composição</summary>
             <div class="pdp__accordion-body">
               {% if comp_from_desc != blank %}
-                {{ comp_from_desc | strip }}
+                {% assign comp_text = comp_from_desc | strip %}
+                {% comment %} Separar composição de peças diferentes em linhas {% endcomment %}
+                {% assign comp_text = comp_text | replace: 'Calça', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Calca', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Blusa', '<br><strong>Blusa</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Saia', '<br><strong>Saia</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Shorts', '<br><strong>Shorts</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Regata', '<br><strong>Regata</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Casaco', '<br><strong>Casaco</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Vestido', '<br><strong>Vestido</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Colete', '<br><strong>Colete</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Top', '<br><strong>Top</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Body', '<br><strong>Body</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Macacão', '<br><strong>Macacão</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Bermuda', '<br><strong>Bermuda</strong>' %}
+                {{ comp_text }}
               {% elsif product.metafields.custom.composition %}
                 {{ product.metafields.custom.composition }}
               {% else %}
@@ -609,32 +624,36 @@
   .pdp__color-swatch input:checked + .pdp__color-swatch-fallback { border-color: #545454; }
   .pdp__color-swatch:hover .pdp__color-swatch-fallback { border-color: rgba(84, 84, 84, 0.5); }
 
-  /* --- Sibling colors (bolinhas coloridas — cada cor é produto separado) --- */
+  /* --- Sibling colors (mini foto do produto — cada cor é produto separado) --- */
   .pdp__siblings {
     margin-bottom: 24px;
   }
   .pdp__sibling-swatches {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-top: 10px;
   }
   .pdp__sibling-link {
     display: block;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(84, 84, 84, 0.2);
-    transition: border-color 0.25s, box-shadow 0.25s;
-    box-shadow: inset 0 0 0 2px #fff;
+    width: 52px;
+    height: 68px;
+    border: 1.5px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s;
     text-decoration: none;
+    overflow: hidden;
   }
   .pdp__sibling-link.is-current {
     border-color: #545454;
-    box-shadow: inset 0 0 0 2px #fff;
   }
   .pdp__sibling-link:hover {
-    border-color: #545454;
+    border-color: rgba(84, 84, 84, 0.5);
+  }
+  .pdp__sibling-link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* --- Size pills --- BP: clean pill style --- */
@@ -1582,9 +1601,18 @@
       const container = document.getElementById('sibling-swatches');
       const colorLabel = document.getElementById('current-color-name');
 
-      // Produto atual como primeiro swatch (bolinha) — sempre aparece
-      const corAtualCSS = corParaCSS(cor);
-      let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '" style="background:' + corAtualCSS + ';"></a>';
+      // Produto atual como primeiro swatch (mini foto) — sempre aparece
+      const currentImg = productJson.featured_image || (productJson.images && productJson.images[0] ? productJson.images[0] : '');
+      const currentImgSrc = typeof currentImg === 'string' ? currentImg : (currentImg.src || '');
+      // Gerar URL menor para thumbnail (300px de largura)
+      function thumbUrl(src) {
+        if (!src) return '';
+        // Shopify CDN: inserir _300x antes da extensão
+        return src.replace(/(\.\w+)(\?|$)/, '_300x$1$2');
+      }
+      let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '">' +
+        '<img src="' + thumbUrl(currentImgSrc) + '" alt="' + cor + '" loading="lazy" />' +
+        '</a>';
 
       // Buscar produtos irmãos (mesmo nome base e tipo, cor diferente)
       const results = await buscarProdutos(base);
@@ -1602,8 +1630,10 @@
 
       siblings.forEach(p => {
         const { cor: pCor } = extrairNomeBase(p.title);
-        const corCSS = corParaCSS(pCor);
-        html += '<a class="pdp__sibling-link" href="' + p.url + '" title="' + pCor + '" style="background:' + corCSS + ';"></a>';
+        const pImg = (p.featured_image && p.featured_image.url) || p.image || '';
+        html += '<a class="pdp__sibling-link" href="' + p.url + '" title="' + pCor + '">' +
+          '<img src="' + thumbUrl(pImg) + '" alt="' + pCor + '" loading="lazy" />' +
+          '</a>';
       });
 
       container.innerHTML = html;
@@ -1619,10 +1649,11 @@
       const query = base + ' ' + cor;
       const results = await buscarProdutos(query);
 
-      // Filtrar: mesmo base+cor, tipo DIFERENTE (ex: Blusa encontra Shorts, Saia, etc.)
+      // Filtrar: mesmo base+cor, tipo DIFERENTE, sem conjuntos (conjunto é o bundle, nao peca avulsa)
       const lookItems = results.filter(p => {
         if (p.url === window.location.pathname) return false;
         const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
+        if (pTipo === 'conjunto' || pTipo === 'twin') return false;
         return pBase === base && pCor === cor && pTipo !== tipo;
       });
 
