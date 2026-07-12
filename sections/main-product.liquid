@@ -1631,28 +1631,21 @@
         return src.replace(/(\.\w+)(\?|$)/, '_300x$1$2');
       }
 
-      // Buscar última imagem (still) de um produto via /products/handle.json
-      async function buscarUltimaImagem(handle) {
-        try {
-          const resp = await fetch('/products/' + handle + '.json');
-          const data = await resp.json();
-          const imgs = data.product && data.product.images;
-          if (imgs && imgs.length > 0) return imgs[imgs.length - 1].src;
-        } catch(e) {}
-        return '';
-      }
+      // Não precisa mais buscar imagens extras — usa a featured_image da busca
 
-      // Produto atual: usar última foto (still)
-      const allImgs = productJson.images || [];
-      const lastImg = allImgs.length > 0 ? allImgs[allImgs.length - 1] : productJson.featured_image || '';
-      const currentImgSrc = typeof lastImg === 'string' ? lastImg : (lastImg.src || '');
+      // Produto atual: usar primeira foto (principal)
+      const currentImg = productJson.featured_image || (productJson.images && productJson.images[0]) || '';
+      const currentImgSrc = typeof currentImg === 'string' ? currentImg : (currentImg.src || '');
 
       let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '">' +
         '<img src="' + thumbUrl(currentImgSrc) + '" alt="' + cor + '" loading="lazy" />' +
         '</a>';
 
       // Buscar produtos irmãos: mesmo modelo + mesmo tipo, cor diferente
-      const results = await buscarProdutos(modelo);
+      // Busca por "tipo modelo" (ex: "casaco Eva") pra restringir resultados
+      // — a API suggest retorna máx 10 e "Eva" sozinho trazia blusas/calças/regatas
+      //   empurrando o casaco Off White pra fora do limite.
+      const results = await buscarProdutos(tipo + ' ' + modelo);
       const coresVistas = new Set([cor.toLowerCase()]);
       const siblings = results.filter(p => {
         if (p.url === window.location.pathname) return false;
@@ -1665,14 +1658,12 @@
         return true;
       });
 
-      // Buscar última imagem (still) de cada irmão em paralelo
-      const siblingData = await Promise.all(siblings.map(async p => {
+      // Usar foto principal (featured) de cada irmão
+      const siblingData = siblings.map(p => {
         const { cor: pCor } = extrairModeloCor(p.title);
-        const handle = p.url.replace('/products/', '').replace(/\/$/, '');
-        const stillImg = await buscarUltimaImagem(handle);
-        const fallbackImg = (p.featured_image && p.featured_image.url) || p.image || '';
-        return { url: p.url, cor: pCor, img: stillImg || fallbackImg };
-      }));
+        const pImg = (p.featured_image && p.featured_image.url) || p.image || '';
+        return { url: p.url, cor: pCor, img: pImg };
+      });
 
       siblingData.forEach(s => {
         html += '<a class="pdp__sibling-link" href="' + s.url + '" title="' + s.cor + '">' +
