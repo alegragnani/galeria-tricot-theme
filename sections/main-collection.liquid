@@ -33,19 +33,18 @@
 
   {%- comment -%} Product Grid {%- endcomment -%}
   {% if collection.products_count > 0 %}
-    {% comment %} Padrao: ordenar por published_at (lancamento mais recente primeiro)
-         So usa outra ordem se o usuario escolheu explicitamente via filtro {% endcomment %}
+    {% comment %} Ordem vem do servidor (manual = mesma ordem da VTEX).
+         Re-ordena no Liquid apenas quando o usuario escolhe ordenacao no filtro.
+         Para a ordenacao padrao, usa collection.products direto (respeita a posicao manual). {% endcomment %}
     {% assign user_sort = collection.sort_by %}
-    {% if user_sort == blank or user_sort == 'created-descending' or user_sort == 'best-selling' %}
-      {% assign sorted_products = collection.products | sort: 'published_at' | reverse %}
-    {% elsif user_sort == 'price-ascending' %}
+    {% if user_sort == 'price-ascending' %}
       {% assign sorted_products = collection.products | sort: 'price' %}
     {% elsif user_sort == 'price-descending' %}
       {% assign sorted_products = collection.products | sort: 'price' | reverse %}
     {% elsif user_sort == 'title-ascending' %}
       {% assign sorted_products = collection.products | sort: 'title' %}
     {% else %}
-      {% assign sorted_products = collection.products | sort: 'published_at' | reverse %}
+      {% assign sorted_products = collection.products %}
     {% endif %}
 
     <div class="collection-page__grid">
