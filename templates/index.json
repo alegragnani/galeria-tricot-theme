@@ -12,20 +12,6 @@
     "hero_slideshow": {
       "type": "hero-slideshow",
       "blocks": {
-        "slide_amicLw": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/20-03_banner_10.jpg",
-            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_4.jpg",
-            "heading": "",
-            "subheading": "",
-            "button_text": "",
-            "button_link": "",
-            "text_position": "center",
-            "text_vertical": "middle",
-            "text_color": "#ffffff"
-          }
-        },
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
@@ -34,16 +20,30 @@
             "heading": "",
             "subheading": "",
             "button_text": "",
-            "button_link": "",
-            "text_position": "center",
-            "text_vertical": "middle",
-            "text_color": "#ffffff"
+            "button_link": "/sale-2026?order=OrderByReleaseDateDESC",
+            "text_position": "right",
+            "text_vertical": "top",
+            "text_color": "#00000000"
+          }
+        },
+        "slide_amicLw": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20-03_banner_10.jpg",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_4.jpg",
+            "heading": "",
+            "subheading": "",
+            "button_text": "",
+            "button_link": "/verao-2027",
+            "text_position": "right",
+            "text_vertical": "top",
+            "text_color": "rgba(0,0,0,0)"
           }
         }
       },
       "block_order": [
-        "slide_amicLw",
-        "slide_6nkhtY"
+        "slide_6nkhtY",
+        "slide_amicLw"
       ],
       "settings": {
         "title": "Hero Slideshow"
