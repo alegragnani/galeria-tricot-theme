@@ -55,9 +55,9 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_c61a2780-35c8-4aad-9ae0-fc5df422db89.webp",
+            "image": "shopify://shop_images/Thassia-Naves---Calca-Tricot-Leda-Cacau-Adicional.jpg",
             "heading": "Conjuntos",
-            "link": "/collections/roupas-conjuntos"
+            "link": "/conjuntos?order=OrderByReleaseDateDESC"
           }
         },
         "cat2": {
@@ -65,7 +65,7 @@
           "settings": {
             "image": "shopify://shop_images/www.galeriatricot.com.webp",
             "heading": "Casacos e Blusas",
-            "link": "/collections/roupas-casacos"
+            "link": "/colecao/blusas"
           }
         },
         "cat3": {
@@ -73,15 +73,15 @@
           "settings": {
             "image": "shopify://shop_images/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
             "heading": "Vestidos",
-            "link": "/collections/roupas-vestidos"
+            "link": "/colecao/vestidos"
           }
         },
         "cat4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_702cc134-0660-4df0-a270-8a61c2a4e5dc.webp",
-            "heading": "MacacÔö£├║o",
-            "link": "/collections/roupas-macacaµes"
+            "image": "shopify://shop_images/juju_-_macacao_georgia_azul_ice.jpg",
+            "heading": "MACACÕES",
+            "link": "/macacao?_q=macacao&map=ft"
           }
         }
       },
