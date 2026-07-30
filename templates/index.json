@@ -12,14 +12,28 @@
     "hero_slideshow": {
       "type": "hero-slideshow",
       "blocks": {
+        "slide_amicLw": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20-03_banner_10.jpg",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_4.jpg",
+            "heading": "",
+            "subheading": "",
+            "button_text": "",
+            "button_link": "",
+            "text_position": "center",
+            "text_vertical": "middle",
+            "text_color": "#ffffff"
+          }
+        },
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/a4fe0123-92cf-4e05-a858-840272d0ce32___cf9495ffc5e847e753ccbda82aed5783_a92d080d-de07-4bec-9992-4f2252fdefcc.webp",
-            "image_mobile": "shopify://shop_images/banner-grande-galeria-tricot-mobile.jpg",
+            "image": "shopify://shop_images/20-03_banner_4.jpg",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_5.jpg",
             "heading": "",
             "subheading": "",
-            "button_text": "COMPRAR AGORA",
+            "button_text": "",
             "button_link": "",
             "text_position": "center",
             "text_vertical": "middle",
@@ -28,6 +42,7 @@
         }
       },
       "block_order": [
+        "slide_amicLw",
         "slide_6nkhtY"
       ],
       "settings": {
@@ -84,11 +99,11 @@
         "b1": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/mae_e_filha_-_descalca.png",
+            "image": "shopify://shop_images/Editavel_Pequeno_5.jpg",
             "subheading": "",
-            "heading": "MOM EDIT",
+            "heading": "",
             "cta_text": "",
-            "link": "",
+            "link": "/new-in",
             "text_horizontal": "left",
             "text_vertical": "top",
             "text_color": "#ffffff"
@@ -97,11 +112,11 @@
         "b2": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Lily_off_1-1_57608b11-6cf7-4a50-8454-5a69607d1b54.png",
+            "image": "shopify://shop_images/Editavel_Pequeno_4.jpg",
             "subheading": "",
-            "heading": "MOM EDIT",
+            "heading": "",
             "cta_text": "",
-            "link": "",
+            "link": "https://www.galeriatricot.com.br/conjuntos?order=OrderByReleaseDateDESC",
             "text_horizontal": "left",
             "text_vertical": "top",
             "text_color": "#ffffff"
@@ -124,14 +139,14 @@
     "image_banner_lancamento": {
       "type": "image-banner",
       "settings": {
-        "image": "shopify://shop_images/36bb74c7-3977-4a7e-85d2-10614c6874f8___aade505a07bce0cbd785dffe84addebd.webp",
-        "image_mobile": "shopify://shop_images/26c1496e-da9d-4753-9760-04610b3143b0___a65a82261be2e1ce7131b34213d97d4f.webp",
+        "image": "shopify://shop_images/20-03_banner_5.jpg",
+        "image_mobile": "shopify://shop_images/rodape_mobile_1.jpg",
         "subtitle": "",
         "subtitle_size": 14,
         "heading": "",
         "heading_size": 48,
         "link_text": "",
-        "link": "",
+        "link": "/COLECAO",
         "text_position": "left",
         "text_vertical": "middle",
         "text_color": "#ffffff"
