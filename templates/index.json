@@ -158,8 +158,8 @@
         "look_bGKapH": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/Lily_off_2_6ac45011-e6ea-4d7b-8a2c-66839bc50103.png",
-            "product": "regata-tricot-lily-branco-marfim"
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_new_gisele.jpg",
+            "product": "vestido-tricot-midi-new-gisele-marinho"
           }
         },
         "look_4mGrGj": {
@@ -190,7 +190,7 @@
       "type": "featured-collection",
       "settings": {
         "title": "DESTAQUES DO OUTLET",
-        "collection": "outlet"
+        "collection": "outlet-vestidos"
       }
     },
     "trust_bar": {
