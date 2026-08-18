@@ -15,12 +15,12 @@
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/20-03_banner_4.jpg",
-            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_5.jpg",
+            "image": "shopify:\/\/shop_images\/20-03_banner_4.jpg",
+            "image_mobile": "shopify:\/\/shop_images\/20-03_MOBILE_BANNER_5.jpg",
             "heading": "",
             "subheading": "",
             "button_text": "",
-            "button_link": "/sale-2026?order=OrderByReleaseDateDESC",
+            "button_link": "\/collections\/sale",
             "text_position": "right",
             "text_vertical": "top",
             "text_color": "#00000000"
@@ -29,12 +29,12 @@
         "slide_amicLw": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/20-03_banner_10.jpg",
-            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_4.jpg",
+            "image": "shopify:\/\/shop_images\/20-03_banner_10.jpg",
+            "image_mobile": "shopify:\/\/shop_images\/20-03_MOBILE_BANNER_4.jpg",
             "heading": "",
             "subheading": "",
             "button_text": "",
-            "button_link": "/verao-2027",
+            "button_link": "\/collections\/novidades",
             "text_position": "right",
             "text_vertical": "top",
             "text_color": "rgba(0,0,0,0)"
@@ -55,33 +55,33 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/Thassia-Naves---Calca-Tricot-Leda-Cacau-Adicional.jpg",
+            "image": "shopify:\/\/shop_images\/Thassia-Naves---Calca-Tricot-Leda-Cacau-Adicional.jpg",
             "heading": "Conjuntos",
-            "link": "/conjuntos?order=OrderByReleaseDateDESC"
+            "link": "\/collections\/roupas-conjuntos"
           }
         },
         "cat2": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com.webp",
+            "image": "shopify:\/\/shop_images\/www.galeriatricot.com.webp",
             "heading": "Casacos e Blusas",
-            "link": "/colecao/blusas"
+            "link": "\/collections\/roupas-blusas"
           }
         },
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
+            "image": "shopify:\/\/shop_images\/www.galeriatricot.com_828c95d1-56ab-4fdc-b394-69a29f3a85d3.webp",
             "heading": "Vestidos",
-            "link": "/colecao/vestidos"
+            "link": "\/collections\/roupas-vestidos"
           }
         },
         "cat4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/juju_-_macacao_georgia_azul_ice.jpg",
+            "image": "shopify:\/\/shop_images\/juju_-_macacao_georgia_azul_ice.jpg",
             "heading": "MACACÕES",
-            "link": "/macacao?_q=macacao&map=ft"
+            "link": "\/collections\/roupas-macacoes"
           }
         }
       },
@@ -99,11 +99,11 @@
         "b1": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Editavel_Pequeno_5.jpg",
+            "image": "shopify:\/\/shop_images\/Editavel_Pequeno_5.jpg",
             "subheading": "",
             "heading": "",
             "cta_text": "",
-            "link": "/new-in",
+            "link": "\/collections\/novidades",
             "text_horizontal": "left",
             "text_vertical": "top",
             "text_color": "#ffffff"
@@ -112,11 +112,11 @@
         "b2": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Editavel_Pequeno_4.jpg",
+            "image": "shopify:\/\/shop_images\/Editavel_Pequeno_4.jpg",
             "subheading": "",
             "heading": "",
             "cta_text": "",
-            "link": "https://www.galeriatricot.com.br/conjuntos?order=OrderByReleaseDateDESC",
+            "link": "\/collections\/roupas-conjuntos",
             "text_horizontal": "left",
             "text_vertical": "top",
             "text_color": "#ffffff"
@@ -139,14 +139,14 @@
     "image_banner_lancamento": {
       "type": "image-banner",
       "settings": {
-        "image": "shopify://shop_images/20-03_banner_5.jpg",
-        "image_mobile": "shopify://shop_images/rodape_mobile_1.jpg",
+        "image": "shopify:\/\/shop_images\/20-03_banner_5.jpg",
+        "image_mobile": "shopify:\/\/shop_images\/rodape_mobile_1.jpg",
         "subtitle": "",
         "subtitle_size": 14,
         "heading": "",
         "heading_size": 48,
         "link_text": "",
-        "link": "/COLECAO",
+        "link": "\/collections\/roupas",
         "text_position": "left",
         "text_vertical": "middle",
         "text_color": "#ffffff"
@@ -158,21 +158,21 @@
         "look_bGKapH": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_new_gisele.jpg",
+            "lifestyle_image": "shopify:\/\/shop_images\/juju_norremose_-_new_gisele.jpg",
             "product": "vestido-tricot-midi-new-gisele-marinho"
           }
         },
         "look_4mGrGj": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd_e971951b-f72c-43d9-9cfe-114d09d4ec43.jpg",
+            "lifestyle_image": "shopify:\/\/shop_images\/15d44fe9-bd91-4a6a-b6bf-cdad0f0fefbd_e971951b-f72c-43d9-9cfe-114d09d4ec43.jpg",
             "product": "blusa-tricot-leila-bege-areia"
           }
         },
         "look_EUBiWQ": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/Giovana_off_3_ba4847d9-8285-4692-8ca4-a5b51b3ba197.jpg",
+            "lifestyle_image": "shopify:\/\/shop_images\/Giovana_off_3_ba4847d9-8285-4692-8ca4-a5b51b3ba197.jpg",
             "product": "blusa-tricot-giovana-off-white"
           }
         }
