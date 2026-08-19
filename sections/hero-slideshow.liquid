@@ -4,6 +4,7 @@
     {% for block in section.blocks %}
       <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}">
         {% if block.settings.image %}
+          {%- if block.settings.button_link != blank -%}<a href="{{ block.settings.button_link }}" class="hero-slideshow__link" aria-label="{{ block.settings.heading | default: 'Ver produtos' }}">{%- endif -%}
           <picture>
             {% if block.settings.image_mobile %}
               <source
@@ -18,6 +19,7 @@
               loading="lazy"
             >
           </picture>
+          {%- if block.settings.button_link != blank -%}</a>{%- endif -%}
         {% else %}
           <div class="hero-slideshow__placeholder">
             {{ 'image' | placeholder_svg_tag }}
@@ -128,6 +130,16 @@
     width: 100%;
   }
 
+  .hero-slideshow__content a, .hero-slideshow__content .hero-slideshow__button { pointer-events: auto; }
+
+  /* banner inteiro clicavel quando tem link */
+  .hero-slideshow__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
   .hero-slideshow__image,
   .hero-slideshow__placeholder {
     width: 100%;
@@ -136,6 +148,7 @@
   }
 
   .hero-slideshow__content {
+    pointer-events: none; /* deixa o clique passar pro link do banner */
     position: absolute;
     top: 0;
     left: 0;
