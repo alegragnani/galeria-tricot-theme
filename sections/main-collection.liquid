@@ -57,7 +57,7 @@
 
     {%- comment -%} Pagination {%- endcomment -%}
     {% if paginate.pages > 1 %}
-      <nav class="collection-page__pagination" aria-label="Paginação">
+      <nav class="collection-page__pagination collection-page__pagination--desktop" aria-label="Paginação">
         {% if paginate.previous %}
           <a href="{{ paginate.previous.url }}" class="collection-page__page-link">‹</a>
         {% endif %}
@@ -76,6 +76,23 @@
 
         {% if paginate.next %}
           <a href="{{ paginate.next.url }}" class="collection-page__page-link">›</a>
+        {% endif %}
+      </nav>
+      <nav class="collection-page__pagination-mobile" aria-label="Paginação">
+        {% if paginate.previous %}
+          <a href="{{ paginate.previous.url }}" class="pagination-m__nav">&#8249; Anterior</a>
+        {% else %}
+          <span class="pagination-m__nav pagination-m__nav--disabled">&#8249; Anterior</span>
+        {% endif %}
+        <select class="pagination-m__select" aria-label="Ir para a página" onchange="window.location.href=this.value">
+          {% for i in (1..paginate.pages) %}
+            <option value="{{ collection.url }}?page={{ i }}" {% if i == paginate.current_page %}selected{% endif %}>{{ i }}</option>
+          {% endfor %}
+        </select>
+        {% if paginate.next %}
+          <a href="{{ paginate.next.url }}" class="pagination-m__nav">Próximo &#8250;</a>
+        {% else %}
+          <span class="pagination-m__nav pagination-m__nav--disabled">Próximo &#8250;</span>
         {% endif %}
       </nav>
     {% endif %}
@@ -296,6 +313,41 @@
   .collection-page__page-link--current {
     border-color: #545454;
     font-weight: 600;
+  }
+
+  /* Paginação mobile (Anterior | página | Próximo) */
+  .collection-page__pagination-mobile { display: none; }
+  @media (max-width: 749px) {
+    .collection-page__pagination--desktop { display: none; }
+    .collection-page__pagination-mobile {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 26px;
+      margin-top: 40px;
+      padding: 20px 0;
+      font-family: 'Raleway', sans-serif;
+    }
+    .pagination-m__nav {
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      color: #545454;
+      text-decoration: none;
+    }
+    .pagination-m__nav--disabled { color: #C9C4BB; }
+    .pagination-m__select {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid #E0DCD4;
+      border-radius: 0;
+      background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23545454" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 12px center;
+      padding: 10px 34px 10px 18px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 15px;
+      color: #545454;
+      min-width: 66px;
+      cursor: pointer;
+    }
   }
 
   /* Empty collection */
