@@ -536,6 +536,16 @@
     padding: 30px 50px;
   }
 
+  /* Ponte invisível: cobre o vão entre o link do menu e o dropdown para o hover não cair */
+  .mega-menu::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -60px;
+    height: 60px;
+  }
+
   .mega-menu__content {
     display: flex;
     flex-wrap: wrap;
