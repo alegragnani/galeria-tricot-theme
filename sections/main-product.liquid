@@ -430,10 +430,37 @@
   <section class="pdp__recommendations">
     <h2 class="pdp__recommendations-title">VOCÊ TAMBÉM VAI AMAR</h2>
     <div class="pdp__recommendations-grid">
-      {% assign rec_collection = collections['all'] %}
-      {% for p in rec_collection.products limit: 8 %}
-        {% if p.id != product.id %}
+      {% comment %} Regra: peça da Sale → mesma aba da Sale; peça de coleção → mesma coleção; senão, geral {% endcomment %}
+      {% assign rec_collection = blank %}
+      {% assign sale_abas = 'sale-blusas,sale-calcas,sale-casacos,sale-conjuntos,sale-saias,sale-shorts,sale-vestidos,outlet-blusas,outlet-calcas,outlet-casacos,outlet-conjuntos,outlet-saias,outlet-shorts,outlet-vestidos,conjuntos-outlet' | split: ',' %}
+      {% for c in product.collections %}
+        {% if sale_abas contains c.handle %}
+          {% assign rec_collection = c %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle contains 'sale' or c.handle contains 'outlet' or c.handle contains 'off-tricot' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle == 'novidades' or c.handle == 'aerolooks' or c.handle == 'mom-edit' or c.handle == 'snow-trip-collab' or c.handle == 'euro-summer' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}{% assign rec_collection = collections['all'] %}{% endif %}
+      {% assign rec_shown = 0 %}
+      {% for p in rec_collection.products limit: 12 %}
+        {% if p.id != product.id and rec_shown < 8 %}
           {% render 'product-card', product: p %}
+          {% assign rec_shown = rec_shown | plus: 1 %}
         {% endif %}
       {% endfor %}
     </div>
@@ -1647,6 +1674,9 @@
         while (start < words.length && SKIP.has(words[start].toLowerCase())) start++;
         remaining = words.slice(start);
       }
+
+      /* Remover modificadores que ficam no meio do nome (ex: "Ana Manga Longa Off White" → base "Ana") */
+      remaining = remaining.filter(function(w){ return !SKIP.has(w.toLowerCase()); });
 
       /* Checar se as últimas 2 palavras formam uma cor composta (ex: "Off White", "Dark Brown") */
       var corWords = 1;
