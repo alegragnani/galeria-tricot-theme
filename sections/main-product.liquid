@@ -1207,6 +1207,23 @@
     color: #B3883D;
     margin-bottom: 16px;
   }
+  .pdp__look-size {
+    margin-top: 8px;
+    padding: 8px 28px 8px 10px;
+    border: 1px solid #E0DCD4;
+    background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%23545454" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 10px center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #545454;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .pdp__look-size--erro {
+    border-color: #B3261E;
+  }
+
   .pdp__look-buy-btn {
     display: inline-block;
     padding: 14px 40px;
@@ -1770,6 +1787,20 @@
 
       if (lookItems.length === 0) return;
 
+      // Buscar variantes (tamanhos) de cada peça complementar
+      const lookDetalhes = await Promise.all(lookItems.map(function(p) {
+        return fetch(p.url.split('?')[0] + '.js').then(function(r){ return r.json(); }).catch(function(){ return null; });
+      }));
+
+      const montarSeletor = function(variants) {
+        var opts = '<option value="">Tamanho</option>';
+        (variants || []).forEach(function(vv) {
+          var dispo = (vv.available === undefined) ? true : vv.available;
+          opts += '<option value="' + vv.id + '"' + (dispo ? '' : ' disabled') + '>' + vv.title + (dispo ? '' : ' — esgotado') + '</option>';
+        });
+        return '<select class="pdp__look-size">' + opts + '</select>';
+      };
+
       const section = document.getElementById('look-section');
       const container = document.getElementById('look-container');
 
@@ -1787,10 +1818,10 @@
         '<img src="' + productJson.featured_image + '" alt="' + productJson.title + '" class="pdp__look-img" />' +
         '</a></div>' +
         '<div class="pdp__look-item-name">' + productJson.title + '</div>' +
-        '<div class="pdp__look-item-price">' + fmt(currentPrice) + '</div></div>';
+        '<div class="pdp__look-item-price">' + fmt(currentPrice) + '</div>' + montarSeletor(productJson.variants) + '</div>';
 
       // Complementares
-      lookItems.forEach(p => {
+      lookItems.forEach((p, lookIdx) => {
         const imgSrc = p.featured_image?.url || p.image || '';
         const price = parseFloat(p.price) || 0;
         html += '<div class="pdp__look-plus">+</div>' +
@@ -1799,7 +1830,7 @@
           '<img src="' + imgSrc + '" alt="' + p.title + '" class="pdp__look-img" />' +
           '</a></div>' +
           '<div class="pdp__look-item-name">' + p.title + '</div>' +
-          '<div class="pdp__look-item-price">' + fmt(price) + '</div></div>';
+          '<div class="pdp__look-item-price">' + fmt(price) + '</div>' + montarSeletor((lookDetalhes[lookIdx] || {}).variants) + '</div>';
       });
 
       html += '</div>'; // fim look-products
@@ -1821,13 +1852,18 @@
 
       // Botão comprar look — adiciona todos ao carrinho
       document.getElementById('look-buy-btn')?.addEventListener('click', async function() {
+        var selects = container.querySelectorAll('.pdp__look-size');
+        var items = [];
+        var faltou = false;
+        selects.forEach(function(s) {
+          s.classList.remove('pdp__look-size--erro');
+          if (!s.value) { faltou = true; s.classList.add('pdp__look-size--erro'); }
+          else items.push({ id: parseInt(s.value, 10), quantity: 1 });
+        });
+        if (faltou) return;
         this.disabled = true;
         this.textContent = 'ADICIONANDO...';
         try {
-          // Adicionar produto atual
-          const items = [{ id: parseInt(variantIdInput.value), quantity: 1 }];
-          // Para os complementares precisamos do variant ID — por enquanto redirecionar para o carrinho
-          // (a API de search não retorna variant_id facilmente)
           await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
