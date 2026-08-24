@@ -1207,21 +1207,48 @@
     color: #B3883D;
     margin-bottom: 16px;
   }
-  .pdp__look-size {
+  .pdp__look-sizes {
     margin-top: 8px;
-    padding: 8px 28px 8px 10px;
-    border: 1px solid #E0DCD4;
-    background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%23545454" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 10px center;
-    font-family: 'Raleway', sans-serif;
-    font-size: 13px;
-    color: #545454;
-    appearance: none;
-    -webkit-appearance: none;
-    border-radius: 0;
-    cursor: pointer;
   }
-  .pdp__look-size--erro {
-    border-color: #B3261E;
+  .pdp__look-sizes-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #545454;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+  .pdp__look-sizes-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .pdp__look-size-opt {
+    background: none;
+    border: none;
+    padding: 2px 2px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #2B1810;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+  }
+  .pdp__look-size-opt:hover {
+    color: #B3883D;
+  }
+  .pdp__look-size-opt--esgotado {
+    color: #C9C4BB;
+    cursor: default;
+  }
+  .pdp__look-size-opt--esgotado:hover {
+    color: #C9C4BB;
+  }
+  .pdp__look-size-opt--sel {
+    color: #B3883D;
+    font-weight: 700;
+    border-bottom: 2px solid #B3883D;
+  }
+  .pdp__look-sizes--erro .pdp__look-sizes-label {
+    color: #B3261E;
   }
 
   .pdp__look-buy-btn {
@@ -1793,12 +1820,16 @@
       }));
 
       const montarSeletor = function(variants) {
-        var opts = '<option value="">Tamanho</option>';
+        var btns = '';
         (variants || []).forEach(function(vv) {
           var dispo = (vv.available === undefined) ? true : vv.available;
-          opts += '<option value="' + vv.id + '"' + (dispo ? '' : ' disabled') + '>' + vv.title + (dispo ? '' : ' — esgotado') + '</option>';
+          if (dispo) {
+            btns += '<button type="button" class="pdp__look-size-opt" data-vid="' + vv.id + '">' + vv.title + '</button>';
+          } else {
+            btns += '<span class="pdp__look-size-opt pdp__look-size-opt--esgotado">' + vv.title + '</span>';
+          }
         });
-        return '<select class="pdp__look-size">' + opts + '</select>';
+        return '<div class="pdp__look-sizes"><div class="pdp__look-sizes-label">Selecionar tamanho</div><div class="pdp__look-sizes-row">' + btns + '</div></div>';
       };
 
       const section = document.getElementById('look-section');
@@ -1850,15 +1881,25 @@
       container.innerHTML = html;
       section.style.display = '';
 
+      container.querySelectorAll('.pdp__look-size-opt[data-vid]').forEach(function(b) {
+        b.addEventListener('click', function() {
+          var row = b.closest('.pdp__look-sizes');
+          row.classList.remove('pdp__look-sizes--erro');
+          row.querySelectorAll('.pdp__look-size-opt--sel').forEach(function(x){ x.classList.remove('pdp__look-size-opt--sel'); });
+          b.classList.add('pdp__look-size-opt--sel');
+        });
+      });
+
       // Botão comprar look — adiciona todos ao carrinho
       document.getElementById('look-buy-btn')?.addEventListener('click', async function() {
-        var selects = container.querySelectorAll('.pdp__look-size');
+        var grupos = container.querySelectorAll('.pdp__look-sizes');
         var items = [];
         var faltou = false;
-        selects.forEach(function(s) {
-          s.classList.remove('pdp__look-size--erro');
-          if (!s.value) { faltou = true; s.classList.add('pdp__look-size--erro'); }
-          else items.push({ id: parseInt(s.value, 10), quantity: 1 });
+        grupos.forEach(function(g) {
+          g.classList.remove('pdp__look-sizes--erro');
+          var sel = g.querySelector('.pdp__look-size-opt--sel');
+          if (!sel) { faltou = true; g.classList.add('pdp__look-sizes--erro'); }
+          else items.push({ id: parseInt(sel.getAttribute('data-vid'), 10), quantity: 1 });
         });
         if (faltou) return;
         this.disabled = true;
