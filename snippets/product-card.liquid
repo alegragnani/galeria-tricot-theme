@@ -82,6 +82,7 @@
               <button
                 class="product-card__size-btn"
                 data-variant-id="{{ variant.id }}"
+                data-url="{{ product.url }}"
                 onclick="quickAddSize(this, event)"
               >{{ size_label }}</button>
             {%- else -%}
@@ -349,38 +350,10 @@ function quickAddSize(btn, e) {
   e.preventDefault();
   e.stopPropagation();
 
+  /* Clique no tamanho: abre a pagina do produto ja com o tamanho selecionado */
   var variantId = btn.getAttribute('data-variant-id');
-  if (!variantId) return;
-
-  /* Feedback visual */
-  var original = btn.textContent;
-  btn.classList.add('product-card__size-btn--sel');
-  btn.textContent = '...';
-  btn.disabled = true;
-
-  fetch('/cart/add.js', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: parseInt(variantId), quantity: 1 })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    btn.textContent = '✓';
-    /* Abre o mini cart */
-    if (typeof openCartDrawer === 'function') {
-      openCartDrawer();
-    }
-    /* Restaura o texto depois de 1.5s */
-    setTimeout(function() {
-      btn.textContent = original;
-      btn.disabled = false;
-      btn.classList.remove('product-card__size-btn--sel');
-    }, 1500);
-  })
-  .catch(function() {
-    btn.textContent = original;
-    btn.disabled = false;
-    btn.classList.remove('product-card__size-btn--sel');
-  });
+  var url = btn.getAttribute('data-url') || '';
+  if (!url) return;
+  window.location.href = url.split('?')[0] + (variantId ? '?variant=' + variantId : '');
 }
 </script>
