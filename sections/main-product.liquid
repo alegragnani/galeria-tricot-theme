@@ -1850,6 +1850,23 @@
         return fetch(p.url.split('?')[0] + '.js').then(function(r){ return r.json(); }).catch(function(){ return null; });
       }));
 
+      // Loja pode ter a mesma peça duplicada (versão antiga + nova): manter só 1 por tipo, preferindo a com estoque
+      (function() {
+        var porTipo = {};
+        lookItems.forEach(function(p, i) {
+          var t = extrairNomeBase(p.title).tipo;
+          var det = lookDetalhes[i];
+          var temEstoque = !!(det && det.variants && det.variants.some(function(vv){ return vv.available; }));
+          if (!(t in porTipo)) { porTipo[t] = { i: i, ok: temEstoque }; }
+          else if (temEstoque && !porTipo[t].ok) { porTipo[t] = { i: i, ok: true }; }
+        });
+        var keep = Object.keys(porTipo).map(function(k){ return porTipo[k].i; }).sort(function(a,b){ return a-b; });
+        var newItems = keep.map(function(i){ return lookItems[i]; });
+        var newDet = keep.map(function(i){ return lookDetalhes[i]; });
+        lookItems.length = 0; Array.prototype.push.apply(lookItems, newItems);
+        lookDetalhes.length = 0; Array.prototype.push.apply(lookDetalhes, newDet);
+      })();
+
       const montarSeletor = function(variants) {
         var btns = '';
         (variants || []).forEach(function(vv) {
