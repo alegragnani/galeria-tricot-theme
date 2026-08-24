@@ -313,6 +313,86 @@
             <summary class="pdp__accordion-trigger">Envio e Trocas</summary>
             <div class="pdp__accordion-body">
               <p>Frete grátis para compras acima de R$ 499. Trocas em até 30 dias.</p>
+
+              <div class="pdp-frete">
+                <label class="pdp-frete__label" for="pdp-frete-cep">Calcular frete e prazo</label>
+                <div class="pdp-frete__row">
+                  <input type="text" id="pdp-frete-cep" class="pdp-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
+                  <button type="button" id="pdp-frete-btn" class="pdp-frete__btn">Calcular</button>
+                </div>
+                <div id="pdp-frete-result" class="pdp-frete__result" aria-live="polite"></div>
+              </div>
+
+              <style>
+                .pdp-frete { margin-top: 14px; }
+                .pdp-frete__label { display:block; font-size:13px; font-weight:600; letter-spacing:.4px; margin-bottom:8px; color:#545454; }
+                .pdp-frete__row { display:flex; gap:8px; }
+                .pdp-frete__input { flex:1; min-width:0; padding:10px 12px; border:1px solid #E0DCD4; font-family:inherit; font-size:14px; outline:none; }
+                .pdp-frete__input:focus { border-color:#B3883D; }
+                .pdp-frete__btn { padding:10px 18px; background:#2B1810; color:#fff; border:none; font-family:inherit; font-size:13px; letter-spacing:.6px; cursor:pointer; transition:background .2s; }
+                .pdp-frete__btn:hover { background:#1a0f09; }
+                .pdp-frete__btn:disabled { background:#B7AFA3; cursor:wait; }
+                .pdp-frete__result { margin-top:10px; font-size:14px; }
+                .pdp-frete__opt { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #F0EDE7; }
+                .pdp-frete__opt:last-child { border-bottom:none; }
+                .pdp-frete__opt-nome { color:#545454; }
+                .pdp-frete__opt-prazo { color:#999; font-size:12px; }
+                .pdp-frete__opt-preco { font-weight:600; color:#2B1810; white-space:nowrap; }
+                .pdp-frete__erro { color:#B3261E; font-size:13px; }
+                .pdp-frete__gratis { color:#1a7f37; font-size:13px; margin-top:6px; }
+              </style>
+
+              <script>
+                (function() {
+                  var faixas = [
+                    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
+                    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
+                    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
+                    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
+                    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
+                    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
+                    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
+                    [88000,89999,'SC'],[90000,99999,'RS']
+                  ];
+                  var zonas = [
+                    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
+                    { ufs:['GO'], eco:34.10, exp:47.74 },
+                    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
+                    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
+                    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
+                    { ufs:['AC'], eco:73.04, exp:96.03 }
+                  ];
+                  var input = document.getElementById('pdp-frete-cep');
+                  var btn = document.getElementById('pdp-frete-btn');
+                  var out = document.getElementById('pdp-frete-result');
+                  if (!input || !btn) return;
+                  input.addEventListener('input', function() {
+                    var d = input.value.replace(/\D/g,'').slice(0,8);
+                    input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d;
+                  });
+                  input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+                  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
+                  btn.addEventListener('click', function() {
+                    var d = input.value.replace(/\D/g,'');
+                    if (d.length !== 8) { out.innerHTML = '<span class="pdp-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
+                    btn.disabled = true; var txt = btn.textContent; btn.textContent = 'Calculando...';
+                    setTimeout(function() {
+                      var n = parseInt(d.slice(0,5),10), uf = null;
+                      for (var i=0;i<faixas.length;i++){ if(n>=faixas[i][0]&&n<=faixas[i][1]){ uf=faixas[i][2]; break; } }
+                      var z = null;
+                      if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
+                      if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
+                      else {
+                        out.innerHTML =
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">5 a 8 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">3 a 5 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>' +
+                          '<div class="pdp-frete__gratis">Frete grátis para compras acima de R$ 499.</div>';
+                      }
+                      btn.disabled = false; btn.textContent = txt;
+                    }, 400);
+                  });
+                })();
+              </script>
             </div>
           </details>
         </div>
