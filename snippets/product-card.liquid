@@ -257,6 +257,13 @@
     color: #B3883D;
   }
 
+  /* Tamanho selecionado — caixinha preenchida */
+  .product-card__size-btn--sel,
+  .product-card__size-btn--sel:hover {
+    background: #B3883D;
+    color: #ffffff;
+  }
+
   /* Tamanho esgotado — riscado */
   .product-card__size-btn--sold-out {
     color: #c0c0c0;
@@ -342,6 +349,7 @@ function quickAddSize(btn, e) {
 
   /* Feedback visual */
   var original = btn.textContent;
+  btn.classList.add('product-card__size-btn--sel');
   btn.textContent = '...';
   btn.disabled = true;
 
@@ -361,11 +369,13 @@ function quickAddSize(btn, e) {
     setTimeout(function() {
       btn.textContent = original;
       btn.disabled = false;
+      btn.classList.remove('product-card__size-btn--sel');
     }, 1500);
   })
   .catch(function() {
     btn.textContent = original;
     btn.disabled = false;
+    btn.classList.remove('product-card__size-btn--sel');
   });
 }
 </script>
