@@ -566,6 +566,20 @@
     object-fit: cover;
     aspect-ratio: 2 / 3;
   }
+  /* Desktop estilo Revolve: 2 fotos por vez (andando de 1 em 1), texto mais a direita */
+  @media (min-width: 750px) {
+    .pdp__gallery {
+      width: 60%;
+      flex: 0 0 60%;
+    }
+    .pdp__info-wrapper {
+      width: 40%;
+      flex: 0 0 40%;
+    }
+    .pdp__gallery-item {
+      flex: 0 0 50%;
+    }
+  }
   /* Setas */
   .pdp__gallery-arrow {
     position: absolute;
