@@ -1789,13 +1789,20 @@
     */
     function extrairModeloCor(title) {
       const words = title.trim().split(/\s+/);
-      const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
-        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga']);
+      const TIPO_SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+']);
+      const MODS = new Set(['curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','gola','alta']);
       let i = 0;
-      while (i < words.length && SKIP.has(words[i].toLowerCase())) i++;
-      if (i >= words.length) return { modelo: '', cor: '', tipo: words[0] ? words[0].toLowerCase() : '' };
-      const modelo = words[i];
-      const cor = words.slice(i + 1).join(' ');
+      /* pular tipo/tricot do início */
+      while (i < words.length && TIPO_SKIP.has(words[i].toLowerCase())) i++;
+      /* modelo = modificadores antes do nome + nome + modificadores depois do nome
+         Ex: "Camisa Tricot Leda Manga Longa Cacau" → modelo "Leda Manga Longa", cor "Cacau"
+         Ex: "Vestido Tricot Midi Clarice Azul Marinho" → modelo "Midi Clarice", cor "Azul Marinho" */
+      var modeloParts = [];
+      while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
+      if (i < words.length) { modeloParts.push(words[i]); i++; }
+      while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
+      const modelo = modeloParts.join(' ');
+      const cor = words.slice(i).join(' ');
       return { modelo: modelo, cor: cor, tipo: words[0] ? words[0].toLowerCase() : '' };
     }
 

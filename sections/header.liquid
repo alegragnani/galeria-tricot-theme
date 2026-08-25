@@ -101,8 +101,9 @@
                 {% if link.links.size > 0 %}
                   <div class="mega-menu" data-mega-menu>
                     <div class="mega-menu__content">
-                      {% assign col_count = 0 %}
+                      {% assign col_count = 1 %}
                       <div class="mega-menu__column">
+                        <a href="{{ link.url }}" class="mega-menu__link mega-menu__link--all">VER TUDO</a>
                         {% for child_link in link.links %}
                           {% if col_count >= 5 %}
                             </div>
@@ -573,6 +574,14 @@
   }
 
   .mega-menu__link:hover {
+    color: #7A3E28;
+  }
+
+  .mega-menu__link--all {
+    font-weight: 600;
+    color: #B3883D;
+  }
+  .mega-menu__link--all:hover {
     color: #7A3E28;
   }
 
