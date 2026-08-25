@@ -1357,6 +1357,13 @@
   .pdp__look-buy-btn:hover {
     opacity: 0.85;
   }
+  .pdp__look-aviso {
+    margin-top: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3261E;
+    text-align: center;
+  }
 
   @media (max-width: 1024px) {
     .pdp__look-container {
@@ -2035,6 +2042,7 @@
         '<div class="pdp__look-summary-total">' + fmt(totalPrice) + '</div>' +
         '<div class="pdp__look-summary-installments">Em até 5x de ' + fmt(parcela) + '</div>' +
         '<button class="pdp__look-buy-btn" id="look-buy-btn">COMPRAR LOOK</button>' +
+        '<div class="pdp__look-aviso" id="look-aviso" style="display:none;">Escolha seu tamanho</div>' +
         '</div></div>';
 
       container.innerHTML = html;
@@ -2046,6 +2054,8 @@
           row.classList.remove('pdp__look-sizes--erro');
           row.querySelectorAll('.pdp__look-size-opt--sel').forEach(function(x){ x.classList.remove('pdp__look-size-opt--sel'); });
           b.classList.add('pdp__look-size-opt--sel');
+          var av = document.getElementById('look-aviso');
+          if (av && !container.querySelector('.pdp__look-sizes--erro')) av.style.display = 'none';
         });
       });
 
@@ -2060,7 +2070,9 @@
           if (!sel) { faltou = true; g.classList.add('pdp__look-sizes--erro'); }
           else items.push({ id: parseInt(sel.getAttribute('data-vid'), 10), quantity: 1 });
         });
-        if (faltou) return;
+        var aviso = document.getElementById('look-aviso');
+        if (faltou) { if (aviso) aviso.style.display = ''; return; }
+        if (aviso) aviso.style.display = 'none';
         this.disabled = true;
         this.textContent = 'ADICIONANDO...';
         try {
