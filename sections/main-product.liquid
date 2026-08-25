@@ -1694,7 +1694,7 @@
     function extrairNomeBase(title) {
       const words = title.trim().split(/\s+/);
       const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
-        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','new','gola','alta']);
+        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','new','gola','alta','pantalona']);
 
       /* Se tem "+" no meio, pode ser 2 formatos:
          A) "Conjunto Colete + Saia Curta Celina Marinho" (tipo+tipo antes do nome)
@@ -1816,7 +1816,7 @@
     function extrairModeloCor(title) {
       const words = title.trim().split(/\s+/);
       const TIPO_SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+']);
-      const MODS = new Set(['curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','gola','alta','new']);
+      const MODS = new Set(['curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','gola','alta','new','pantalona']);
       let i = 0;
       /* pular tipo/tricot do início */
       while (i < words.length && TIPO_SKIP.has(words[i].toLowerCase())) i++;
@@ -1827,7 +1827,7 @@
       while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
       if (i < words.length) { modeloParts.push(words[i]); i++; }
       /* nomes compostos conhecidos (2 palavras), ex: Leila Eva */
-      const SEGUNDA_PALAVRA_NOME = new Set(['eva']);
+      const SEGUNDA_PALAVRA_NOME = new Set(['eva','ski','star']);
       if (i < words.length && SEGUNDA_PALAVRA_NOME.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
       while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
       const modelo = modeloParts.join(' ');
