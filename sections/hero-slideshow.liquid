@@ -2,7 +2,7 @@
 <div class="hero-slideshow" data-slideshow>
   <div class="hero-slideshow__slides">
     {% for block in section.blocks %}
-      <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}">
+      <div class="hero-slideshow__slide{% if forloop.first %} active{% endif %}" data-slide="{{ forloop.index0 }}" style="--ratio-desktop: {{ block.settings.image.aspect_ratio | default: 1.7778 }}; --ratio-mobile: {{ block.settings.image_mobile.aspect_ratio | default: block.settings.image.aspect_ratio | default: 1.7778 }};">
         {% if block.settings.image %}
           {%- if block.settings.button_link != blank -%}<a href="{{ block.settings.button_link }}" class="hero-slideshow__link" aria-label="{{ block.settings.heading | default: 'Ver produtos' }}">{%- endif -%}
           <picture>
@@ -108,9 +108,16 @@
     z-index: 1;
   }
 
+  /* Moldura na proporcao EXATA da arte enviada — nao corta e nao pula */
   .hero-slideshow__slide picture {
     display: block;
     width: 100%;
+    aspect-ratio: var(--ratio-desktop, 1.7778);
+  }
+  @media (max-width: 749px) {
+    .hero-slideshow__slide picture {
+      aspect-ratio: var(--ratio-mobile, 1.7778);
+    }
   }
 
   .hero-slideshow__content a, .hero-slideshow__content .hero-slideshow__button { pointer-events: auto; }
@@ -126,7 +133,8 @@
   .hero-slideshow__image,
   .hero-slideshow__placeholder {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
 
