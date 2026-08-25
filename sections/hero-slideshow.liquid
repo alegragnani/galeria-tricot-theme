@@ -16,7 +16,7 @@
               src="{{ block.settings.image | image_url: width: 1920 }}"
               alt="{{ block.settings.heading }}"
               class="hero-slideshow__image"
-              loading="lazy"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
             >
           </picture>
           {%- if block.settings.button_link != blank -%}</a>{%- endif -%}
@@ -84,44 +84,27 @@
     margin-bottom: 3px;
   }
 
+  /* Slides empilhados via GRID: o container SEMPRE tem a altura da imagem.
+     (Antes os slides eram absolute e a altura vinha só do 1º slide — quando
+     o carrossel passava pro 2º, a altura zerava e o banner sumia.) */
   .hero-slideshow__slides {
     position: relative;
     width: 100%;
-  }
-
-  /* Primeiro slide relativo pra definir a altura do container pela imagem */
-  .hero-slideshow__slide:first-child {
-    position: relative !important;
-    height: auto !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-  }
-
-  /* Slides inativos escondidos, ativo visivel */
-  .hero-slideshow__slide:not(.active) {
-    display: none;
-  }
-  .hero-slideshow__slide.active {
-    display: block;
-    opacity: 1;
+    display: grid;
   }
 
   .hero-slideshow__slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    grid-area: 1 / 1;
+    position: relative;
     width: 100%;
-    height: 100%;
     opacity: 0;
-    transition: opacity 0.6s ease-in-out;
+    visibility: hidden;
+    transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
   }
 
   .hero-slideshow__slide.active {
     opacity: 1;
+    visibility: visible;
     z-index: 1;
   }
 
