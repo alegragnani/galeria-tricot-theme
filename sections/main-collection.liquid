@@ -583,10 +583,9 @@
     .collection-page {
       padding: 0 4px 32px;
     }
-    .collection-page__title {
-      font-size: 24px;
-      margin: 2px 0 0;
-    }
+    /* Mobile: sem caminho (Inicio > ...) e sem titulo da secao */
+    .collection-page__breadcrumb { display: none; }
+    .collection-page__title { display: none; }
     .collection-page__grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 16px 8px;
