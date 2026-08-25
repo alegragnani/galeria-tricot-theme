@@ -488,8 +488,9 @@
 
   .site-header__nav-link {
     position: relative;
-    z-index: 10000; /* fica acima da ponte invisível do dropdown (9999) — sem isso o clique não chega no link */
+    z-index: 10000;
     cursor: pointer;
+    padding: 28px 0; /* estende a área de hover até o dropdown, só na largura do próprio item */
     color: #000;
     text-decoration: none;
     font-family: 'Raleway', -apple-system, sans-serif;
@@ -540,15 +541,8 @@
     padding: 30px 50px;
   }
 
-  /* Ponte invisível: cobre o vão entre o link do menu e o dropdown para o hover não cair */
-  .mega-menu::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -60px;
-    height: 60px;
-  }
+  /* (ponte invisível removida — bloqueava cliques no logo e na busca;
+     o vão do hover agora é coberto pelo padding vertical dos próprios links do menu) */
 
   .mega-menu__content {
     display: flex;
