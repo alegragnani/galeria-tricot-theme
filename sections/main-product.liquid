@@ -1833,21 +1833,35 @@
     }
 
     async function carregarCompreOLook() {
-      const title = productJson.title;
-      const { base, cor, tipo } = extrairNomeBase(title);
-      if (!base || base.length < 2) return;
+      /* Look MANUAL: metafield "Compre o Look" preenchido pela equipe no admin do produto.
+         Se tiver peças escolhidas ali, usa elas; senão monta automático por nome+cor. */
+      var lookManual = [
+        {% assign look_manual = product.metafields.custom.compre_o_look.value %}
+        {% for lp in look_manual %}
+        { url: {{ lp.url | json }}, title: {{ lp.title | json }}, price: {{ lp.price | divided_by: 100.0 }}, featured_image: { url: {{ lp.featured_image | image_url: width: 600 | json }} } }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ];
 
-      // Buscar pelo nome base + cor (ex: "Melissa Azul") para achar peças complementares
-      const query = base + ' ' + cor;
-      const results = await buscarProdutos(query);
+      var lookItems;
+      if (lookManual.length > 0) {
+        lookItems = lookManual.filter(function(p){ return p.url.split('?')[0] !== window.location.pathname; });
+      } else {
+        const title = productJson.title;
+        const { base, cor, tipo } = extrairNomeBase(title);
+        if (!base || base.length < 2) return;
 
-      // Filtrar: mesmo base+cor, tipo DIFERENTE, sem conjuntos (conjunto é o bundle, nao peca avulsa)
-      const lookItems = results.filter(p => {
-        if (p.url === window.location.pathname) return false;
-        const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
-        if (pTipo === 'conjunto' || pTipo === 'twin') return false;
-        return pBase === base && pCor === cor && pTipo !== tipo;
-      });
+        // Buscar pelo nome base + cor (ex: "Melissa Azul") para achar peças complementares
+        const query = base + ' ' + cor;
+        const results = await buscarProdutos(query);
+
+        // Filtrar: mesmo base+cor, tipo DIFERENTE, sem conjuntos (conjunto é o bundle, nao peca avulsa)
+        lookItems = results.filter(p => {
+          if (p.url === window.location.pathname) return false;
+          const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
+          if (pTipo === 'conjunto' || pTipo === 'twin') return false;
+          return pBase === base && pCor === cor && pTipo !== tipo;
+        });
+      }
 
       if (lookItems.length === 0) return;
 
@@ -1857,7 +1871,8 @@
       }));
 
       // Loja pode ter a mesma peça duplicada (versão antiga + nova): manter só 1 por tipo, preferindo a com estoque
-      (function() {
+      // (só no modo automático — look manual respeita a escolha da equipe)
+      if (lookManual.length === 0) (function() {
         var porTipo = {};
         lookItems.forEach(function(p, i) {
           var t = extrairNomeBase(p.title).tipo;
