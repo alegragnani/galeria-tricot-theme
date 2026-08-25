@@ -59,6 +59,9 @@
       </svg>
     </button>
 
+    {%- comment -%} Mobile: botao que leva pra pagina do produto {%- endcomment -%}
+    <a href="{{ product.url }}" class="product-card__mobile-btn">ADICIONAR À SACOLA</a>
+
     <!-- Seletor de tamanho rapido — hover -->
     {%- assign is_conjunto = false -%}
     {%- assign title_lower = product.title | downcase -%}
@@ -339,10 +342,33 @@
     color: #c1673a;
   }
 
+  .product-card__mobile-btn { display: none; }
+
   /* Mobile: sem seletor de tamanho no card (cliente escolhe na pagina do produto) */
   @media (max-width: 768px) {
     .product-card__quick-sizes {
       display: none;
+    }
+    .product-card__mobile-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 2;
+      padding: 13px 8px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #4A3222;
+      font-family: 'Raleway', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
     /* Proporcao byNV mobile: foto ~2,1x mais alta que larga (cabem ~2 por tela) */
     .product-card__image-wrapper {
