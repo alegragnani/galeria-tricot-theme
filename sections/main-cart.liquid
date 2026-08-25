@@ -67,9 +67,9 @@
           <span id="cart-page-total-final">{{ cart.total_price | money }}</span>
         </div>
 
-        {% assign cart_installment = cart.total_price | divided_by: 600 | times: 100 %}
+        {% assign cart_installment = cart.total_price | divided_by: 500 | times: 100 %}
         <div class="cart-page__summary-installments">
-          ou 6x de {{ cart_installment | money }} sem juros
+          ou 5x de {{ cart_installment | money }} sem juros
         </div>
 
         <a href="/checkout" class="cart-page__checkout-btn">FINALIZAR COMPRA</a>
@@ -363,7 +363,7 @@
 
       /* Atualizar parcelamento */
       var instEl = document.querySelector('.cart-page__summary-installments');
-      if (instEl) instEl.textContent = 'ou 6x de ' + fmt(Math.round(cart.total_price / 6)) + ' sem juros';
+      if (instEl) instEl.textContent = 'ou 5x de ' + fmt(Math.round(cart.total_price / 5)) + ' sem juros';
 
       /* Badge do header */
       var badges = document.querySelectorAll('.cart-count, [data-cart-count]');

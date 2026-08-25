@@ -80,8 +80,8 @@
             <div class="conjunto" id="conjunto-section">
               <div class="conjunto__header">
                 <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
-                {% assign inst_total_header = conjunto_total | divided_by: 600 | times: 100 %}
-                <div class="conjunto__header-installments">ou 6x de {{ inst_total_header | money }} sem juros</div>
+                {% assign inst_total_header = conjunto_total | divided_by: 500 | times: 100 %}
+                <div class="conjunto__header-installments">ou 5x de {{ inst_total_header | money }} sem juros</div>
               </div>
 
               <div class="conjunto__items" id="conjunto-items">
@@ -166,9 +166,9 @@
           </div>
 
           {% comment %} Parcelamento {% endcomment %}
-          {% assign installment_value = variant.price | divided_by: 6 %}
+          {% assign installment_value = variant.price | divided_by: 5 %}
           <div class="pdp__installments">
-            ou 6x de {{ installment_value | money }} sem juros
+            ou 5x de {{ installment_value | money }} sem juros
           </div>
         {% endif %}
 
@@ -1522,8 +1522,8 @@
         // Update installments
         const instEl = document.querySelector('.pdp__installments');
         if (instEl) {
-          const instVal = (variant.price / 100 / 6).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-          instEl.textContent = 'ou 6x de ' + instVal + ' sem juros';
+          const instVal = (variant.price / 100 / 5).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          instEl.textContent = 'ou 5x de ' + instVal + ' sem juros';
         }
         // Button state
         if (variant.available) {
@@ -1993,13 +1993,13 @@
 
       // Resumo
       const totalQtd = lookItems.length + 1;
-      const parcela = totalPrice / 6;
+      const parcela = totalPrice / 5;
       html += '<div class="pdp__look-summary">' +
         '<div class="pdp__look-equals">=</div>' +
         '<div class="pdp__look-summary-inner">' +
         '<div class="pdp__look-summary-label">Compre os ' + totalQtd + ' produtos</div>' +
         '<div class="pdp__look-summary-total">' + fmt(totalPrice) + '</div>' +
-        '<div class="pdp__look-summary-installments">Em até 6x de ' + fmt(parcela) + '</div>' +
+        '<div class="pdp__look-summary-installments">Em até 5x de ' + fmt(parcela) + '</div>' +
         '<button class="pdp__look-buy-btn" id="look-buy-btn">COMPRAR LOOK</button>' +
         '</div></div>';
 
@@ -2070,7 +2070,7 @@
           if (selected) total += parseInt(selected.getAttribute('data-price') || '0');
         });
         if (totalEl) totalEl.textContent = fmt(total);
-        var instText = total > 0 ? 'ou 6x de ' + fmt(Math.round(total / 6)) + ' sem juros' : '';
+        var instText = total > 0 ? 'ou 5x de ' + fmt(Math.round(total / 5)) + ' sem juros' : '';
         if (instEl) instEl.textContent = instText;
         if (headerInstEl) headerInstEl.textContent = instText;
 
