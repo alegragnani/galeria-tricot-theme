@@ -1163,6 +1163,8 @@
   }
   .pdp__look-img-wrap {
     margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
   }
   .pdp__look-img {
     width: 100%;
@@ -1247,18 +1249,28 @@
     margin-bottom: 16px;
   }
   .pdp__look-sizes {
-    margin-top: 8px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.92);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    margin: 0;
   }
   .pdp__look-sizes-label {
     font-family: 'Raleway', sans-serif;
     font-size: 12px;
     color: #545454;
     letter-spacing: 0.4px;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+    white-space: nowrap;
   }
   .pdp__look-sizes-row {
     display: flex;
-    gap: 14px;
+    gap: 6px;
     flex-wrap: wrap;
   }
   .pdp__look-size-opt {
@@ -1277,13 +1289,15 @@
     letter-spacing: 0.4px;
   }
   .pdp__look-size-opt:hover {
-    color: #B3883D;
+    background: #B3883D;
+    color: #ffffff;
   }
   .pdp__look-size-opt--esgotado {
     color: #C9C4BB;
     cursor: default;
   }
   .pdp__look-size-opt--esgotado:hover {
+    background: none;
     color: #C9C4BB;
   }
   .pdp__look-size-opt--sel,
@@ -1927,9 +1941,9 @@
       html += '<div class="pdp__look-item">' +
         '<div class="pdp__look-img-wrap"><a href="' + window.location.pathname + '">' +
         '<img src="' + productJson.featured_image + '" alt="' + productJson.title + '" class="pdp__look-img" />' +
-        '</a></div>' +
+        '</a>' + montarSeletor(productJson.variants) + '</div>' +
         '<div class="pdp__look-item-name">' + productJson.title + '</div>' +
-        '<div class="pdp__look-item-price">' + fmt(currentPrice) + '</div>' + montarSeletor(productJson.variants) + '</div>';
+        '<div class="pdp__look-item-price">' + fmt(currentPrice) + '</div>' + '</div>';
 
       // Complementares
       lookItems.forEach((p, lookIdx) => {
@@ -1939,9 +1953,9 @@
           '<div class="pdp__look-item">' +
           '<div class="pdp__look-img-wrap"><a href="' + p.url + '">' +
           '<img src="' + imgSrc + '" alt="' + p.title + '" class="pdp__look-img" />' +
-          '</a></div>' +
+          '</a>' + montarSeletor((lookDetalhes[lookIdx] || {}).variants) + '</div>' +
           '<div class="pdp__look-item-name">' + p.title + '</div>' +
-          '<div class="pdp__look-item-price">' + fmt(price) + '</div>' + montarSeletor((lookDetalhes[lookIdx] || {}).variants) + '</div>';
+          '<div class="pdp__look-item-price">' + fmt(price) + '</div>' + '</div>';
       });
 
       html += '</div>'; // fim look-products
