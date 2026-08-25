@@ -191,8 +191,13 @@
                 <legend class="pdp__option-label">{{ option.name }}</legend>
                 <div class="pdp__sizes">
                   {% for value in option.values %}
-                    <label class="pdp__size-pill">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} />
+                    {% assign opt_idx = option.position | minus: 1 %}
+                    {% assign val_avail = false %}
+                    {% for var in product.variants %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% endif %}
+                    {% endfor %}
+                    <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
                       <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
@@ -807,6 +812,20 @@
   }
   .pdp__size-label:hover {
     border-color: #545454;
+  }
+  /* Tamanho esgotado — riscado */
+  .pdp__size-pill--soldout,
+  .pdp__size-pill--soldout .pdp__size-label {
+    cursor: default;
+  }
+  .pdp__size-pill--soldout .pdp__size-label {
+    color: #c0c0c0;
+    text-decoration: line-through;
+    border-color: rgba(84, 84, 84, 0.12);
+    background: #ffffff;
+  }
+  .pdp__size-pill--soldout .pdp__size-label:hover {
+    border-color: rgba(84, 84, 84, 0.12);
   }
 
   /* --- Select (outras opções) --- */
