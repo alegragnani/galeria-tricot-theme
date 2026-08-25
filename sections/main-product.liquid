@@ -192,7 +192,7 @@
                 <div class="pdp__sizes">
                   {% for value in option.values %}
                     <label class="pdp__size-pill">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} />
                       <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
@@ -205,7 +205,7 @@
                 <legend class="pdp__option-label">{{ option.name }}</legend>
                 <select name="options[{{ option.name }}]" class="pdp__select">
                   {% for value in option.values %}
-                    <option value="{{ value }}" {% if forloop.first %}selected{% endif %}>{{ value }}</option>
+                    <option value="{{ value }}" {% if value == option.selected_value %}selected{% endif %}>{{ value }}</option>
                   {% endfor %}
                 </select>
               </fieldset>
@@ -396,7 +396,7 @@
         {% comment %} WhatsApp Personal Shopper — estilo BP {% endcomment %}
         <div class="pdp__personal-shopper">
           <h2 class="pdp__ps-title">PRECISA DE AJUDA?</h2>
-          <a href="https://wa.me/5511999999999?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
+          <a href="https://wa.me/553598543079?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366">
               <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8.01 12.27C8.14 12.44 9.76 14.94 12.25 16.08C14.28 16.99 14.74 16.82 15.18 16.77C15.62 16.72 16.62 16.1 16.83 15.45C17.04 14.81 17.04 14.26 16.97 14.14C16.9 14.02 16.73 13.96 16.48 13.83C16.23 13.71 15.01 13.11 14.78 13.03C14.56 12.95 14.39 12.91 14.23 13.16C14.07 13.41 13.57 13.96 13.43 14.14C13.29 14.31 13.15 14.33 12.9 14.21C12.65 14.08 11.87 13.83 10.95 13.01C10.22 12.35 9.72 11.54 9.58 11.29C9.44 11.04 9.57 10.91 9.69 10.78C9.8 10.67 9.94 10.49 10.07 10.35C10.19 10.21 10.24 10.11 10.32 9.94C10.4 9.77 10.36 9.63 10.29 9.5C10.23 9.38 9.73 8.15 9.53 7.65C9.33 7.18 9.13 7.23 8.98 7.23C8.84 7.22 8.68 7.33 8.53 7.33Z"/>
             </svg>
@@ -551,7 +551,8 @@
     top: 50%;
     transform: translateY(-50%);
     z-index: 5;
-    background: none;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
     border: none;
     width: 40px;
     height: 40px;
@@ -560,11 +561,11 @@
     justify-content: center;
     cursor: pointer;
     color: #B3883D;
-    transition: opacity 0.2s;
-    border-radius: 0;
+    transition: background 0.2s;
+    border-radius: 50%;
   }
   .pdp__gallery-arrow:hover {
-    opacity: 0.7;
+    background: #ffffff;
   }
   .pdp__gallery-arrow--prev { left: 12px; }
   .pdp__gallery-arrow--next { right: 12px; }
