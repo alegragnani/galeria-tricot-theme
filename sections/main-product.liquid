@@ -248,10 +248,6 @@
           </button>
         </form>
 
-        {% comment %} Links auxiliares {% endcomment %}
-        <div class="pdp__aux-links">
-          <a href="#" class="pdp__aux-link">Tabela de Medidas</a>
-        </div>
         {% endunless %}
 
         {% comment %} Acordeões {% endcomment %}
@@ -389,6 +385,21 @@
             <div class="pdp__accordion-body">
               {% assign desc_clean = desc_only | replace: '<details', '<div' | replace: '</details>', '</div>' | replace: '<summary', '<div hidden' | replace: '</summary>', '</div>' %}
               {{ desc_clean }}
+            </div>
+          </details>
+
+          {% comment %} Guia de tamanhos {% endcomment %}
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Como escolher seu tamanho</summary>
+            <div class="pdp__accordion-body">
+              <p><strong>PARA ESCOLHER SEU TAMANHO, CONSIDERE:</strong></p>
+              <p>PP = 36<br>P = 38<br>M = 40<br>G = 42 a 44</p>
+              <p><strong>AO ESCOLHER SEU TAMANHO CONFORME ACIMA:</strong></p>
+              <p>Vestidos longos ficam rente ao chão para altura da cliente de 1,70m<br>
+              Vestidos midi ficam abaixo do joelho para altura da cliente de 1,70m<br>
+              Vestidos curtos ficam no meio da coxa para altura da cliente de 1,70m</p>
+              <p>Se você tem entre 1,70m e 1,75m recomendamos escolher um tamanho acima do seu (o vestido não fica largo pois, sobrando dos lados, estica para baixo)</p>
+              <p>Se você tem entre 1,75m e 1,80m recomendamos escolher 2 tamanhos acima do seu.</p>
             </div>
           </details>
         </div>
