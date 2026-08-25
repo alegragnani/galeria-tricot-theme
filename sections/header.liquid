@@ -487,6 +487,9 @@
   }
 
   .site-header__nav-link {
+    position: relative;
+    z-index: 5; /* fica acima da ponte invisível do dropdown — sem isso o clique não chega no link */
+    cursor: pointer;
     color: #000;
     text-decoration: none;
     font-family: 'Raleway', -apple-system, sans-serif;
