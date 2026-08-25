@@ -29,15 +29,15 @@
         {% if block.settings.heading or block.settings.subheading or block.settings.button_text %}
           <div class="hero-slideshow__content hero-slideshow__content--{{ block.settings.text_position }} hero-slideshow__content--v-{{ block.settings.text_vertical }}">
             <div class="hero-slideshow__text-wrapper">
-              {% if block.settings.heading %}
+              {% if block.settings.heading != blank %}
                 <h1 class="hero-slideshow__heading" style="color: {{ block.settings.text_color }};">{{ block.settings.heading }}</h1>
               {% endif %}
 
-              {% if block.settings.subheading %}
+              {% if block.settings.subheading != blank %}
                 <p class="hero-slideshow__subheading" style="color: {{ block.settings.text_color }};">{{ block.settings.subheading }}</p>
               {% endif %}
 
-              {% if block.settings.button_text and block.settings.button_link %}
+              {% if block.settings.button_text != blank and block.settings.button_link != blank %}
                 <a href="{{ block.settings.button_link }}" class="button button--primary hero-slideshow__button" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">
                   {{ block.settings.button_text }}
                 </a>
