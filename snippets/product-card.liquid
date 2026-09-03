@@ -33,6 +33,22 @@
       {%- endif -%}
     </a>
 
+    {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
+    <div class="pc-mslider">
+      <div class="pc-mtrack" onscroll="pcDots(this)">
+        {%- if gt_card == 2 -%}
+        <a href="{{ product.url }}" class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></a>
+        {%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}
+        <a href="{{ product.url }}" class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></a>
+        {%- endfor -%}
+      </div>
+      <div class="pc-mdots">
+        {%- if gt_card == 2 -%}<span class="pc-mdot pc-mdot--on"></span>{%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}<span class="pc-mdot{% if forloop.first and gt_card != 2 %} pc-mdot--on{% endif %}"></span>{%- endfor -%}
+      </div>
+    </div>
+
     {%- if product.compare_at_price > product.price -%}
       {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
       <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
@@ -384,6 +400,18 @@
       object-fit: cover !important;
     }
   }
+  .pc-mslider { display: none; }
+  @media (max-width: 768px) {
+    .product-card__image-link { display: none !important; }
+    .pc-mslider { display: block; position: absolute; inset: 0; }
+    .pc-mtrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%; }
+    .pc-mtrack::-webkit-scrollbar { display: none; }
+    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; }
+    .pc-mslide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pc-mdots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 2; }
+    .pc-mdot { width: 14px; height: 2px; background: rgba(255,255,255,0.55); box-shadow: 0 0 2px rgba(0,0,0,0.35); }
+    .pc-mdot--on { background: #FFFFFF; }
+  }
 </style>
 
 <script>
@@ -396,5 +424,10 @@ function quickAddSize(btn, e) {
   var url = btn.getAttribute('data-url') || '';
   if (!url) return;
   window.location.href = url.split('?')[0] + (variantId ? '?variant=' + variantId : '');
+}
+function pcDots(track) {
+  var i = Math.round(track.scrollLeft / track.clientWidth);
+  var dots = track.parentElement.querySelectorAll('.pc-mdot');
+  for (var j = 0; j < dots.length; j++) { dots[j].classList.toggle('pc-mdot--on', j === i); }
 }
 </script>
