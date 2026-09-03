@@ -63,8 +63,6 @@
       </svg>
     </button>
 
-    {%- comment -%} Mobile: botao que leva pra pagina do produto {%- endcomment -%}
-    <a href="{{ product.url }}" class="product-card__mobile-btn">ADICIONAR À SACOLA</a>
 
     <!-- Seletor de tamanho rapido — hover -->
     {%- assign is_conjunto = false -%}
@@ -355,7 +353,7 @@
       display: none;
     }
     .product-card__mobile-btn {
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       position: absolute;
