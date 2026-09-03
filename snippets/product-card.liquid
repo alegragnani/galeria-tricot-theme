@@ -3,12 +3,16 @@
   Usage: {% render 'product-card', product: product %}
 {%- endcomment -%}
 
+{%- assign gt_extra = product.metafields.custom.foto_extra_vitrine -%}
+{%- assign gt_vezes = 1 -%}
+{%- if gt_extra != blank -%}{%- assign gt_vezes = 2 -%}{%- endif -%}
+{%- for gt_card in (1..gt_vezes) -%}
 <div class="product-card">
   <div class="product-card__image-wrapper">
     <a href="{{ product.url }}" class="product-card__image-link">
       {%- if product.featured_image -%}
         <img
-          src="{{ product.featured_image | image_url: width: 600 }}"
+          src="{% if gt_card == 2 %}{{ gt_extra.value | image_url: width: 600 }}{% else %}{{ product.featured_image | image_url: width: 600 }}{% endif %}"
           alt="{{ product.featured_image.alt | escape }}"
           class="product-card__image product-card__image--primary"
           loading="lazy"
@@ -123,6 +127,7 @@
     </div>
   </div>
 </div>
+{%- endfor -%}
 
 <style>
   .product-card {
