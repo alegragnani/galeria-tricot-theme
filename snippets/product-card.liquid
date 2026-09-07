@@ -35,12 +35,12 @@
 
     {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
     <div class="pc-mslider">
-      <div class="pc-mtrack" onscroll="pcDots(this)">
+      <div class="pc-mtrack" data-url="{{ product.url }}" onscroll="pcDots(this)">
         {%- if gt_card == 2 -%}
-        <a href="{{ product.url }}" class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></a>
+        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></span>
         {%- endif -%}
         {%- for gt_img in product.images limit: 4 -%}
-        <a href="{{ product.url }}" class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></a>
+        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></span>
         {%- endfor -%}
       </div>
       <div class="pc-mdots">
@@ -406,7 +406,7 @@
     .pc-mslider { display: block; position: absolute; inset: 0; }
     .pc-mtrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%; }
     .pc-mtrack::-webkit-scrollbar { display: none; }
-    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; }
+    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; cursor: pointer; }
     .pc-mslide img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .pc-mdots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 2; }
     .pc-mdot { width: 14px; height: 2px; background: rgba(255,255,255,0.55); box-shadow: 0 0 2px rgba(0,0,0,0.35); }
@@ -430,4 +430,5 @@ function pcDots(track) {
   var dots = track.parentElement.querySelectorAll('.pc-mdot');
   for (var j = 0; j < dots.length; j++) { dots[j].classList.toggle('pc-mdot--on', j === i); }
 }
+(function(){var sx=0,sy=0,mv=false,cur=null;document.addEventListener("pointerdown",function(e){cur=e.target.closest(".pc-mtrack");if(cur){sx=e.clientX;sy=e.clientY;mv=false;}},true);document.addEventListener("pointermove",function(e){if(cur&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8))mv=true;},true);document.addEventListener("pointerup",function(e){if(cur&&!mv){var u=cur.getAttribute("data-url");if(u)window.location.href=u;}cur=null;},true);})();
 </script>
