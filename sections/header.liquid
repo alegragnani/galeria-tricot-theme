@@ -1069,6 +1069,7 @@
               </div>
               {% if link.links.size > 0 %}
                 <ul class="mobile-drawer__submenu">
+                  <li><a href="{{ link.url }}" class="mobile-drawer__sublink">VER TUDO</a></li>
                   {% for child in link.links %}
                     <li><a href="{{ child.url }}" class="mobile-drawer__sublink">{{ child.title }}</a></li>
                   {% endfor %}
