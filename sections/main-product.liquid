@@ -1399,6 +1399,14 @@
 
   /* Mobile: look em grade 2 colunas, sem "+" solto, resumo embaixo */
   @media (max-width: 749px) {
+    /* foto do produto cabe inteira na tela, sem cortar */
+    .pdp__gallery-img {
+      width: auto;
+      max-width: 100%;
+      max-height: 80vh;
+      height: auto;
+      margin: 0 auto;
+    }
     .pdp__look-container {
       flex-direction: column;
       gap: 20px;
