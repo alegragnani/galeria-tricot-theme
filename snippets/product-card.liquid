@@ -73,17 +73,12 @@
       {%- endif -%}
     {%- endif -%}
 
-    {%- assign gt_tags = product.tags | join: ',' | downcase -%}
     {%- assign gt_ispv = false -%}
-    {%- if gt_tags contains 'pré-venda' or gt_tags contains 'pre-venda' -%}
-      {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
-      {%- if gt_pvdate == blank -%}
-        {%- assign gt_ispv = true -%}
-      {%- else -%}
-        {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
-        {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
-        {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
-      {%- endif -%}
+    {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
+    {%- if gt_pvdate != blank -%}
+      {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
+      {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
+      {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
     {%- endif -%}
     {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
 
@@ -216,9 +211,10 @@
   }
 
   .product-card__badge--prevenda {
-    background: #4A3222;
+    background: rgba(74, 50, 34, 0.5);
     color: #fff;
     letter-spacing: 1px;
+    text-shadow: 0 0 3px rgba(0,0,0,0.25);
   }
 
   /* Wishlist heart */
