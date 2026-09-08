@@ -394,7 +394,12 @@
   }
   /* Compensar header fixed em páginas internas — empurra conteúdo pra baixo */
   body:not(.template-index) .main-content {
-    padding-top: 80px; /* altura aproximada do header */
+    padding-top: 80px; /* altura do header no mobile */
+  }
+  @media (min-width: 750px) {
+    body:not(.template-index) .main-content {
+      padding-top: 106px; /* header maior no desktop (nao esconder o breadcrumb) */
+    }
   }
 
   body:not(.template-index) .site-header .site-header__logo-text,
