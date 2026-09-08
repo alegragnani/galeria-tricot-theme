@@ -43,8 +43,14 @@
 
         {% comment %} Dots {% endcomment %}
         <div class="pdp__gallery-dots" id="gallery-dots">
-          {% for image in product.images %}
-            <button class="pdp__gallery-dot {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Imagem {{ forloop.index }}"></button>
+          {% assign img_count = product.images.size %}
+          {% if img_count > 10 %}{% assign dot_count = 10 %}{% else %}{% assign dot_count = img_count %}{% endif %}
+          {% assign last_dot = dot_count | minus: 1 %}
+          {% assign last_img = img_count | minus: 1 %}
+          {% assign half = last_dot | divided_by: 2 %}
+          {% for j in (0..last_dot) %}
+            {% assign mapped = j | times: last_img | plus: half | divided_by: last_dot %}
+            <button class="pdp__gallery-dot {% if j == 0 %}is-active{% endif %}" data-index="{{ mapped }}" aria-label="Imagem {{ mapped | plus: 1 }}"></button>
           {% endfor %}
         </div>
       {% endif %}
@@ -1668,6 +1674,11 @@
     let currentSlide = 0;
     const totalSlides = document.querySelectorAll('.pdp__gallery-item').length;
 
+    function setActiveDot(cur) {
+      if (!dots.length) return;
+      var pos = totalSlides > 1 ? Math.round(cur * (dots.length - 1) / (totalSlides - 1)) : 0;
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === pos));
+    }
     function goToSlide(idx) {
       if (idx < 0) idx = totalSlides - 1;
       if (idx >= totalSlides) idx = 0;
@@ -1678,7 +1689,7 @@
           track.scrollTo({ left: item.offsetLeft, behavior: 'smooth' });
         }
       }
-      dots.forEach((d, i) => d.classList.toggle('is-active', i === currentSlide));
+      setActiveDot(currentSlide);
     }
 
     prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
@@ -1698,7 +1709,7 @@
           const newIndex = Math.round(scrollLeft / itemWidth);
           if (newIndex !== currentSlide && newIndex >= 0 && newIndex < totalSlides) {
             currentSlide = newIndex;
-            dots.forEach((d, i) => d.classList.toggle('is-active', i === currentSlide));
+            setActiveDot(currentSlide);
           }
         }, 80);
       });
