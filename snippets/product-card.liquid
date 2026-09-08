@@ -74,9 +74,18 @@
     {%- endif -%}
 
     {%- assign gt_tags = product.tags | join: ',' | downcase -%}
+    {%- assign gt_ispv = false -%}
     {%- if gt_tags contains 'pré-venda' or gt_tags contains 'pre-venda' -%}
-      <span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>
+      {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
+      {%- if gt_pvdate == blank -%}
+        {%- assign gt_ispv = true -%}
+      {%- else -%}
+        {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
+        {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
+        {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
+      {%- endif -%}
     {%- endif -%}
+    {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
 
     <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
