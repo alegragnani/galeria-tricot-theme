@@ -2,10 +2,10 @@
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
   .site-header {
-    background: linear-gradient(360deg, rgba(55, 44, 25, 0), rgba(15, 15, 14, 0.35));
+    background: transparent;
     background-color: transparent;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: none;
     position: fixed;
     top: 39px;
@@ -105,7 +105,7 @@
   }
   @media (min-width: 750px) {
     body:not(.template-index) .main-content {
-      padding-top: 106px; /* header desktop */
+      padding-top: 88px; /* header desktop */
     }
   }
 
@@ -135,7 +135,7 @@
     max-width: 1600px;
     margin: 0 auto;
     gap: 24px;
-    min-height: 86px;
+    min-height: 84px;
     box-sizing: border-box;
   }
   .site-header__logo { grid-area: logo; justify-self: start; }
@@ -202,7 +202,7 @@
     position: relative;
     z-index: 10000;
     cursor: pointer;
-    padding: 28px 0; /* estende a área de hover até o dropdown, só na largura do próprio item */
+    padding: 19px 0; /* estende a área de hover até o dropdown, só na largura do próprio item */
     color: #000;
     text-decoration: none;
     font-family: 'Raleway', -apple-system, sans-serif;
