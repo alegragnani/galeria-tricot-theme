@@ -73,6 +73,11 @@
       {%- endif -%}
     {%- endif -%}
 
+    {%- assign gt_tags = product.tags | join: ',' | downcase -%}
+    {%- if gt_tags contains 'pré-venda' or gt_tags contains 'pre-venda' -%}
+      <span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>
+    {%- endif -%}
+
     <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -199,6 +204,12 @@
     padding: 4px 8px;
     background: #000;
     color: #fff;
+  }
+
+  .product-card__badge--prevenda {
+    background: #4A3222;
+    color: #fff;
+    letter-spacing: 1px;
   }
 
   /* Wishlist heart */
