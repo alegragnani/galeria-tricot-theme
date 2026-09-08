@@ -298,6 +298,13 @@
       padding-right: 2rem;
     }
   }
+/*HEROFULL-START*/
+  @media (max-width: 768px) {
+    .hero-slideshow__slide { aspect-ratio: auto !important; max-height: none !important; height: 100svh !important; }
+    .hero-slideshow__slide picture { aspect-ratio: auto !important; height: 100% !important; width: 100% !important; }
+    .hero-slideshow__image, .hero-slideshow__placeholder { height: 100% !important; width: 100% !important; object-fit: cover !important; }
+  }
+  /*HEROFULL-END*/
 </style>
 
 <script>
