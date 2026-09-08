@@ -1,296 +1,3 @@
-<header class="site-header" data-site-header{% if section.settings.sticky_header %} data-sticky-header{% endif %}>
-  <div class="site-header__container">
-    <!-- Mobile Menu Toggle (esquerda em tablet/mobile, escondido no desktop) -->
-    <button
-      class="site-header__menu-toggle"
-      aria-label="Menu"
-      data-menu-toggle
-    >
-      <svg class="icon-hamburger"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        width="24"
-        height="24"
-      >
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-      <svg class="icon-close"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        width="24"
-        height="24"
-      >
-        <line x1="5" y1="5" x2="19" y2="19"></line>
-        <line x1="19" y1="5" x2="5" y2="19"></line>
-      </svg>
-    </button>
-
-    <!-- Logo -->
-    <div class="site-header__logo">
-      {% if section.settings.logo %}
-        <a href="{{ '/' | absolute_url }}" class="site-header__logo-link">
-          <img
-            src="{{ section.settings.logo | image_url: width: 400 }}"
-            alt="{{ shop.name }}"
-            width="180"
-            height="40"
-            loading="eager"
-            class="site-header__logo-img"
-          />
-        </a>
-      {% else %}
-        <a href="{{ '/' | absolute_url }}" class="site-header__logo-link">
-          <img
-            src="https://mundodasmalhas.vtexassets.com/assets/vtex/assets-builder/mundodasmalhas.store/3.25.160/logo-gt___c2eb9df48d06eba042153a5c93a107a0.svg"
-            alt="{{ shop.name }}"
-            width="180"
-            height="40"
-            loading="eager"
-            class="site-header__logo-img"
-          />
-        </a>
-      {% endif %}
-    </div>
-
-    <!-- Navigation -->
-    <nav class="site-header__nav" data-site-nav>
-      <div class="site-header__nav-inner">
-        {% assign menu_handle = section.settings.menu | default: 'main-menu' %}
-        {% assign menu = linklists[menu_handle] %}
-        {% if menu == blank or menu.links.size == 0 %}
-          {% assign menu = linklists['main-menu'] %}
-          {% assign menu_handle = 'main-menu' %}
-        {% endif %}
-        {% assign menu_links = menu.links %}
-        {% if menu_links.size > 0 %}
-          <ul class="site-header__nav-list">
-            {% for link in menu.links %}
-              <li class="site-header__nav-item">
-                <a
-                  href="{{ link.url }}"
-                  class="site-header__nav-link"
-                  {% if link.links.size > 0 %}
-                    data-mega-menu-trigger
-                  {% endif %}
-                >
-                  {{ link.title }}
-                  {% if link.links.size > 0 %}
-                    <svg
-                      class="site-header__nav-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      width="16"
-                      height="16"
-                    >
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  {% endif %}
-                </a>
-
-                {% if link.links.size > 0 %}
-                  <div class="mega-menu" data-mega-menu>
-                    <div class="mega-menu__content">
-                      {% assign col_count = 1 %}
-                      <div class="mega-menu__column">
-                        <a href="{{ link.url }}" class="mega-menu__link mega-menu__link--all">VER TUDO</a>
-                        {% for child_link in link.links %}
-                          {% if col_count >= 5 %}
-                            </div>
-                            <div class="mega-menu__column">
-                            {% assign col_count = 0 %}
-                          {% endif %}
-                          <a href="{{ child_link.url }}" class="mega-menu__link">
-                            {{ child_link.title }}
-                          </a>
-                          {% assign col_count = col_count | plus: 1 %}
-                        {% endfor %}
-                      </div>
-                    </div>
-                  </div>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <ul class="site-header__nav-list">
-            <li class="site-header__nav-item"><a href="/collections/novidades" class="site-header__nav-link">NOVIDADES</a></li>
-            <li class="site-header__nav-item"><a href="/collections/mom-edit" class="site-header__nav-link">MOM EDIT</a></li>
-            <li class="site-header__nav-item"><a href="/collections/snow-trip-collab" class="site-header__nav-link">SNOW TRIP COLLAB</a></li>
-            <li class="site-header__nav-item"><a href="/collections/roupas" class="site-header__nav-link">ROUPAS</a></li>
-            <li class="site-header__nav-item"><a href="/collections/aerolooks" class="site-header__nav-link">AEROLOOKS</a></li>
-            <li class="site-header__nav-item"><a href="/collections/sale-ver26" class="site-header__nav-link">SALE VER26</a></li>
-            <li class="site-header__nav-item"><a href="/collections/outlet" class="site-header__nav-link">OUTLET</a></li>
-          </ul>
-        {% endif %}
-      </div>
-    </nav>
-
-    <!-- Icons -->
-    <div class="site-header__icons">
-      <!-- Search -->
-      <button
-        class="site-header__icon-btn"
-        aria-label="Buscar"
-        data-search-btn
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22">
-          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-          <path d="M21.0004 21L16.6504 16.65" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-        </svg>
-      </button>
-
-      <!-- Account -->
-      <a
-        href="{{ routes.account_url }}"
-        class="site-header__icon-btn"
-        aria-label="Conta"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 19" fill="currentColor" width="22" height="22">
-          <path fill-rule="evenodd" d="M6 4.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8m5.58 12.15c1.12.82 1.83 2.24 1.91 4.85H1.51c.08-2.6.79-4.03 1.9-4.85C4.66 11.75 6.5 11.5 9 11.5s4.35.26 5.58 1.15M9 10.5c-2.5 0-4.65.24-6.17 1.35C1.27 12.98.5 14.93.5 18v.5h17V18c0-3.07-.77-5.02-2.33-6.15-1.52-1.1-3.67-1.35-6.17-1.35"/>
-        </svg>
-      </a>
-
-      <!-- Cart — abre mini cart; link pra /cart fica dentro do drawer -->
-      <a
-        href="{{ routes.cart_url }}"
-        class="site-header__icon-btn site-header__cart-btn"
-        aria-label="Sacola"
-        onclick="event.preventDefault(); if(typeof openCartDrawer==='function') openCartDrawer();"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 25" fill="none" width="22" height="22">
-          <path d="M6.99316 8.98838V4.81625C6.99316 2.71705 8.79633 1 11.0008 1C13.2044 1 15.008 2.71705 15.008 4.81625V8.988" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linejoin="round"/>
-          <path d="M3.04688 20.6383H18.9533" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
-          <path d="M15.1254 6.65979H20.1939L20.9976 22.6163C21.0511 23.6648 20.2053 24 19.0641 24H2.93589C1.79465 24 0.948836 23.6648 1.00238 22.6163L1.80613 6.65979H6.87457" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linejoin="round"/>
-        </svg>
-        {% if cart.item_count > 0 %}
-          <span class="site-header__cart-count" data-cart-count>{{ cart.item_count }}</span>
-        {% endif %}
-      </a>
-
-    </div>
-  </div>
-</header>
-
-<!-- Search Bar (full-width, topo — estilo BP) -->
-<div class="search-bar" id="search-overlay" aria-hidden="true">
-  <div class="search-bar__backdrop" data-search-close></div>
-  <div class="search-bar__panel">
-    <div class="search-bar__top">
-      <a href="/" class="search-bar__logo" aria-label="Início">
-        {%- if section.settings.logo -%}
-          <img src="{{ section.settings.logo | image_url: width: 120 }}" alt="{{ shop.name }}" height="36">
-        {%- else -%}
-          <span class="search-bar__logo-text">{{ shop.name }}</span>
-        {%- endif -%}
-      </a>
-      <button type="button" class="search-bar__close" data-search-close aria-label="Fechar busca">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <form action="/search" method="get" class="search-bar__form" role="search">
-      <input type="hidden" name="type" value="product">
-      <input type="hidden" name="sort_by" value="created-descending">
-      <input
-        type="text"
-        name="q"
-        class="search-bar__input"
-        placeholder="Pesquise por cor, nome do produto..."
-        autocomplete="off"
-        id="search-input"
-      >
-    </form>
-    <div class="search-bar__body" id="search-results">
-      <div class="search-bar__suggestions">
-        <div class="search-bar__col">
-          <div class="search-bar__col-header">
-            <span class="search-bar__col-title">Buscas recentes</span>
-            <button class="search-bar__col-action" id="search-clear-recent">Limpar</button>
-          </div>
-          <ul class="search-bar__recent-list" id="search-recent-list"></ul>
-        </div>
-        <div class="search-bar__col">
-          <span class="search-bar__col-title">Termos mais buscados</span>
-          <ul class="search-bar__popular-list">
-            <li><a href="/search?q=tricot&type=product">Tricot</a></li>
-            <li><a href="/search?q=conjunto&type=product">Conjunto</a></li>
-            <li><a href="/search?q=vestido&type=product">Vestido</a></li>
-            <li><a href="/search?q=casaco&type=product">Casaco</a></li>
-            <li><a href="/search?q=macacão&type=product">Macacão</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Mobile Drawer (estilo PatBO) -->
-<div class="mobile-drawer" data-mobile-drawer aria-hidden="true">
-  <div class="mobile-drawer__overlay" data-drawer-close></div>
-  <aside class="mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
-    <div class="mobile-drawer__header">
-      <button class="mobile-drawer__close" data-drawer-close aria-label="Fechar menu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 17" fill="none" width="18" height="17">
-          <path fill="currentColor" d="M.865 15.978a.5.5 0 0 0 .707.707l7.433-7.431 7.579 7.282a.501.501 0 0 0 .846-.37.5.5 0 0 0-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 1 0-.707-.708L8.991 7.853 1.413.573a.5.5 0 1 0-.693.72l7.563 7.272z"/>
-        </svg>
-      </button>
-    </div>
-    <nav class="mobile-drawer__nav">
-      <ul class="mobile-drawer__menu">
-        {% if menu_links and menu_links.size > 0 %}
-          {% for link in menu_links %}
-            <li class="mobile-drawer__item{% if link.links.size > 0 %} has-submenu{% endif %}">
-              <div class="mobile-drawer__link-row">
-                <a href="{{ link.url }}" class="mobile-drawer__link">{{ link.title }}</a>
-                {% if link.links.size > 0 %}
-                  <button class="mobile-drawer__expand" aria-label="Expandir" data-submenu-toggle>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </button>
-                {% endif %}
-              </div>
-              {% if link.links.size > 0 %}
-                <ul class="mobile-drawer__submenu">
-                  {% for child in link.links %}
-                    <li><a href="{{ child.url }}" class="mobile-drawer__sublink">{{ child.title }}</a></li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </li>
-          {% endfor %}
-        {% else %}
-          <li class="mobile-drawer__item"><a href="/collections/novidades" class="mobile-drawer__link">NOVIDADES</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/mom-edit" class="mobile-drawer__link">MOM EDIT</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/snow-trip-collab" class="mobile-drawer__link">SNOW TRIP COLLAB</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/roupas" class="mobile-drawer__link">ROUPAS</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/aerolooks" class="mobile-drawer__link">AEROLOOKS</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/sale-ver26" class="mobile-drawer__link">SALE VER26</a></li>
-          <li class="mobile-drawer__item"><a href="/collections/outlet" class="mobile-drawer__link">OUTLET</a></li>
-        {% endif %}
-      </ul>
-      <div class="mobile-drawer__footer">
-        <a href="/pages/wishlist" class="mobile-drawer__footer-link">Favoritos</a>
-        <a href="{{ routes.account_login_url }}" class="mobile-drawer__footer-link">Fazer login</a>
-        <a href="/pages/fale-conosco" class="mobile-drawer__footer-link">Fale Conosco</a>
-      </div>
-    </nav>
-  </aside>
-</div>
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
@@ -1094,6 +801,301 @@
     .search-bar__live-results { grid-template-columns: 1fr 1fr; gap: 12px; }
   }
 </style>
+
+<header class="site-header" data-site-header{% if section.settings.sticky_header %} data-sticky-header{% endif %}>
+  <div class="site-header__container">
+    <!-- Mobile Menu Toggle (esquerda em tablet/mobile, escondido no desktop) -->
+    <button
+      class="site-header__menu-toggle"
+      aria-label="Menu"
+      data-menu-toggle
+    >
+      <svg class="icon-hamburger"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="24"
+        height="24"
+      >
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <svg class="icon-close"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        width="24"
+        height="24"
+      >
+        <line x1="5" y1="5" x2="19" y2="19"></line>
+        <line x1="19" y1="5" x2="5" y2="19"></line>
+      </svg>
+    </button>
+
+    <!-- Logo -->
+    <div class="site-header__logo">
+      {% if section.settings.logo %}
+        <a href="{{ '/' | absolute_url }}" class="site-header__logo-link">
+          <img
+            src="{{ section.settings.logo | image_url: width: 400 }}"
+            alt="{{ shop.name }}"
+            width="180"
+            height="40"
+            loading="eager"
+            class="site-header__logo-img"
+          />
+        </a>
+      {% else %}
+        <a href="{{ '/' | absolute_url }}" class="site-header__logo-link">
+          <img
+            src="https://mundodasmalhas.vtexassets.com/assets/vtex/assets-builder/mundodasmalhas.store/3.25.160/logo-gt___c2eb9df48d06eba042153a5c93a107a0.svg"
+            alt="{{ shop.name }}"
+            width="180"
+            height="40"
+            loading="eager"
+            class="site-header__logo-img"
+          />
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Navigation -->
+    <nav class="site-header__nav" data-site-nav>
+      <div class="site-header__nav-inner">
+        {% assign menu_handle = section.settings.menu | default: 'main-menu' %}
+        {% assign menu = linklists[menu_handle] %}
+        {% if menu == blank or menu.links.size == 0 %}
+          {% assign menu = linklists['main-menu'] %}
+          {% assign menu_handle = 'main-menu' %}
+        {% endif %}
+        {% assign menu_links = menu.links %}
+        {% if menu_links.size > 0 %}
+          <ul class="site-header__nav-list">
+            {% for link in menu.links %}
+              <li class="site-header__nav-item">
+                <a
+                  href="{{ link.url }}"
+                  class="site-header__nav-link"
+                  {% if link.links.size > 0 %}
+                    data-mega-menu-trigger
+                  {% endif %}
+                >
+                  {{ link.title }}
+                  {% if link.links.size > 0 %}
+                    <svg
+                      class="site-header__nav-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      width="16"
+                      height="16"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  {% endif %}
+                </a>
+
+                {% if link.links.size > 0 %}
+                  <div class="mega-menu" data-mega-menu>
+                    <div class="mega-menu__content">
+                      {% assign col_count = 1 %}
+                      <div class="mega-menu__column">
+                        <a href="{{ link.url }}" class="mega-menu__link mega-menu__link--all">VER TUDO</a>
+                        {% for child_link in link.links %}
+                          {% if col_count >= 5 %}
+                            </div>
+                            <div class="mega-menu__column">
+                            {% assign col_count = 0 %}
+                          {% endif %}
+                          <a href="{{ child_link.url }}" class="mega-menu__link">
+                            {{ child_link.title }}
+                          </a>
+                          {% assign col_count = col_count | plus: 1 %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <ul class="site-header__nav-list">
+            <li class="site-header__nav-item"><a href="/collections/novidades" class="site-header__nav-link">NOVIDADES</a></li>
+            <li class="site-header__nav-item"><a href="/collections/mom-edit" class="site-header__nav-link">MOM EDIT</a></li>
+            <li class="site-header__nav-item"><a href="/collections/snow-trip-collab" class="site-header__nav-link">SNOW TRIP COLLAB</a></li>
+            <li class="site-header__nav-item"><a href="/collections/roupas" class="site-header__nav-link">ROUPAS</a></li>
+            <li class="site-header__nav-item"><a href="/collections/aerolooks" class="site-header__nav-link">AEROLOOKS</a></li>
+            <li class="site-header__nav-item"><a href="/collections/sale-ver26" class="site-header__nav-link">SALE VER26</a></li>
+            <li class="site-header__nav-item"><a href="/collections/outlet" class="site-header__nav-link">OUTLET</a></li>
+          </ul>
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- Icons -->
+    <div class="site-header__icons">
+      <!-- Search -->
+      <button
+        class="site-header__icon-btn"
+        aria-label="Buscar"
+        data-search-btn
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22">
+          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+          <path d="M21.0004 21L16.6504 16.65" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        </svg>
+      </button>
+
+      <!-- Account -->
+      <a
+        href="{{ routes.account_url }}"
+        class="site-header__icon-btn"
+        aria-label="Conta"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 19" fill="currentColor" width="22" height="22">
+          <path fill-rule="evenodd" d="M6 4.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8m5.58 12.15c1.12.82 1.83 2.24 1.91 4.85H1.51c.08-2.6.79-4.03 1.9-4.85C4.66 11.75 6.5 11.5 9 11.5s4.35.26 5.58 1.15M9 10.5c-2.5 0-4.65.24-6.17 1.35C1.27 12.98.5 14.93.5 18v.5h17V18c0-3.07-.77-5.02-2.33-6.15-1.52-1.1-3.67-1.35-6.17-1.35"/>
+        </svg>
+      </a>
+
+      <!-- Cart — abre mini cart; link pra /cart fica dentro do drawer -->
+      <a
+        href="{{ routes.cart_url }}"
+        class="site-header__icon-btn site-header__cart-btn"
+        aria-label="Sacola"
+        onclick="event.preventDefault(); if(typeof openCartDrawer==='function') openCartDrawer();"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 25" fill="none" width="22" height="22">
+          <path d="M6.99316 8.98838V4.81625C6.99316 2.71705 8.79633 1 11.0008 1C13.2044 1 15.008 2.71705 15.008 4.81625V8.988" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linejoin="round"/>
+          <path d="M3.04688 20.6383H18.9533" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+          <path d="M15.1254 6.65979H20.1939L20.9976 22.6163C21.0511 23.6648 20.2053 24 19.0641 24H2.93589C1.79465 24 0.948836 23.6648 1.00238 22.6163L1.80613 6.65979H6.87457" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linejoin="round"/>
+        </svg>
+        {% if cart.item_count > 0 %}
+          <span class="site-header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+
+    </div>
+  </div>
+</header>
+
+<!-- Search Bar (full-width, topo — estilo BP) -->
+<div class="search-bar" id="search-overlay" aria-hidden="true">
+  <div class="search-bar__backdrop" data-search-close></div>
+  <div class="search-bar__panel">
+    <div class="search-bar__top">
+      <a href="/" class="search-bar__logo" aria-label="Início">
+        {%- if section.settings.logo -%}
+          <img src="{{ section.settings.logo | image_url: width: 120 }}" alt="{{ shop.name }}" height="36">
+        {%- else -%}
+          <span class="search-bar__logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+      <button type="button" class="search-bar__close" data-search-close aria-label="Fechar busca">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <form action="/search" method="get" class="search-bar__form" role="search">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="sort_by" value="created-descending">
+      <input
+        type="text"
+        name="q"
+        class="search-bar__input"
+        placeholder="Pesquise por cor, nome do produto..."
+        autocomplete="off"
+        id="search-input"
+      >
+    </form>
+    <div class="search-bar__body" id="search-results">
+      <div class="search-bar__suggestions">
+        <div class="search-bar__col">
+          <div class="search-bar__col-header">
+            <span class="search-bar__col-title">Buscas recentes</span>
+            <button class="search-bar__col-action" id="search-clear-recent">Limpar</button>
+          </div>
+          <ul class="search-bar__recent-list" id="search-recent-list"></ul>
+        </div>
+        <div class="search-bar__col">
+          <span class="search-bar__col-title">Termos mais buscados</span>
+          <ul class="search-bar__popular-list">
+            <li><a href="/search?q=tricot&type=product">Tricot</a></li>
+            <li><a href="/search?q=conjunto&type=product">Conjunto</a></li>
+            <li><a href="/search?q=vestido&type=product">Vestido</a></li>
+            <li><a href="/search?q=casaco&type=product">Casaco</a></li>
+            <li><a href="/search?q=macacão&type=product">Macacão</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Drawer (estilo PatBO) -->
+<div class="mobile-drawer" data-mobile-drawer aria-hidden="true">
+  <div class="mobile-drawer__overlay" data-drawer-close></div>
+  <aside class="mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="mobile-drawer__header">
+      <button class="mobile-drawer__close" data-drawer-close aria-label="Fechar menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 17" fill="none" width="18" height="17">
+          <path fill="currentColor" d="M.865 15.978a.5.5 0 0 0 .707.707l7.433-7.431 7.579 7.282a.501.501 0 0 0 .846-.37.5.5 0 0 0-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 1 0-.707-.708L8.991 7.853 1.413.573a.5.5 0 1 0-.693.72l7.563 7.272z"/>
+        </svg>
+      </button>
+    </div>
+    <nav class="mobile-drawer__nav">
+      <ul class="mobile-drawer__menu">
+        {% if menu_links and menu_links.size > 0 %}
+          {% for link in menu_links %}
+            <li class="mobile-drawer__item{% if link.links.size > 0 %} has-submenu{% endif %}">
+              <div class="mobile-drawer__link-row">
+                <a href="{{ link.url }}" class="mobile-drawer__link">{{ link.title }}</a>
+                {% if link.links.size > 0 %}
+                  <button class="mobile-drawer__expand" aria-label="Expandir" data-submenu-toggle>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                {% endif %}
+              </div>
+              {% if link.links.size > 0 %}
+                <ul class="mobile-drawer__submenu">
+                  {% for child in link.links %}
+                    <li><a href="{{ child.url }}" class="mobile-drawer__sublink">{{ child.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="mobile-drawer__item"><a href="/collections/novidades" class="mobile-drawer__link">NOVIDADES</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/mom-edit" class="mobile-drawer__link">MOM EDIT</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/snow-trip-collab" class="mobile-drawer__link">SNOW TRIP COLLAB</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/roupas" class="mobile-drawer__link">ROUPAS</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/aerolooks" class="mobile-drawer__link">AEROLOOKS</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/sale-ver26" class="mobile-drawer__link">SALE VER26</a></li>
+          <li class="mobile-drawer__item"><a href="/collections/outlet" class="mobile-drawer__link">OUTLET</a></li>
+        {% endif %}
+      </ul>
+      <div class="mobile-drawer__footer">
+        <a href="/pages/wishlist" class="mobile-drawer__footer-link">Favoritos</a>
+        <a href="{{ routes.account_login_url }}" class="mobile-drawer__footer-link">Fazer login</a>
+        <a href="/pages/fale-conosco" class="mobile-drawer__footer-link">Fale Conosco</a>
+      </div>
+    </nav>
+  </aside>
+</div>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
