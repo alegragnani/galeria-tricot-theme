@@ -233,6 +233,16 @@
               {% assign data_envio = tag | split: ':' | last | strip %}
             {% endif %}
           {% endfor %}
+          {% assign pv_meta = product.metafields.custom.data_pre_venda.value %}
+          {% if is_pre_venda and pv_meta != blank %}
+            {% assign pv_now = 'now' | date: '%s' | plus: 0 %}
+            {% assign pv_dts = pv_meta | date: '%s' | plus: 0 %}
+            {% if pv_dts > pv_now %}
+              {% assign data_envio = pv_meta | date: '%d/%m/%Y' %}
+            {% else %}
+              {% assign is_pre_venda = false %}
+            {% endif %}
+          {% endif %}
 
           {% if is_pre_venda %}
             <div class="pdp__pre-venda">
@@ -244,26 +254,6 @@
               {% endif %}
             </div>
           {% endif %}
-
-          {%- assign pv_tags = product.tags | join: ',' | downcase -%}
-          {%- if pv_tags contains 'pré-venda' or pv_tags contains 'pre-venda' -%}
-            {%- assign pv_date = product.metafields.custom.data_pre_venda.value -%}
-            {%- assign pv_show = false -%}
-            {%- if pv_date == blank -%}{%- assign pv_show = true -%}{%- else -%}
-              {%- assign pv_now = 'now' | date: '%s' | plus: 0 -%}{%- assign pv_dts = pv_date | date: '%s' | plus: 0 -%}
-              {%- if pv_dts > pv_now -%}{%- assign pv_show = true -%}{%- endif -%}
-            {%- endif -%}
-            {%- if pv_show -%}
-              <div class="pdp__prevenda">
-                <span class="pdp__prevenda-tag">PRÉ-VENDA</span>
-                {%- if pv_date != blank -%}
-                  <span class="pdp__prevenda-txt">Peça sob encomenda · envio previsto a partir de {{ pv_date | date: '%d/%m/%Y' }}</span>
-                {%- else -%}
-                  <span class="pdp__prevenda-txt">Peça sob encomenda · pré-venda, fabricação sob demanda</span>
-                {%- endif -%}
-              </div>
-            {%- endif -%}
-          {%- endif -%}
 
           {% comment %} Botão comprar {% endcomment %}
           <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
@@ -912,28 +902,6 @@
   }
 
   /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px, 80% da coluna --- */
-  .pdp__prevenda {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin: 0 0 14px;
-    padding: 12px 14px;
-    background: #F5F1EA;
-    border-left: 3px solid #4A3222;
-  }
-  .pdp__prevenda-tag {
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    color: #4A3222;
-  }
-  .pdp__prevenda-txt {
-    font-family: 'Raleway', sans-serif;
-    font-size: 13px;
-    color: #545454;
-    line-height: 1.4;
-  }
   .pdp__add-to-cart {
     width: 80%;
     height: 47px;
