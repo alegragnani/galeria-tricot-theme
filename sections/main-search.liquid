@@ -41,11 +41,11 @@
 
   {% if search.performed %}
     {% if search.results_count > 0 %}
-      {% paginate search.results by 48 %}
+      {% paginate search.results by 250 %}
       <div class="search-results__grid" id="search-grid">
         {% for item in search.results %}
           {% if item.object_type == 'product' %}
-            <div class="search-results__card-wrap" data-published="{{ item.published_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
+            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: 0 }}" data-created="{{ item.created_at | date: '%s' }}">
               {% render 'product-card', product: item %}
             </div>
           {% else %}
@@ -65,9 +65,9 @@
           var cards = Array.from(grid.querySelectorAll('.search-results__card-wrap'));
           if (cards.length < 2) return;
           cards.sort(function(a, b) {
-            var pa = parseInt(a.dataset.published || '0', 10);
-            var pb = parseInt(b.dataset.published || '0', 10);
-            /* Se published_at diferente, usa ele; senão usa created_at */
+            var pa = parseInt(a.dataset.release || '0', 10);
+            var pb = parseInt(b.dataset.release || '0', 10);
+            /* Data de lancamento real (VTEX); se igual, usa ele; senão usa created_at */
             if (pa !== pb) return pb - pa;
             var ca = parseInt(a.dataset.created || '0', 10);
             var cb = parseInt(b.dataset.created || '0', 10);
