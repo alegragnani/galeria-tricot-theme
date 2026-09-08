@@ -45,7 +45,7 @@
       <div class="search-results__grid" id="search-grid">
         {% for item in search.results %}
           {% if item.object_type == 'product' %}
-            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: 0 }}" data-created="{{ item.created_at | date: '%s' }}">
+            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: item.created_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
               {% render 'product-card', product: item %}
             </div>
           {% else %}
