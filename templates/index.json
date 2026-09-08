@@ -15,12 +15,12 @@
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/20-03_banner_4.jpg",
-            "image_mobile": "shopify:\/\/shop_images\/20-03_MOBILE_BANNER_5.jpg",
+            "image": "shopify:\/\/shop_images\/e89c4b9d-1633-4376-9d28-4cf17e113802___cfff985417694f52f4f28de8ba9d8f23.png",
+            "image_mobile": "shopify:\/\/shop_images\/3a55a136-2637-42ba-b317-93fa5ebbaf1d___8dba57c66f6daddcf7d51ff8d69f2583.png",
             "heading": "",
             "subheading": "",
             "button_text": "",
-            "button_link": "\/collections\/sale",
+            "button_link": "\/collections\/sale-1",
             "text_position": "right",
             "text_vertical": "top",
             "text_color": "#00000000"
@@ -29,12 +29,12 @@
         "slide_amicLw": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/20-03_banner_10.jpg",
-            "image_mobile": "shopify:\/\/shop_images\/20-03_MOBILE_BANNER_4.jpg",
+            "image": "shopify:\/\/shop_images\/1217d5bc-56c8-41a3-b09e-42fbe5b1d680___bf4b5fa6629acda1d1e0f35166a9761f.jpg",
+            "image_mobile": "shopify:\/\/shop_images\/53ff6273-329d-4f2c-a9e9-f49208fa988f___4c128a3acdb4b8f839f5c0a83caf7f0a.jpg",
             "heading": "",
             "subheading": "",
             "button_text": "",
-            "button_link": "\/collections\/novidades",
+            "button_link": "\/collections\/verao-2027",
             "text_position": "right",
             "text_vertical": "top",
             "text_color": "rgba(0,0,0,0)"
