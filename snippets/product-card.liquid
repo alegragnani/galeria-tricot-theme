@@ -1,157 +1,4 @@
-{%- comment -%}
-  Product Card Snippet — Galeria Tricot (estilo BP)
-  Usage: {% render 'product-card', product: product %}
-{%- endcomment -%}
-
-{%- assign gt_extra = product.metafields.custom.foto_extra_vitrine -%}
-{%- assign gt_vezes = 1 -%}
-{%- if gt_extra != blank -%}{%- assign gt_vezes = 2 -%}{%- endif -%}
-{%- for gt_card in (1..gt_vezes) -%}
-<div class="product-card">
-  <div class="product-card__image-wrapper">
-    <a href="{{ product.url }}" class="product-card__image-link">
-      {%- if product.featured_image -%}
-        <img
-          src="{% if gt_card == 2 %}{{ gt_extra.value | image_url: width: 600 }}{% else %}{{ product.featured_image | image_url: width: 600 }}{% endif %}"
-          alt="{{ product.featured_image.alt | escape }}"
-          class="product-card__image product-card__image--primary"
-          loading="lazy"
-          width="600"
-          height="900"
-        >
-      {%- endif -%}
-
-      {%- if product.images.size > 1 -%}
-        <img
-          src="{{ product.images[1] | image_url: width: 600 }}"
-          alt="{{ product.images[1].alt | escape }}"
-          class="product-card__image product-card__image--hover"
-          loading="lazy"
-          width="600"
-          height="900"
-        >
-      {%- endif -%}
-    </a>
-
-    {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
-    <div class="pc-mslider">
-      <div class="pc-mtrack" data-url="{{ product.url }}" onscroll="pcDots(this)">
-        {%- if gt_card == 2 -%}
-        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></span>
-        {%- endif -%}
-        {%- for gt_img in product.images limit: 4 -%}
-        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></span>
-        {%- endfor -%}
-      </div>
-      <div class="pc-mdots">
-        {%- if gt_card == 2 -%}<span class="pc-mdot pc-mdot--on"></span>{%- endif -%}
-        {%- for gt_img in product.images limit: 4 -%}<span class="pc-mdot{% if forloop.first and gt_card != 2 %} pc-mdot--on{% endif %}"></span>{%- endfor -%}
-      </div>
-    </div>
-
-    {%- if product.compare_at_price > product.price -%}
-      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
-      <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
-    {%- elsif product.metafields.custom.conjunto_pecas != blank -%}
-      {%- comment -%} Conjunto: verificar se as pecas estao em sale {%- endcomment -%}
-      {%- assign conj_pecas = product.metafields.custom.conjunto_pecas.value -%}
-      {%- assign conj_compare_total = 0 -%}
-      {%- assign conj_price_total = 0 -%}
-      {%- assign conj_has_sale = false -%}
-      {%- for peca in conj_pecas -%}
-        {%- if peca.compare_at_price > peca.price -%}
-          {%- assign conj_has_sale = true -%}
-          {%- assign conj_compare_total = conj_compare_total | plus: peca.compare_at_price -%}
-        {%- else -%}
-          {%- assign conj_compare_total = conj_compare_total | plus: peca.price -%}
-        {%- endif -%}
-        {%- assign conj_price_total = conj_price_total | plus: peca.price -%}
-      {%- endfor -%}
-      {%- if conj_has_sale and conj_compare_total > conj_price_total -%}
-        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100 | divided_by: conj_compare_total -%}
-        <span class="product-card__badge product-card__badge--sale">- {{ conj_discount }}%</span>
-      {%- endif -%}
-    {%- endif -%}
-
-    {%- assign gt_ispv = false -%}
-    {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
-    {%- if gt_pvdate != blank -%}
-      {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
-      {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
-      {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
-    {%- endif -%}
-    {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
-
-    <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    </button>
-
-
-    <!-- Seletor de tamanho rapido — hover -->
-    {%- assign is_conjunto = false -%}
-    {%- assign title_lower = product.title | downcase -%}
-    {%- if product.type == 'Conjuntos' or title_lower contains 'conjunto' or title_lower contains 'twin' -%}
-      {%- assign is_conjunto = true -%}
-    {%- endif -%}
-
-    {%- if is_conjunto -%}
-      {%- comment -%} Conjunto: botao que leva pra pagina do produto {%- endcomment -%}
-      <a href="{{ product.url }}" class="product-card__quick-sizes product-card__quick-sizes--link">
-        <span class="product-card__sizes-label">Selecionar tamanho</span>
-      </a>
-    {%- else -%}
-      {%- comment -%} Peça avulsa: tamanhos direto no card {%- endcomment -%}
-      <div class="product-card__quick-sizes">
-        <span class="product-card__sizes-label">Selecionar tamanho</span>
-        <div class="product-card__sizes-row">
-          {%- for variant in product.variants -%}
-            {%- assign size_label = variant.title -%}
-            {%- if variant.available -%}
-              <button
-                class="product-card__size-btn"
-                data-variant-id="{{ variant.id }}"
-                data-url="{{ product.url }}"
-                onclick="quickAddSize(this, event)"
-              >{{ size_label }}</button>
-            {%- else -%}
-              <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
-      </div>
-    {%- endif -%}
-  </div>
-
-  <div class="product-card__info">
-    <a href="{{ product.url }}" class="product-card__title-link">
-      <h3 class="product-card__title">{{ product.title }}</h3>
-    </a>
-
-    <div class="product-card__price">
-      {%- if product.compare_at_price > product.price -%}
-        <span class="product-card__price--compare">
-          {{ product.compare_at_price | money }}
-        </span>
-        <span class="product-card__price--sale">
-          {{ product.price | money }}
-        </span>
-      {%- elsif conj_has_sale and conj_compare_total > conj_price_total -%}
-        <span class="product-card__price--compare">
-          {{ conj_compare_total | money }}
-        </span>
-        <span class="product-card__price--sale">
-          {{ conj_price_total | money }}
-        </span>
-      {%- else -%}
-        {{ product.price | money }}
-      {%- endif -%}
-    </div>
-  </div>
-</div>
-{%- endfor -%}
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .product-card {
     position: relative;
@@ -429,6 +276,161 @@
     .pc-mdot--on { background: #FFFFFF; }
   }
 </style>
+{%- comment -%}
+  Product Card Snippet — Galeria Tricot (estilo BP)
+  Usage: {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+{%- assign gt_extra = product.metafields.custom.foto_extra_vitrine -%}
+{%- assign gt_vezes = 1 -%}
+{%- if gt_extra != blank -%}{%- assign gt_vezes = 2 -%}{%- endif -%}
+{%- for gt_card in (1..gt_vezes) -%}
+<div class="product-card">
+  <div class="product-card__image-wrapper">
+    <a href="{{ product.url }}" class="product-card__image-link">
+      {%- if product.featured_image -%}
+        <img
+          src="{% if gt_card == 2 %}{{ gt_extra.value | image_url: width: 600 }}{% else %}{{ product.featured_image | image_url: width: 600 }}{% endif %}"
+          alt="{{ product.featured_image.alt | escape }}"
+          class="product-card__image product-card__image--primary"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
+
+      {%- if product.images.size > 1 -%}
+        <img
+          src="{{ product.images[1] | image_url: width: 600 }}"
+          alt="{{ product.images[1].alt | escape }}"
+          class="product-card__image product-card__image--hover"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
+    <div class="pc-mslider">
+      <div class="pc-mtrack" data-url="{{ product.url }}" onscroll="pcDots(this)">
+        {%- if gt_card == 2 -%}
+        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></span>
+        {%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}
+        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></span>
+        {%- endfor -%}
+      </div>
+      <div class="pc-mdots">
+        {%- if gt_card == 2 -%}<span class="pc-mdot pc-mdot--on"></span>{%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}<span class="pc-mdot{% if forloop.first and gt_card != 2 %} pc-mdot--on{% endif %}"></span>{%- endfor -%}
+      </div>
+    </div>
+
+    {%- if product.compare_at_price > product.price -%}
+      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+      <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
+    {%- elsif product.metafields.custom.conjunto_pecas != blank -%}
+      {%- comment -%} Conjunto: verificar se as pecas estao em sale {%- endcomment -%}
+      {%- assign conj_pecas = product.metafields.custom.conjunto_pecas.value -%}
+      {%- assign conj_compare_total = 0 -%}
+      {%- assign conj_price_total = 0 -%}
+      {%- assign conj_has_sale = false -%}
+      {%- for peca in conj_pecas -%}
+        {%- if peca.compare_at_price > peca.price -%}
+          {%- assign conj_has_sale = true -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.compare_at_price -%}
+        {%- else -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.price -%}
+        {%- endif -%}
+        {%- assign conj_price_total = conj_price_total | plus: peca.price -%}
+      {%- endfor -%}
+      {%- if conj_has_sale and conj_compare_total > conj_price_total -%}
+        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100 | divided_by: conj_compare_total -%}
+        <span class="product-card__badge product-card__badge--sale">- {{ conj_discount }}%</span>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- assign gt_ispv = false -%}
+    {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
+    {%- if gt_pvdate != blank -%}
+      {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
+      {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
+      {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
+    {%- endif -%}
+    {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
+
+    <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+
+
+    <!-- Seletor de tamanho rapido — hover -->
+    {%- assign is_conjunto = false -%}
+    {%- assign title_lower = product.title | downcase -%}
+    {%- if product.type == 'Conjuntos' or title_lower contains 'conjunto' or title_lower contains 'twin' -%}
+      {%- assign is_conjunto = true -%}
+    {%- endif -%}
+
+    {%- if is_conjunto -%}
+      {%- comment -%} Conjunto: botao que leva pra pagina do produto {%- endcomment -%}
+      <a href="{{ product.url }}" class="product-card__quick-sizes product-card__quick-sizes--link">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+      </a>
+    {%- else -%}
+      {%- comment -%} Peça avulsa: tamanhos direto no card {%- endcomment -%}
+      <div class="product-card__quick-sizes">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+        <div class="product-card__sizes-row">
+          {%- for variant in product.variants -%}
+            {%- assign size_label = variant.title -%}
+            {%- if variant.available -%}
+              <button
+                class="product-card__size-btn"
+                data-variant-id="{{ variant.id }}"
+                data-url="{{ product.url }}"
+                onclick="quickAddSize(this, event)"
+              >{{ size_label }}</button>
+            {%- else -%}
+              <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__info">
+    <a href="{{ product.url }}" class="product-card__title-link">
+      <h3 class="product-card__title">{{ product.title }}</h3>
+    </a>
+
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="product-card__price--compare">
+          {{ product.compare_at_price | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ product.price | money }}
+        </span>
+      {%- elsif conj_has_sale and conj_compare_total > conj_price_total -%}
+        <span class="product-card__price--compare">
+          {{ conj_compare_total | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ conj_price_total | money }}
+        </span>
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{%- endfor -%}
+
+
 
 <script>
 function quickAddSize(btn, e) {

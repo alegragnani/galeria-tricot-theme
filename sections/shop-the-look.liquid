@@ -1,94 +1,4 @@
-<!-- Escolhas das Blogueiras — carrossel BP "Escolhas da Pat" -->
-<section class="shop-the-look">
-  {% if section.settings.title != blank %}
-    <div class="shop-the-look__header">
-      <h2 class="shop-the-look__section-title">{{ section.settings.title }}</h2>
-    </div>
-  {% endif %}
-
-  <div class="shop-the-look__container">
-    <div class="shop-the-look__slider" id="stl-slider-{{ section.id }}">
-      <div class="shop-the-look__track" id="stl-track-{{ section.id }}">
-        {% for block in section.blocks %}
-          <div class="shop-the-look__slide" {{ block.shopify_attributes }}>
-            <div class="shop-the-look__grid">
-              <!-- Esquerda: Foto lifestyle retrato -->
-              <div class="shop-the-look__lifestyle">
-                {% if block.settings.lifestyle_image %}
-                  <img
-                    src="{{ block.settings.lifestyle_image | image_url: width: 900 }}"
-                    srcset="{{ block.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ block.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ block.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
-                    sizes="(max-width: 749px) 100vw, 50vw"
-                    alt="{{ block.settings.heading | default: section.settings.title | escape }}"
-                    class="shop-the-look__lifestyle-image"
-                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                  >
-                {% else %}
-                  <div class="shop-the-look__placeholder">
-                    {{ 'image' | placeholder_svg_tag }}
-                  </div>
-                {% endif %}
-              </div>
-
-              <!-- Direita: Produto com moldura -->
-              <div class="shop-the-look__product-side">
-                {% if block.settings.product != blank %}
-                  {% assign product = block.settings.product %}
-                  <div class="shop-the-look__card-frame">
-                    <a href="{{ product.url }}" class="shop-the-look__product-link">
-                      <div class="shop-the-look__product-image-wrapper">
-                        {% if product.featured_image %}
-                          <img
-                            src="{{ product.featured_image | image_url: width: 600 }}"
-                            alt="{{ product.title | escape }}"
-                            class="shop-the-look__product-image"
-                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                          >
-                        {% endif %}
-
-                        <!-- Hover: Adicionar a sacola -->
-                        <div class="shop-the-look__quick-add">
-                          <span class="shop-the-look__quick-add-text">Adicionar à sacola</span>
-                        </div>
-                      </div>
-
-                      <div class="shop-the-look__product-info">
-                        <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
-                        <div class="shop-the-look__product-price">
-                          {% if product.compare_at_price > product.price %}
-                            <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
-                          {% endif %}
-                          <span class="shop-the-look__price">{{ product.price | money }}</span>
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-                {% else %}
-                  <div class="shop-the-look__placeholder">
-                    {{ 'image' | placeholder_svg_tag }}
-                  </div>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-
-      <!-- Setas de navegacao (BP style: centralizadas embaixo da foto lifestyle) -->
-      {% if section.blocks.size > 1 %}
-        <div class="shop-the-look__nav">
-          <button class="shop-the-look__arrow shop-the-look__arrow--prev" aria-label="Anterior" data-stl-prev="{{ section.id }}">
-            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
-          </button>
-          <button class="shop-the-look__arrow shop-the-look__arrow--next" aria-label="Próximo" data-stl-next="{{ section.id }}">
-            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
-          </button>
-        </div>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .shop-the-look {
     padding: 0 0 36px;
@@ -480,6 +390,98 @@
     }
   }
 </style>
+<!-- Escolhas das Blogueiras — carrossel BP "Escolhas da Pat" -->
+<section class="shop-the-look">
+  {% if section.settings.title != blank %}
+    <div class="shop-the-look__header">
+      <h2 class="shop-the-look__section-title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="shop-the-look__container">
+    <div class="shop-the-look__slider" id="stl-slider-{{ section.id }}">
+      <div class="shop-the-look__track" id="stl-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="shop-the-look__slide" {{ block.shopify_attributes }}>
+            <div class="shop-the-look__grid">
+              <!-- Esquerda: Foto lifestyle retrato -->
+              <div class="shop-the-look__lifestyle">
+                {% if block.settings.lifestyle_image %}
+                  <img
+                    src="{{ block.settings.lifestyle_image | image_url: width: 900 }}"
+                    srcset="{{ block.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ block.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ block.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
+                    sizes="(max-width: 749px) 100vw, 50vw"
+                    alt="{{ block.settings.heading | default: section.settings.title | escape }}"
+                    class="shop-the-look__lifestyle-image"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Direita: Produto com moldura -->
+              <div class="shop-the-look__product-side">
+                {% if block.settings.product != blank %}
+                  {% assign product = block.settings.product %}
+                  <div class="shop-the-look__card-frame">
+                    <a href="{{ product.url }}" class="shop-the-look__product-link">
+                      <div class="shop-the-look__product-image-wrapper">
+                        {% if product.featured_image %}
+                          <img
+                            src="{{ product.featured_image | image_url: width: 600 }}"
+                            alt="{{ product.title | escape }}"
+                            class="shop-the-look__product-image"
+                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                          >
+                        {% endif %}
+
+                        <!-- Hover: Adicionar a sacola -->
+                        <div class="shop-the-look__quick-add">
+                          <span class="shop-the-look__quick-add-text">Adicionar à sacola</span>
+                        </div>
+                      </div>
+
+                      <div class="shop-the-look__product-info">
+                        <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
+                        <div class="shop-the-look__product-price">
+                          {% if product.compare_at_price > product.price %}
+                            <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
+                          {% endif %}
+                          <span class="shop-the-look__price">{{ product.price | money }}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Setas de navegacao (BP style: centralizadas embaixo da foto lifestyle) -->
+      {% if section.blocks.size > 1 %}
+        <div class="shop-the-look__nav">
+          <button class="shop-the-look__arrow shop-the-look__arrow--prev" aria-label="Anterior" data-stl-prev="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+          <button class="shop-the-look__arrow shop-the-look__arrow--next" aria-label="Próximo" data-stl-next="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
 
 <script>
   (function() {

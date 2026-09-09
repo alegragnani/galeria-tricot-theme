@@ -1,41 +1,4 @@
-{%- comment -%}
-  Cart Drawer (mini cart) — Galeria Tricot (estilo BP)
-  100% AJAX — não recarrega a página ao adicionar/remover/mudar quantidade
-{%- endcomment -%}
-
-<div class="cart-drawer__overlay" id="cart-overlay"></div>
-
-<aside class="cart-drawer" id="cart-drawer">
-  <div class="cart-drawer__header">
-    <h2 class="cart-drawer__title">MINHA SACOLA</h2>
-    <button class="cart-drawer__close" id="cart-drawer-close" aria-label="Fechar sacola">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>
-
-  <div class="cart-drawer__items" id="cart-drawer-items">
-    {%- comment -%} Conteúdo carregado via JS {%- endcomment -%}
-  </div>
-
-  <div class="cart-drawer__footer" id="cart-drawer-footer" style="display:none;">
-    <div class="cart-drawer__coupon" id="cart-coupon-section">
-      <div class="cart-drawer__coupon-row">
-        <input type="text" id="cart-coupon-input" class="cart-drawer__coupon-input" placeholder="Cupom de desconto" autocomplete="off">
-        <button type="button" id="cart-coupon-btn" class="cart-drawer__coupon-btn" onclick="applyCoupon()">APLICAR</button>
-      </div>
-      <p class="cart-drawer__coupon-msg" id="cart-coupon-msg"></p>
-    </div>
-    <div class="cart-drawer__subtotal">
-      <span>SUBTOTAL</span>
-      <span id="cart-drawer-total"></span>
-    </div>
-    <p class="cart-drawer__shipping-note">Frete calculado no checkout</p>
-    <a href="/checkout" class="cart-drawer__checkout-btn">FINALIZAR COMPRA</a>
-  </div>
-</aside>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .cart-drawer__overlay {
     position: fixed;
@@ -317,6 +280,45 @@
   }
   .cart-drawer__checkout-btn:hover { opacity: 0.85; }
 </style>
+{%- comment -%}
+  Cart Drawer (mini cart) — Galeria Tricot (estilo BP)
+  100% AJAX — não recarrega a página ao adicionar/remover/mudar quantidade
+{%- endcomment -%}
+
+<div class="cart-drawer__overlay" id="cart-overlay"></div>
+
+<aside class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer__header">
+    <h2 class="cart-drawer__title">MINHA SACOLA</h2>
+    <button class="cart-drawer__close" id="cart-drawer-close" aria-label="Fechar sacola">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="cart-drawer__items" id="cart-drawer-items">
+    {%- comment -%} Conteúdo carregado via JS {%- endcomment -%}
+  </div>
+
+  <div class="cart-drawer__footer" id="cart-drawer-footer" style="display:none;">
+    <div class="cart-drawer__coupon" id="cart-coupon-section">
+      <div class="cart-drawer__coupon-row">
+        <input type="text" id="cart-coupon-input" class="cart-drawer__coupon-input" placeholder="Cupom de desconto" autocomplete="off">
+        <button type="button" id="cart-coupon-btn" class="cart-drawer__coupon-btn" onclick="applyCoupon()">APLICAR</button>
+      </div>
+      <p class="cart-drawer__coupon-msg" id="cart-coupon-msg"></p>
+    </div>
+    <div class="cart-drawer__subtotal">
+      <span>SUBTOTAL</span>
+      <span id="cart-drawer-total"></span>
+    </div>
+    <p class="cart-drawer__shipping-note">Frete calculado no checkout</p>
+    <a href="/checkout" class="cart-drawer__checkout-btn">FINALIZAR COMPRA</a>
+  </div>
+</aside>
+
+
 
 <script>
 (function() {

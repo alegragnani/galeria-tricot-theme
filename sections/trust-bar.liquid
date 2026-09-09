@@ -1,3 +1,90 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+  .trust-bar {
+    background-color: #f9f9f9;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 2rem;
+  }
+
+  .trust-bar__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+  }
+
+  .trust-bar__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .trust-bar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border-radius: 50%;
+    color: #000;
+  }
+
+  .trust-bar__text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 1024px) {
+    .trust-bar__container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trust-bar {
+      padding: 1.5rem;
+    }
+
+    .trust-bar__container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .trust-bar__text {
+      font-size: 0.7rem;
+    }
+
+    .trust-bar__icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .trust-bar__icon svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trust-bar__container {
+      grid-template-columns: 1fr;
+    }
+
+    .trust-bar__text {
+      font-size: 0.75rem;
+    }
+  }
+</style>
 <!-- Trust Bar Section -->
 <section class="trust-bar">
   <div class="trust-bar__container">
@@ -112,92 +199,7 @@
   </div>
 </section>
 
-<style>
-  .trust-bar {
-    background-color: #f9f9f9;
-    border-top: 1px solid #e8e8e8;
-    border-bottom: 1px solid #e8e8e8;
-    padding: 2rem;
-  }
 
-  .trust-bar__container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1.5rem;
-  }
-
-  .trust-bar__item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .trust-bar__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: #fff;
-    border-radius: 50%;
-    color: #000;
-  }
-
-  .trust-bar__text {
-    font-size: 0.8rem;
-    font-weight: 500;
-    line-height: 1.4;
-    margin: 0;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  @media (max-width: 1024px) {
-    .trust-bar__container {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .trust-bar {
-      padding: 1.5rem;
-    }
-
-    .trust-bar__container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-
-    .trust-bar__text {
-      font-size: 0.7rem;
-    }
-
-    .trust-bar__icon {
-      width: 40px;
-      height: 40px;
-    }
-
-    .trust-bar__icon svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .trust-bar__container {
-      grid-template-columns: 1fr;
-    }
-
-    .trust-bar__text {
-      font-size: 0.75rem;
-    }
-  }
-</style>
 
 {% schema %}
 {
