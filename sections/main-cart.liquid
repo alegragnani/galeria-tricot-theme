@@ -159,6 +159,24 @@
     font-size: 13px;
     color: #aaaaaa;
   }
+  /* PRAZO-SACOLA */
+  .cart-page__item-entrega { font-size: 12px; color: #6b6b6b; margin-top: 2px; letter-spacing: 0.2px; }
+  .cart-page__item-entrega--pv { color: #4A3222; font-weight: 600; }
+  .cart-frete { margin: 2px 0 6px; }
+  .cart-frete__form { display: flex; gap: 8px; }
+  .cart-frete__input { flex: 1; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid #e0ddd8; background: #fff; font-family: 'Raleway', sans-serif; font-size: 14px; color: #121212; outline: none; }
+  .cart-frete__input:focus { border-color: #4A3222; }
+  .cart-frete__btn { height: 40px; padding: 0 16px; border: 1px solid #4A3222; background: #fff; color: #4A3222; font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .cart-frete__btn:hover { background: #4A3222; color: #fff; }
+  .cart-frete__btn:disabled, .cart-frete__btn.is-loading { background: #B3883D; border-color: #B3883D; color: #fff; cursor: wait; }
+  .cart-frete__out { margin-top: 10px; }
+  .cart-frete__opt { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; border-top: 1px solid #f0ede8; font-size: 13px; color: #545454; }
+  .cart-frete__opt:first-child { border-top: none; }
+  .cart-frete__opt-nome { font-weight: 600; color: #121212; }
+  .cart-frete__opt-prazo { display: block; font-size: 12px; color: #6b6b6b; margin-top: 2px; }
+  .cart-frete__opt-preco { font-weight: 600; color: #121212; white-space: nowrap; }
+  .cart-frete__pv { font-size: 12px; color: #4A3222; margin-top: 6px; }
+  .cart-frete__erro { font-size: 12px; color: #b3261e; }
   .cart-page__summary-row--total {
     border-top: 1px solid #e0ddd8;
     margin-top: 8px;
@@ -270,11 +288,19 @@
               </a>
 
               <div class="cart-page__item-details">
-                <a href="{{ item.url }}" class="cart-page__item-title">{{ item.product_title }}</a>
+                <a href="{{ item.url }}" class="cart-page__item-title">{{ item.product.title }}</a>
                 <span class="cart-page__item-price">{{ item.price | money }}</span>
-                {% if item.variant_title and item.variant_title != 'Default Title' %}
-                  <span class="cart-page__item-variant">TAMANHO: {{ item.variant_title }}</span>
+                {% if item.variant.title != blank and item.variant.title != 'Default Title' %}
+                  <span class="cart-page__item-variant">TAMANHO: {{ item.variant.title }}</span>
                 {% endif %}
+                {%- comment -%} PRAZO-SACOLA: pré-venda por tamanho (metafield custom.pre_venda_data, sincronizado da VTEX) {%- endcomment -%}
+                {%- assign it_pv = '' -%}
+                {%- if item.variant.metafields.custom.pre_venda_data.value != blank -%}
+                  {%- assign it_ts = item.variant.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 -%}
+                  {%- assign hoje_ts = 'now' | date: '%s' | plus: 0 -%}
+                  {%- if it_ts > hoje_ts -%}{%- assign it_pv = item.variant.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' -%}{%- endif -%}
+                {%- endif -%}
+                <span class="cart-page__item-entrega{% if it_pv != '' %} cart-page__item-entrega--pv{% endif %}" data-prevenda-data="{{ it_pv }}">{% if it_pv != '' %}Pré-venda · envio a partir de {{ it_pv | date: '%d/%m' }}{% else %}Pronta entrega{% endif %}</span>
 
                 <div class="cart-page__item-qty">
                   <button class="cart-page__qty-btn" data-action="decrease" aria-label="Diminuir">−</button>
@@ -304,8 +330,16 @@
         </div>
 
         <div class="cart-page__summary-row">
-          <span>Frete</span>
-          <span class="cart-page__summary-note">Calculado no checkout</span>
+          <span>Frete e prazo</span>
+          <span class="cart-page__summary-note" id="cart-frete-note">Calcule pelo CEP</span>
+        </div>
+        {%- comment -%} PRAZO-SACOLA: calculadora de frete/prazo do PEDIDO (peça de prazo mais longo) — mesma tabela do produto e do checkout {%- endcomment -%}
+        <div class="cart-frete" id="cart-frete">
+          <div class="cart-frete__form">
+            <input type="text" id="cart-frete-cep" class="cart-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
+            <button type="button" id="cart-frete-btn" class="cart-frete__btn">Calcular</button>
+          </div>
+          <div class="cart-frete__out" id="cart-frete-out"></div>
         </div>
 
         <div class="cart-page__summary-row cart-page__summary-row--total">
@@ -376,6 +410,7 @@
 
       if (qty === 0 && row) {
         row.remove();
+        if (window.cartFreteRecalc) window.cartFreteRecalc();
       } else if (row) {
         row.style.opacity = '1';
         var valEl = row.querySelector('.cart-page__qty-val');
@@ -411,6 +446,76 @@
       updateItem(key2, 0);
     }
   });
+})();
+</script>
+
+<script>
+/* PRAZO-SACOLA: frete + DATA de entrega do pedido = prazo do estado + dias úteis até a maior data de pré-venda da sacola (igual ao checkout) */
+(function() {
+  var input = document.getElementById('cart-frete-cep');
+  var btn = document.getElementById('cart-frete-btn');
+  var out = document.getElementById('cart-frete-out');
+  var note = document.getElementById('cart-frete-note');
+  if (!input || !btn || !out) return;
+  var faixas = [
+    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
+    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
+    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
+    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
+    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
+    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
+    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
+    [88000,89999,'SC'],[90000,99999,'RS']
+  ];
+  var zonas = [
+    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
+    { ufs:['GO'], eco:34.10, exp:47.74 },
+    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
+    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
+    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
+    { ufs:['AC'], eco:73.04, exp:96.03 }
+  ];
+  /* prazos por estado (dias úteis) copiados da simulação da VTEX em 09/09/2026: [econômico, expresso] */
+  var prazos = { SP:[7,3], RJ:[9,4], MG:[7,3], ES:[9,5], PR:[11,3], SC:[10,3], RS:[13,3], DF:[9,4], GO:[9,5], MT:[14,5], MS:[11,5], BA:[12,5], SE:[13,5], PE:[12,5], AL:[13,5], PB:[13,5], RN:[14,5], CE:[12,5], PI:[10,5], MA:[13,5], PA:[11,5], AP:[24,4], AM:[25,5], RR:[28,5], AC:[21,11], RO:[20,6], TO:[10,5] };
+  function hoje(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+  function parse(s){ if(!s) return null; var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function addUteis(from, n){ var d = new Date(from.getTime()); var c = 0; while (c < n) { d.setDate(d.getDate()+1); var w = d.getDay(); if (w !== 0 && w !== 6) c++; } return d; }
+  function uteisAte(from, ate){ var d = new Date(from.getTime()); var n = 0; while (d < ate) { d.setDate(d.getDate()+1); var w = d.getDay(); if (w !== 0 && w !== 6) n++; } return n; }
+  function dd(d){ return ('0'+d.getDate()).slice(-2) + '/' + ('0'+(d.getMonth()+1)).slice(-2); }
+  function ddaa(d){ return dd(d) + '/' + d.getFullYear(); }
+  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
+  function maiorPreVenda(){ var m = null; document.querySelectorAll('.cart-page__item-entrega[data-prevenda-data]').forEach(function(el){ var d = parse(el.getAttribute('data-prevenda-data')); if (d && (!m || d > m)) m = d; }); return m; }
+  input.addEventListener('input', function(){ var d = input.value.replace(/\D/g,'').slice(0,8); input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d; });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } });
+  function calcular(){
+    var d = input.value.replace(/\D/g,'');
+    if (d.length !== 8) { out.innerHTML = '<span class="cart-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
+    if (btn.disabled) return;
+    btn.disabled = true; btn.classList.add('is-loading'); var txt = btn.textContent; btn.textContent = 'Calculando...';
+    setTimeout(function(){
+      var n = parseInt(d.slice(0,5),10), uf = null;
+      for (var i=0;i<faixas.length;i++){ if (n>=faixas[i][0] && n<=faixas[i][1]) { uf = faixas[i][2]; break; } }
+      var z = null; if (uf) for (var j=0;j<zonas.length;j++){ if (zonas[j].ufs.indexOf(uf)>-1) { z = zonas[j]; break; } }
+      if (!z) { out.innerHTML = '<span class="cart-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
+      else {
+        var h = hoje(), pvData = maiorPreVenda();
+        var extra = (pvData && pvData > h) ? uteisAte(h, pvData) : 0;
+        var base = extra ? pvData : h;
+        var pz = prazos[uf] || [12,5];
+        var eco = addUteis(base, pz[0]), exp = addUteis(base, pz[1]);
+        out.innerHTML =
+          '<div class="cart-frete__opt"><span><span class="cart-frete__opt-nome">Frete Econômico</span><span class="cart-frete__opt-prazo">Entrega até ' + ddaa(eco) + ' (em até ' + (pz[0]+extra) + ' dias úteis)</span></span><span class="cart-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+          '<div class="cart-frete__opt"><span><span class="cart-frete__opt-nome">Frete Expresso</span><span class="cart-frete__opt-prazo">Entrega até ' + ddaa(exp) + ' (em até ' + (pz[1]+extra) + ' dias úteis)</span></span><span class="cart-frete__opt-preco">' + brl(z.exp) + '</span></div>' +
+          (extra ? '<div class="cart-frete__pv">Sua sacola tem peça em pré-venda: o pedido é enviado junto a partir de ' + dd(pvData) + '.</div>' : '');
+        if (note) note.textContent = uf + ' · CEP ' + input.value;
+        try { sessionStorage.setItem('gt_cep', d); } catch (e) {}
+      }
+      btn.disabled = false; btn.classList.remove('is-loading'); btn.textContent = txt;
+    }, 350);
+  }
+  btn.addEventListener('click', calcular);
+  window.cartFreteRecalc = function(){ if (out.innerHTML && input.value.replace(/\D/g,'').length === 8) calcular(); };
+  try { var s = sessionStorage.getItem('gt_cep'); if (s && s.length === 8) { input.value = s.slice(0,5) + '-' + s.slice(5); calcular(); } } catch (e) {}
 })();
 </script>
 
