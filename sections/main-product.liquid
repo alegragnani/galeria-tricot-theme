@@ -1263,8 +1263,9 @@
                     {% assign val_avail = false %}
                     {% assign val_pv = false %}
                     {% assign val_pv_data = '' %}
+                    {% assign pv_hoje_ts = 'now' | date: '%s' | plus: 0 %}
                     {% for var in product.variants %}
-                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% if var.metafields.custom.pre_venda.value == true %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value %}{% endif %}{% endif %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% assign pvd_ts = var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}{% if var.metafields.custom.pre_venda_data.value != blank and pvd_ts > pv_hoje_ts %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}{% endif %}
                     {% endfor %}
                     <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
                       <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-prevenda="{{ val_pv }}" data-prevenda-data="{{ val_pv_data }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
@@ -1291,7 +1292,9 @@
           {% assign sel_pv = false %}
           {% assign sel_pv_data = '' %}
           {% assign sel_var = product.selected_or_first_available_variant %}
-          {% if sel_var.metafields.custom.pre_venda.value == true %}{% assign sel_pv = true %}{% assign sel_pv_data = sel_var.metafields.custom.pre_venda_data.value %}{% endif %}
+          {% assign sel_hoje_ts = 'now' | date: '%s' | plus: 0 %}
+          {% assign sel_pvd_ts = sel_var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}
+          {% if sel_var.metafields.custom.pre_venda_data.value != blank and sel_pvd_ts > sel_hoje_ts %}{% assign sel_pv = true %}{% assign sel_pv_data = sel_var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}
           <div class="pdp__pre-venda" id="pdp-pre-venda" data-prevenda-data="{{ sel_pv_data }}" {% unless sel_pv %}hidden{% endunless %}>
             <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
             <div class="pdp__pre-venda-date">Será enviado dia <span id="pdp-pre-venda-data"></span></div>
