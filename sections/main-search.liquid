@@ -1,115 +1,5 @@
-{% comment %}
-  Página de resultados de busca — layout vitrine (grid de cards)
-  Usa o snippet product-card para manter visual consistente com PLP
-{% endcomment %}
-
-<div class="search-results">
-  <div class="search-results__header">
-    <h1 class="search-results__title">
-      {% if search.performed %}
-        {% if search.results_count > 0 %}
-          Resultados para "{{ search.terms }}"
-        {% else %}
-          Nenhum resultado para "{{ search.terms }}"
-        {% endif %}
-      {% else %}
-        Buscar
-      {% endif %}
-    </h1>
-
-    {% comment %} Barra de busca persistente {% endcomment %}
-    <form action="/search" method="get" class="search-results__form">
-      <input type="hidden" name="type" value="product" />
-      <input type="hidden" name="sort_by" value="created-descending" />
-      <div class="search-results__input-wrap">
-        <input
-          type="text"
-          name="q"
-          value="{{ search.terms | escape }}"
-          placeholder="O que você procura?"
-          class="search-results__input"
-          autocomplete="off"
-        />
-        <button type="submit" class="search-results__submit" aria-label="Buscar">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-          </svg>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  {% if search.performed %}
-    {% if search.results_count > 0 %}
-      {% paginate search.results by 250 %}
-      <div class="search-results__grid" id="search-grid">
-        {% for item in search.results %}
-          {% if item.object_type == 'product' %}
-            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: item.created_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
-              {% render 'product-card', product: item %}
-            </div>
-          {% else %}
-            <a href="{{ item.url }}" class="search-results__page-item">
-              <h3 class="search-results__page-title">{{ item.title }}</h3>
-              <p class="search-results__page-excerpt">{{ item.content | strip_html | truncatewords: 30 }}</p>
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <style>/*SEARCHWRAP*/ .search-results__card-wrap { display: contents; } </style>
-      <script>
-        /* Ordena cards por data — mais recente primeiro */
-        (function() {
-          var grid = document.getElementById('search-grid');
-          if (!grid) return;
-          var cards = Array.from(grid.querySelectorAll('.search-results__card-wrap'));
-          if (cards.length < 2) return;
-          cards.sort(function(a, b) {
-            var pa = parseInt(a.dataset.release || '0', 10);
-            var pb = parseInt(b.dataset.release || '0', 10);
-            /* Data de lancamento real (VTEX); se igual, usa ele; senão usa created_at */
-            if (pa !== pb) return pb - pa;
-            var ca = parseInt(a.dataset.created || '0', 10);
-            var cb = parseInt(b.dataset.created || '0', 10);
-            return cb - ca;
-          });
-          cards.forEach(function(c) { grid.appendChild(c); });
-        })();
-      </script>
-
-      {% if paginate.pages > 1 %}
-        <nav class="search-results__pagination">
-          {% if paginate.previous %}
-            <a href="{{ paginate.previous.url }}" class="search-results__page-link">&laquo; Anterior</a>
-          {% endif %}
-          {% for part in paginate.parts %}
-            {% if part.is_link %}
-              <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
-            {% else %}
-              <span class="search-results__page-link is-current">{{ part.title }}</span>
-            {% endif %}
-          {% endfor %}
-          {% if paginate.next %}
-            <a href="{{ paginate.next.url }}" class="search-results__page-link">Próxima &raquo;</a>
-          {% endif %}
-        </nav>
-      {% endif %}
-      {% endpaginate %}
-    {% else %}
-      {% comment %} Sem resultados — sugestões {% endcomment %}
-      <div class="search-results__empty">
-        <p class="search-results__empty-text">Não encontramos produtos para essa busca. Tente outro termo ou navegue pelas categorias:</p>
-        <div class="search-results__suggestions">
-          <a href="/collections/novidades" class="search-results__suggestion">Novidades</a>
-          <a href="/collections/roupas" class="search-results__suggestion">Roupas</a>
-          <a href="/collections/sale-ver26" class="search-results__suggestion">Sale</a>
-        </div>
-      </div>
-    {% endif %}
-  {% endif %}
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>/*SEARCHWRAP*/ .search-results__card-wrap[hidden] { display: none !important; } .search-results__empty { text-align: center; padding: 48px 16px; font-size: 16px; color: #666; } /*SEARCHRELEV*/ .search-results__card-wrap { display: contents; } </style>
 <style>
   /* ===== Página de Resultados de Busca — vitrine ===== */
 
@@ -307,6 +197,136 @@
     }
   }
 </style>
+{% comment %}
+  Página de resultados de busca — layout vitrine (grid de cards)
+  Usa o snippet product-card para manter visual consistente com PLP
+{% endcomment %}
+
+<div class="search-results">
+  <div class="search-results__header">
+    <h1 class="search-results__title">
+      {% if search.performed %}
+        {% if search.results_count > 0 %}
+          Resultados para "{{ search.terms }}"
+        {% else %}
+          Nenhum resultado para "{{ search.terms }}"
+        {% endif %}
+      {% else %}
+        Buscar
+      {% endif %}
+    </h1>
+
+    {% comment %} Barra de busca persistente {% endcomment %}
+    <form action="/search" method="get" class="search-results__form">
+      <input type="hidden" name="type" value="product" />
+      <input type="hidden" name="sort_by" value="created-descending" />
+      <div class="search-results__input-wrap">
+        <input
+          type="text"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="O que você procura?"
+          class="search-results__input"
+          autocomplete="off"
+        />
+        <button type="submit" class="search-results__submit" aria-label="Buscar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if search.performed %}
+    {% if search.results_count > 0 %}
+      {% paginate search.results by 250 %}
+      <div class="search-results__grid" id="search-grid">
+        {% for item in search.results %}
+          {% if item.object_type == 'product' %}
+            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: item.created_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
+              {% render 'product-card', product: item %}
+            </div>
+          {% else %}
+            <a href="{{ item.url }}" class="search-results__page-item">
+              <h3 class="search-results__page-title">{{ item.title }}</h3>
+              <p class="search-results__page-excerpt">{{ item.content | strip_html | truncatewords: 30 }}</p>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      
+      <script>
+        /* Busca igual VTEX: mostra so produtos cujo TITULO contem TODAS as palavras buscadas (sem acento, singular/plural); ordena por lancamento (mais novo primeiro) */
+        (function() {
+          var grid = document.getElementById('search-grid');
+          if (!grid) return;
+          var norm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' '); };
+          var STOP = {de:1,da:1,do:1,das:1,dos:1,e:1,com:1,em:1,para:1,a:1,o:1,as:1,os:1};
+          var termo = {{ search.terms | json }};
+          var terms = norm(termo).split(/\s+/).filter(function(t){ return t.length >= 2 && !STOP[t]; });
+          var wraps = Array.prototype.slice.call(grid.querySelectorAll('.search-results__card-wrap'));
+          var visiveis = 0;
+          wraps.forEach(function(w) {
+            var t = w.querySelector('.product-card__title');
+            var titulo = norm(t ? t.textContent : '');
+            var ok = terms.every(function(term){
+              var sing = term.replace(/s$/,'');
+              return titulo.indexOf(term) >= 0 || (sing.length >= 2 && titulo.indexOf(sing) >= 0);
+            });
+            if (ok) { w.removeAttribute('hidden'); visiveis++; } else { w.setAttribute('hidden', ''); }
+          });
+          var vis = wraps.filter(function(w){ return !w.hasAttribute('hidden'); });
+          vis.sort(function(a, b) {
+            var pa = parseInt(a.dataset.release || '0', 10), pb = parseInt(b.dataset.release || '0', 10);
+            if (pa !== pb) return pb - pa;
+            var ca = parseInt(a.dataset.created || '0', 10), cb = parseInt(b.dataset.created || '0', 10);
+            return cb - ca;
+          });
+          vis.forEach(function(c) { grid.appendChild(c); });
+          if (visiveis === 0 && wraps.length > 0) {
+            var msg = document.createElement('p');
+            msg.className = 'search-results__empty';
+            msg.textContent = 'Nenhum resultado para "' + termo + '"';
+            grid.parentNode.insertBefore(msg, grid);
+          }
+        })();
+      </script>
+
+      {% if paginate.pages > 1 %}
+        <nav class="search-results__pagination">
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}" class="search-results__page-link">&laquo; Anterior</a>
+          {% endif %}
+          {% for part in paginate.parts %}
+            {% if part.is_link %}
+              <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
+            {% else %}
+              <span class="search-results__page-link is-current">{{ part.title }}</span>
+            {% endif %}
+          {% endfor %}
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}" class="search-results__page-link">Próxima &raquo;</a>
+          {% endif %}
+        </nav>
+      {% endif %}
+      {% endpaginate %}
+    {% else %}
+      {% comment %} Sem resultados — sugestões {% endcomment %}
+      <div class="search-results__empty">
+        <p class="search-results__empty-text">Não encontramos produtos para essa busca. Tente outro termo ou navegue pelas categorias:</p>
+        <div class="search-results__suggestions">
+          <a href="/collections/novidades" class="search-results__suggestion">Novidades</a>
+          <a href="/collections/roupas" class="search-results__suggestion">Roupas</a>
+          <a href="/collections/sale-ver26" class="search-results__suggestion">Sale</a>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+
+
 
 {% schema %}
 {
