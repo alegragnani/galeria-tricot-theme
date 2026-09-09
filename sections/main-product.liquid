@@ -1415,9 +1415,12 @@
                       else {
                         var pv = (window.pdpPreVendaDias ? window.pdpPreVendaDias() : 0); /* pré-venda: soma os dias úteis do depósito, igual à VTEX */
                         var pvTxt = pv ? ' (inclui ' + pv + ' dias úteis da pré-venda)' : '';
+                        /* prazos por estado (dias úteis) copiados da simulação da VTEX em 09/09/2026: [econômico, expresso] */
+                        var prazos = { SP:[7,3], RJ:[9,4], MG:[7,3], ES:[9,5], PR:[11,3], SC:[10,3], RS:[13,3], DF:[9,4], GO:[9,5], MT:[14,5], MS:[11,5], BA:[12,5], SE:[13,5], PE:[12,5], AL:[13,5], PB:[13,5], RN:[14,5], CE:[12,5], PI:[10,5], MA:[13,5], PA:[11,5], AP:[24,4], AM:[25,5], RR:[28,5], AC:[21,11], RO:[20,6], TO:[10,5] };
+                        var pz = prazos[uf] || [12,5];
                         out.innerHTML =
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">' + (5 + pv) + ' a ' + (8 + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">' + (3 + pv) + ' a ' + (5 + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">Em até ' + (pz[0] + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">Em até ' + (pz[1] + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
                       }
                       btn.disabled = false; btn.textContent = txt;
                     }, 400);
