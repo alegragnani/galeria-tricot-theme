@@ -1,36 +1,4 @@
-<!-- Category Grid - 4 mini banners de categoria (estilo PatBO) -->
-<section class="gt-cats">
-  <ul class="gt-cats__grid">
-    {% for block in section.blocks %}
-      <li class="gt-cats__item" {{ block.shopify_attributes }}>
-        <a href="{{ block.settings.link }}" class="gt-cats__link">
-          <div class="gt-cats__image-wrapper">
-            {% if block.settings.image %}
-              <img
-                src="{{ block.settings.image | image_url: width: 800 }}"
-                srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
-                sizes="(max-width: 768px) 50vw, 25vw"
-                alt="{{ block.settings.heading | escape }}"
-                class="gt-cats__image"
-                loading="lazy"
-                width="800"
-                height="1067"
-              >
-            {% else %}
-              <div class="gt-cats__placeholder">
-                {{ 'image' | placeholder_svg_tag }}
-              </div>
-            {% endif %}
-          </div>
-          {% if block.settings.heading != blank %}
-            <h3 class="gt-cats__heading">{{ block.settings.heading }}</h3>
-          {% endif %}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-</section>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .section-category-grid {
     display: block;
@@ -113,6 +81,40 @@
     }
   }
 </style>
+<!-- Category Grid - 4 mini banners de categoria (estilo PatBO) -->
+<section class="gt-cats">
+  <ul class="gt-cats__grid">
+    {% for block in section.blocks %}
+      <li class="gt-cats__item" {{ block.shopify_attributes }}>
+        <a href="{{ block.settings.link }}" class="gt-cats__link">
+          <div class="gt-cats__image-wrapper">
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | image_url: width: 800 }}"
+                srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 768px) 50vw, 25vw"
+                alt="{{ block.settings.heading | escape }}"
+                class="gt-cats__image"
+                loading="lazy"
+                width="800"
+                height="1067"
+              >
+            {% else %}
+              <div class="gt-cats__placeholder">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+          {% if block.settings.heading != blank %}
+            <h3 class="gt-cats__heading">{{ block.settings.heading }}</h3>
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+
 
 {% schema %}
 {

@@ -1,50 +1,4 @@
-<!-- Escolhas das Blogueiras — 2 banners retrato lado a lado (lookbook estilo BP) -->
-<section class="lookbook">
-  {% if section.settings.title != blank %}
-    <div class="lookbook__header">
-      <h2 class="lookbook__title">{{ section.settings.title }}</h2>
-    </div>
-  {% endif %}
-
-  <div class="lookbook__grid">
-    {% for block in section.blocks %}
-      <div class="lookbook__item" {{ block.shopify_attributes }}>
-        {% if block.settings.link %}<a href="{{ block.settings.link }}" class="lookbook__link">{% endif %}
-          <div class="lookbook__image-wrapper">
-            {% if block.settings.image %}
-              <img
-                src="{{ block.settings.image | image_url: width: 900 }}"
-                srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 900 }} 900w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
-                sizes="(max-width: 749px) 100vw, 50vw"
-                alt="{{ block.settings.heading | escape }}"
-                class="lookbook__image"
-                loading="lazy"
-              >
-            {% else %}
-              <div class="lookbook__placeholder">
-                {{ 'image' | placeholder_svg_tag }}
-              </div>
-            {% endif %}
-
-            {% if block.settings.heading != blank or block.settings.cta_text != blank %}
-              <div class="lookbook__overlay">
-                <div class="lookbook__content">
-                  {% if block.settings.heading != blank %}
-                    <h3 class="lookbook__heading">{{ block.settings.heading }}</h3>
-                  {% endif %}
-                  {% if block.settings.cta_text != blank %}
-                    <span class="lookbook__cta">{{ block.settings.cta_text }}</span>
-                  {% endif %}
-                </div>
-              </div>
-            {% endif %}
-          </div>
-        {% if block.settings.link %}</a>{% endif %}
-      </div>
-    {% endfor %}
-  </div>
-</section>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .lookbook {
     padding: 24px 0;
@@ -168,6 +122,54 @@
     }
   }
 </style>
+<!-- Escolhas das Blogueiras — 2 banners retrato lado a lado (lookbook estilo BP) -->
+<section class="lookbook">
+  {% if section.settings.title != blank %}
+    <div class="lookbook__header">
+      <h2 class="lookbook__title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="lookbook__grid">
+    {% for block in section.blocks %}
+      <div class="lookbook__item" {{ block.shopify_attributes }}>
+        {% if block.settings.link %}<a href="{{ block.settings.link }}" class="lookbook__link">{% endif %}
+          <div class="lookbook__image-wrapper">
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | image_url: width: 900 }}"
+                srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 900 }} 900w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 749px) 100vw, 50vw"
+                alt="{{ block.settings.heading | escape }}"
+                class="lookbook__image"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="lookbook__placeholder">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+
+            {% if block.settings.heading != blank or block.settings.cta_text != blank %}
+              <div class="lookbook__overlay">
+                <div class="lookbook__content">
+                  {% if block.settings.heading != blank %}
+                    <h3 class="lookbook__heading">{{ block.settings.heading }}</h3>
+                  {% endif %}
+                  {% if block.settings.cta_text != blank %}
+                    <span class="lookbook__cta">{{ block.settings.cta_text }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% if block.settings.link %}</a>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+
 
 {% schema %}
 {

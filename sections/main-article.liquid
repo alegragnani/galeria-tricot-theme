@@ -1,115 +1,4 @@
-{% comment %}
-  Article detail section - main-article.liquid
-{% endcomment %}
-
-<div class="article-page">
-  <article class="article-content">
-    {% comment %} Breadcrumb {% endcomment %}
-    <nav class="breadcrumb" aria-label="breadcrumb">
-      <ul class="breadcrumb__list">
-        <li><a href="/">Inicio</a></li>
-        <li><a href="{{ blog.url }}">{{ blog.title }}</a></li>
-        <li><span aria-current="page">{{ article.title }}</span></li>
-      </ul>
-    </nav>
-
-    {% comment %} Featured Image {% endcomment %}
-    {% if article.featured_image %}
-      <div class="article__featured-image">
-        <img src="{{ article.featured_image | image_url: width: 1000 }}" alt="{{ article.featured_image.alt }}" />
-      </div>
-    {% endif %}
-
-    {% comment %} Article Meta {% endcomment %}
-    <div class="article__meta">
-      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-        {{ article.published_at | date: '%d de %B de %Y' }}
-      </time>
-      <span>Por {{ article.author }}</span>
-    </div>
-
-    {% comment %} Article Title {% endcomment %}
-    <h1 class="article__title">{{ article.title }}</h1>
-
-    {% comment %} Article Content {% endcomment %}
-    <div class="article__body">
-      {{ article.content }}
-    </div>
-
-    {% comment %} Article Tags {% endcomment %}
-    {% if article.tags.size > 0 %}
-      <div class="article__tags">
-        <span class="tags__label">Tags:</span>
-        <ul class="tags__list">
-          {% for tag in article.tags %}
-            <li><a href="{{ blog.url }}/tagged/{{ tag | handle }}">#{{ tag }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-  </article>
-
-  {% comment %} Comments Section {% endcomment %}
-  <section class="article__comments">
-    <h2>Comentários</h2>
-    {% if article.comments_count > 0 %}
-      <ul class="comments__list">
-        {% for comment in article.comments %}
-          <li class="comment">
-            <div class="comment__author">{{ comment.author }}</div>
-            <div class="comment__date">{{ comment.created_at | date: '%d de %B de %Y' }}</div>
-            <div class="comment__content">{{ comment.content }}</div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    {% if article.comments_enabled? %}
-      <form class="comment-form" id="comment-form">
-        <h3>Deixe um comentário</h3>
-        <div class="form-group">
-          <label for="comment-author">Nome *</label>
-          <input type="text" id="comment-author" name="comment[author]" required />
-        </div>
-        <div class="form-group">
-          <label for="comment-email">E-mail *</label>
-          <input type="email" id="comment-email" name="comment[email]" required />
-        </div>
-        <div class="form-group">
-          <label for="comment-body">Comentário *</label>
-          <textarea id="comment-body" name="comment[body]" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn btn--primary">POSTAR COMENTÁRIO</button>
-      </form>
-    {% endif %}
-  </section>
-
-  {% comment %} Related Articles {% endcomment %}
-  <section class="article__related">
-    <h2 class="section__title">ARTIGOS RELACIONADOS</h2>
-    <div class="related-articles">
-      {% assign related = blog.articles | where: "tags", article.tags.first | limit: 3 %}
-      {% for post in related %}
-        {% unless post.id == article.id %}
-          <article class="article-card">
-            {% if post.featured_image %}
-              <div class="article-card__image">
-                <img src="{{ post.featured_image | image_url: width: 300 }}" alt="{{ post.title }}" />
-              </div>
-            {% endif %}
-            <div class="article-card__content">
-              <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-              <time datetime="{{ post.published_at | date: '%Y-%m-%d' }}">
-                {{ post.published_at | date: '%d de %B de %Y' }}
-              </time>
-            </div>
-          </article>
-        {% endunless %}
-      {% endfor %}
-    </div>
-  </section>
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .article-page {
     max-width: 1000px;
@@ -371,6 +260,119 @@
     }
   }
 </style>
+{% comment %}
+  Article detail section - main-article.liquid
+{% endcomment %}
+
+<div class="article-page">
+  <article class="article-content">
+    {% comment %} Breadcrumb {% endcomment %}
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <ul class="breadcrumb__list">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="{{ blog.url }}">{{ blog.title }}</a></li>
+        <li><span aria-current="page">{{ article.title }}</span></li>
+      </ul>
+    </nav>
+
+    {% comment %} Featured Image {% endcomment %}
+    {% if article.featured_image %}
+      <div class="article__featured-image">
+        <img src="{{ article.featured_image | image_url: width: 1000 }}" alt="{{ article.featured_image.alt }}" />
+      </div>
+    {% endif %}
+
+    {% comment %} Article Meta {% endcomment %}
+    <div class="article__meta">
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: '%d de %B de %Y' }}
+      </time>
+      <span>Por {{ article.author }}</span>
+    </div>
+
+    {% comment %} Article Title {% endcomment %}
+    <h1 class="article__title">{{ article.title }}</h1>
+
+    {% comment %} Article Content {% endcomment %}
+    <div class="article__body">
+      {{ article.content }}
+    </div>
+
+    {% comment %} Article Tags {% endcomment %}
+    {% if article.tags.size > 0 %}
+      <div class="article__tags">
+        <span class="tags__label">Tags:</span>
+        <ul class="tags__list">
+          {% for tag in article.tags %}
+            <li><a href="{{ blog.url }}/tagged/{{ tag | handle }}">#{{ tag }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </article>
+
+  {% comment %} Comments Section {% endcomment %}
+  <section class="article__comments">
+    <h2>Comentários</h2>
+    {% if article.comments_count > 0 %}
+      <ul class="comments__list">
+        {% for comment in article.comments %}
+          <li class="comment">
+            <div class="comment__author">{{ comment.author }}</div>
+            <div class="comment__date">{{ comment.created_at | date: '%d de %B de %Y' }}</div>
+            <div class="comment__content">{{ comment.content }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if article.comments_enabled? %}
+      <form class="comment-form" id="comment-form">
+        <h3>Deixe um comentário</h3>
+        <div class="form-group">
+          <label for="comment-author">Nome *</label>
+          <input type="text" id="comment-author" name="comment[author]" required />
+        </div>
+        <div class="form-group">
+          <label for="comment-email">E-mail *</label>
+          <input type="email" id="comment-email" name="comment[email]" required />
+        </div>
+        <div class="form-group">
+          <label for="comment-body">Comentário *</label>
+          <textarea id="comment-body" name="comment[body]" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary">POSTAR COMENTÁRIO</button>
+      </form>
+    {% endif %}
+  </section>
+
+  {% comment %} Related Articles {% endcomment %}
+  <section class="article__related">
+    <h2 class="section__title">ARTIGOS RELACIONADOS</h2>
+    <div class="related-articles">
+      {% assign related = blog.articles | where: "tags", article.tags.first | limit: 3 %}
+      {% for post in related %}
+        {% unless post.id == article.id %}
+          <article class="article-card">
+            {% if post.featured_image %}
+              <div class="article-card__image">
+                <img src="{{ post.featured_image | image_url: width: 300 }}" alt="{{ post.title }}" />
+              </div>
+            {% endif %}
+            <div class="article-card__content">
+              <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+              <time datetime="{{ post.published_at | date: '%Y-%m-%d' }}">
+                {{ post.published_at | date: '%d de %B de %Y' }}
+              </time>
+            </div>
+          </article>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+
 
 {% schema %}
 {

@@ -1,42 +1,4 @@
-<!-- Dual Banner Section - Banner duplo lado a lado (estilo PatBO) -->
-<section class="dual-banner">
-  <div class="dual-banner__container">
-    {% for block in section.blocks %}
-      <a href="{{ block.settings.link }}" class="dual-banner__item" {{ block.shopify_attributes }}>
-        <div class="dual-banner__image-wrapper">
-          {% if block.settings.image %}
-            <img
-              src="{{ block.settings.image | image_url: width: 1200 }}"
-              srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1800 }} 1800w"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              alt="{{ block.settings.heading | escape }}"
-              class="dual-banner__image"
-              loading="lazy"
-              width="1200"
-              height="900"
-            >
-          {% else %}
-            <div class="dual-banner__placeholder">{{ 'image' | placeholder_svg_tag }}</div>
-          {% endif %}
-          <div class="dual-banner__overlay dual-banner__overlay--h-{{ block.settings.text_horizontal }} dual-banner__overlay--v-{{ block.settings.text_vertical }}">
-            <div class="dual-banner__content" style="color: {{ block.settings.text_color }};">
-              {% if block.settings.subheading != blank %}
-                <p class="dual-banner__subheading" style="color: {{ block.settings.text_color }};">{{ block.settings.subheading }}</p>
-              {% endif %}
-              {% if block.settings.heading != blank %}
-                <h3 class="dual-banner__heading" style="color: {{ block.settings.text_color }};">{{ block.settings.heading }}</h3>
-              {% endif %}
-              {% if block.settings.cta_text != blank %}
-                <span class="dual-banner__cta" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">{{ block.settings.cta_text }}</span>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </a>
-    {% endfor %}
-  </div>
-</section>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .dual-banner {
     padding: 0;
@@ -156,6 +118,46 @@
     }
   }
 </style>
+<!-- Dual Banner Section - Banner duplo lado a lado (estilo PatBO) -->
+<section class="dual-banner">
+  <div class="dual-banner__container">
+    {% for block in section.blocks %}
+      <a href="{{ block.settings.link }}" class="dual-banner__item" {{ block.shopify_attributes }}>
+        <div class="dual-banner__image-wrapper">
+          {% if block.settings.image %}
+            <img
+              src="{{ block.settings.image | image_url: width: 1200 }}"
+              srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1800 }} 1800w"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              alt="{{ block.settings.heading | escape }}"
+              class="dual-banner__image"
+              loading="lazy"
+              width="1200"
+              height="900"
+            >
+          {% else %}
+            <div class="dual-banner__placeholder">{{ 'image' | placeholder_svg_tag }}</div>
+          {% endif %}
+          <div class="dual-banner__overlay dual-banner__overlay--h-{{ block.settings.text_horizontal }} dual-banner__overlay--v-{{ block.settings.text_vertical }}">
+            <div class="dual-banner__content" style="color: {{ block.settings.text_color }};">
+              {% if block.settings.subheading != blank %}
+                <p class="dual-banner__subheading" style="color: {{ block.settings.text_color }};">{{ block.settings.subheading }}</p>
+              {% endif %}
+              {% if block.settings.heading != blank %}
+                <h3 class="dual-banner__heading" style="color: {{ block.settings.text_color }};">{{ block.settings.heading }}</h3>
+              {% endif %}
+              {% if block.settings.cta_text != blank %}
+                <span class="dual-banner__cta" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">{{ block.settings.cta_text }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+
 
 {% schema %}
 {

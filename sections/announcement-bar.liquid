@@ -1,57 +1,4 @@
-<div class="announcement-bar" data-announcement-bar>
-  <div class="announcement-bar__wrapper">
-    <button
-      class="announcement-bar__button announcement-bar__button--prev"
-      aria-label="Previous announcement"
-      data-announcement-prev
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        width="20"
-        height="20"
-      >
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-
-    <div class="announcement-bar__content">
-      <div class="announcement-bar__messages" data-announcement-messages>
-        {% for block in section.blocks %}
-          <div
-            class="announcement-bar__message {% if forloop.first %}is-active{% endif %}"
-            data-announcement-message
-            {{ block.shopify_attributes }}
-          >
-            <p>{{ block.settings.message }}</p>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <button
-      class="announcement-bar__button announcement-bar__button--next"
-      aria-label="Next announcement"
-      data-announcement-next
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        width="20"
-        height="20"
-      >
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-  </div>
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 
@@ -146,6 +93,61 @@
     }
   }
 </style>
+<div class="announcement-bar" data-announcement-bar>
+  <div class="announcement-bar__wrapper">
+    <button
+      class="announcement-bar__button announcement-bar__button--prev"
+      aria-label="Previous announcement"
+      data-announcement-prev
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="20"
+        height="20"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    <div class="announcement-bar__content">
+      <div class="announcement-bar__messages" data-announcement-messages>
+        {% for block in section.blocks %}
+          <div
+            class="announcement-bar__message {% if forloop.first %}is-active{% endif %}"
+            data-announcement-message
+            {{ block.shopify_attributes }}
+          >
+            <p>{{ block.settings.message }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button
+      class="announcement-bar__button announcement-bar__button--next"
+      aria-label="Next announcement"
+      data-announcement-next
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="20"
+        height="20"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</div>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

@@ -1,58 +1,4 @@
-{% comment %}
-  Customer login section - main-login.liquid
-{% endcomment %}
-
-<div class="login-page">
-  <div class="login-container">
-    <div class="login-box">
-      <h1 class="login-title">FAÇA LOGIN</h1>
-
-      {% if shop.customer_accounts_enabled %}
-        <form method="post" action="/account/login" class="login-form" novalidate>
-          <div class="form-group">
-            <label for="customer-email">E-mail *</label>
-            <input
-              type="email"
-              name="customer[email]"
-              id="customer-email"
-              class="form-input"
-              autocomplete="email"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="customer-password">Senha *</label>
-            <input
-              type="password"
-              name="customer[password]"
-              id="customer-password"
-              class="form-input"
-              autocomplete="current-password"
-              required
-            />
-          </div>
-
-          <button type="submit" class="btn btn--primary">ENTRAR</button>
-        </form>
-
-        <div class="login-help">
-          <a href="/account/recover">Esqueceu sua senha?</a>
-        </div>
-
-        <div class="login-divider">ou</div>
-
-        <div class="register-prompt">
-          <p>Ainda não é cliente?</p>
-          <a href="/account/register" class="btn btn--secondary">CRIAR CONTA</a>
-        </div>
-      {% else %}
-        <p>As contas de cliente estão desativadas neste momento.</p>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .login-page {
     min-height: 60vh;
@@ -76,7 +22,7 @@
 
   .login-title {
     font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 400;
     letter-spacing: 2px;
     margin: 0 0 30px 0;
@@ -199,6 +145,62 @@
     }
   }
 </style>
+{% comment %}
+  Customer login section - main-login.liquid
+{% endcomment %}
+
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-box">
+      <h1 class="login-title">FAÇA LOGIN</h1>
+
+      {% if shop.customer_accounts_enabled %}
+        <form method="post" action="/account/login" class="login-form" novalidate>
+          <div class="form-group">
+            <label for="customer-email">E-mail *</label>
+            <input
+              type="email"
+              name="customer[email]"
+              id="customer-email"
+              class="form-input"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="customer-password">Senha *</label>
+            <input
+              type="password"
+              name="customer[password]"
+              id="customer-password"
+              class="form-input"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn--primary">ENTRAR</button>
+        </form>
+
+        <div class="login-help">
+          <a href="/account/recover">Esqueceu sua senha?</a>
+        </div>
+
+        <div class="login-divider">ou</div>
+
+        <div class="register-prompt">
+          <p>Ainda não é cliente?</p>
+          <a href="/account/register" class="btn btn--secondary">CRIAR CONTA</a>
+        </div>
+      {% else %}
+        <p>As contas de cliente estão desativadas neste momento.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
 
 {% schema %}
 {

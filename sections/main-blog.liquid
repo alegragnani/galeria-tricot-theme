@@ -1,76 +1,4 @@
-{% comment %}
-  Blog listing section - main-blog.liquid
-{% endcomment %}
-
-<div class="blog-page">
-  <div class="blog-header">
-    <h1 class="blog-title">{{ blog.title }}</h1>
-    {% if blog.excerpt %}
-      <p class="blog-excerpt">{{ blog.excerpt }}</p>
-    {% endif %}
-  </div>
-
-  <div class="blog-grid">
-    {% for article in blog.articles %}
-      <article class="blog-card">
-        {% if article.featured_image %}
-          <div class="blog-card__image">
-            <a href="{{ article.url }}">
-              <img src="{{ article.featured_image | image_url: width: 400 }}" alt="{{ article.title }}" />
-            </a>
-          </div>
-        {% endif %}
-
-        <div class="blog-card__content">
-          <div class="blog-card__meta">
-            <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-              {{ article.published_at | date: '%d de %B de %Y' }}
-            </time>
-            <span class="blog-card__author">{{ article.author }}</span>
-          </div>
-
-          <h2 class="blog-card__title">
-            <a href="{{ article.url }}">{{ article.title }}</a>
-          </h2>
-
-          <p class="blog-card__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 30 }}</p>
-
-          <a href="{{ article.url }}" class="btn btn--link">LER MAIS</a>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
-
-  {% comment %} Pagination {% endcomment %}
-  {% if paginate.pages > 1 %}
-    <nav class="pagination" aria-label="pagination">
-      <ul class="pagination__list">
-        {% if paginate.previous %}
-          <li>
-            <a href="{{ paginate.previous.url }}" class="pagination__link">Anterior</a>
-          </li>
-        {% endif %}
-
-        {% for page in (1..paginate.pages) %}
-          <li>
-            {% if page == paginate.current_page %}
-              <span class="pagination__item--current" aria-current="page">{{ page }}</span>
-            {% else %}
-              <a href="{{ blog.url }}?page={{ page }}" class="pagination__link">{{ page }}</a>
-            {% endif %}
-          </li>
-        {% endfor %}
-
-        {% if paginate.next %}
-          <li>
-            <a href="{{ paginate.next.url }}" class="pagination__link">Próximo</a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .blog-page {
     max-width: 1200px;
@@ -225,6 +153,80 @@
     }
   }
 </style>
+{% comment %}
+  Blog listing section - main-blog.liquid
+{% endcomment %}
+
+<div class="blog-page">
+  <div class="blog-header">
+    <h1 class="blog-title">{{ blog.title }}</h1>
+    {% if blog.excerpt %}
+      <p class="blog-excerpt">{{ blog.excerpt }}</p>
+    {% endif %}
+  </div>
+
+  <div class="blog-grid">
+    {% for article in blog.articles %}
+      <article class="blog-card">
+        {% if article.featured_image %}
+          <div class="blog-card__image">
+            <a href="{{ article.url }}">
+              <img src="{{ article.featured_image | image_url: width: 400 }}" alt="{{ article.title }}" />
+            </a>
+          </div>
+        {% endif %}
+
+        <div class="blog-card__content">
+          <div class="blog-card__meta">
+            <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{ article.published_at | date: '%d de %B de %Y' }}
+            </time>
+            <span class="blog-card__author">{{ article.author }}</span>
+          </div>
+
+          <h2 class="blog-card__title">
+            <a href="{{ article.url }}">{{ article.title }}</a>
+          </h2>
+
+          <p class="blog-card__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 30 }}</p>
+
+          <a href="{{ article.url }}" class="btn btn--link">LER MAIS</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% comment %} Pagination {% endcomment %}
+  {% if paginate.pages > 1 %}
+    <nav class="pagination" aria-label="pagination">
+      <ul class="pagination__list">
+        {% if paginate.previous %}
+          <li>
+            <a href="{{ paginate.previous.url }}" class="pagination__link">Anterior</a>
+          </li>
+        {% endif %}
+
+        {% for page in (1..paginate.pages) %}
+          <li>
+            {% if page == paginate.current_page %}
+              <span class="pagination__item--current" aria-current="page">{{ page }}</span>
+            {% else %}
+              <a href="{{ blog.url }}?page={{ page }}" class="pagination__link">{{ page }}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+
+        {% if paginate.next %}
+          <li>
+            <a href="{{ paginate.next.url }}" class="pagination__link">Próximo</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+
 
 {% schema %}
 {

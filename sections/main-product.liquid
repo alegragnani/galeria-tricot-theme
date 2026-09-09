@@ -1,321 +1,5 @@
-{% comment %}
-  Product page (PDP) – estilo BP
-  Layout: galeria à esquerda (scroll vertical de imagens grandes) + info à direita (sticky)
-  Medidas conferidas na BP via getComputedStyle em 22/abr/2026
-{% endcomment %}
-
-<div class="pdp">
-  {% comment %} Breadcrumb {% endcomment %}
-  <nav class="pdp__breadcrumb" aria-label="breadcrumb">
-    <a href="/">Início</a>
-    <span class="pdp__breadcrumb-sep">›</span>
-    {% if collection %}
-      <a href="{{ collection.url }}">{{ collection.title }}</a>
-      <span class="pdp__breadcrumb-sep">›</span>
-    {% endif %}
-    <span>{{ product.title }}</span>
-  </nav>
-
-  <div class="pdp__container">
-    {% comment %} ===== GALERIA (esquerda, 50%) — carrossel horizontal como BP ===== {% endcomment %}
-    <div class="pdp__gallery">
-      <div class="pdp__gallery-track" id="gallery-track">
-        {% for image in product.images %}
-          <div class="pdp__gallery-item" data-index="{{ forloop.index0 }}">
-            <img
-              src="{{ image | image_url: width: 1200 }}"
-              alt="{{ image.alt | default: product.title }}"
-              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-              class="pdp__gallery-img"
-            />
-          </div>
-        {% endfor %}
-      </div>
-
-      {% if product.images.size > 1 %}
-        {% comment %} Setas de navegação {% endcomment %}
-        <button class="pdp__gallery-arrow pdp__gallery-arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L7 10L13 16"/></svg>
-        </button>
-        <button class="pdp__gallery-arrow pdp__gallery-arrow--next" id="gallery-next" aria-label="Próxima imagem">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4L13 10L7 16"/></svg>
-        </button>
-
-        {% comment %} Dots {% endcomment %}
-        <div class="pdp__gallery-dots" id="gallery-dots">
-          {% assign img_count = product.images.size %}
-          {% if img_count > 10 %}{% assign dot_count = 10 %}{% else %}{% assign dot_count = img_count %}{% endif %}
-          {% assign last_dot = dot_count | minus: 1 %}
-          {% for j in (0..last_dot) %}
-            <button class="pdp__gallery-dot {% if j == 0 %}is-active{% endif %}" data-index="{{ j }}" aria-label="Imagem {{ j | plus: 1 }}"></button>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-
-    {% comment %} Detectar se é Conjunto {% endcomment %}
-    {% assign is_conjunto = false %}
-    {% assign title_first_word = product.title | split: ' ' | first | downcase %}
-    {% if title_first_word == 'conjunto' %}
-      {% assign is_conjunto = true %}
-    {% endif %}
-
-    {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
-    <div class="pdp__info-wrapper">
-      <div class="pdp__info">
-
-        {% comment %} Vendor — oculto, todo o site é Galeria Tricot {% endcomment %}
-
-        {% comment %} Título {% endcomment %}
-        <h1 class="pdp__title">{{ product.title }}</h1>
-
-        {% if is_conjunto %}
-          {% comment %} ===== MODO CONJUNTO — layout bundle (server-side via metafield) ===== {% endcomment %}
-          {% assign conjunto_pecas = product.metafields.custom.conjunto_pecas.value %}
-
-          {% if conjunto_pecas and conjunto_pecas.size > 0 %}
-            {% comment %} Calcular total das pecas {% endcomment %}
-            {% assign conjunto_total = 0 %}
-            {% for peca in conjunto_pecas %}
-              {% assign conjunto_total = conjunto_total | plus: peca.price %}
-            {% endfor %}
-
-            <div class="conjunto" id="conjunto-section">
-              <div class="conjunto__header">
-                <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
-                {% assign inst_total_header = conjunto_total | divided_by: 500 | times: 100 %}
-                <div class="conjunto__header-installments">ou 5x de {{ inst_total_header | money }} sem juros</div>
-              </div>
-
-              <div class="conjunto__items" id="conjunto-items">
-                {% for peca in conjunto_pecas %}
-                  {% assign peca_variant = peca.selected_or_first_available_variant %}
-                  {% assign peca_price = peca_variant.price %}
-                  {% assign peca_installment = peca_price | divided_by: 500 | times: 100 %}
-                  <div class="conjunto__item" data-product-id="{{ peca.id }}" data-handle="{{ peca.handle }}">
-                    <input type="checkbox" class="conjunto__item-check" data-idx="{{ forloop.index0 }}" checked>
-                    <a href="/products/{{ peca.handle }}">
-                      {% if peca.featured_image %}
-                        <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
-                      {% else %}
-                        <div class="conjunto__item-img conjunto__item-img--placeholder">
-                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                        </div>
-                      {% endif %}
-                    </a>
-                    <div class="conjunto__item-info">
-                      <div class="conjunto__item-name">
-                        <a href="/products/{{ peca.handle }}">{{ peca.title }}</a>
-                      </div>
-                      <div class="conjunto__item-price">{{ peca_price | money }}</div>
-                      <div class="conjunto__item-installments">ou 5x de {{ peca_installment | money }}</div>
-                      <div class="conjunto__item-sizes-label">Tamanho</div>
-                      <div class="conjunto__item-sizes">
-                        {% for variant in peca.variants %}
-                          <button type="button"
-                            class="conjunto__size-pill {% if variant == peca_variant %}is-selected{% endif %} {% unless variant.available %}is-soldout{% endunless %}"
-                            data-variant-id="{{ variant.id }}"
-                            data-price="{{ variant.price }}"
-                            data-available="{{ variant.available }}"
-                            {% unless variant.available %}disabled{% endunless %}>
-                            {{ variant.title | split: ' / ' | last }}
-                          </button>
-                        {% endfor %}
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-
-              <button class="conjunto__add-btn" id="conjunto-add-btn" type="button">
-                ADICIONAR CONJUNTO À SACOLA
-              </button>
-              <div class="conjunto__installments" id="conjunto-installments" style="display:none;"></div>
-            </div>
-          {% else %}
-            {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
-            <div class="conjunto" id="conjunto-section">
-              <p class="conjunto__loading">Este conjunto ainda não tem peças associadas. Entre em contato.</p>
-            </div>
-          {% endif %}
-        {% else %}
-          {% comment %} ===== MODO NORMAL ===== {% endcomment %}
-
-          {% comment %} Cores (produtos irmãos — mesmo nome, cores diferentes) {% endcomment %}
-          {% comment %} Sempre mostra a cor atual; JS adiciona as outras cores se existirem {% endcomment %}
-          {% assign cor_atual = '' %}
-          {% for option in product.options_with_values %}
-            {% assign opt_down = option.name | downcase %}
-            {% if opt_down == 'cor' or opt_down == 'color' %}
-              {% assign cor_atual = option.selected_value | default: option.values.first %}
-            {% endif %}
-          {% endfor %}
-          <div class="pdp__siblings" id="color-siblings">
-            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name">{{ cor_atual }}</span></div>
-            <div class="pdp__sibling-swatches" id="sibling-swatches">
-              {% comment %} Swatch do produto atual renderizado server-side; JS adiciona irmãos {% endcomment %}
-            </div>
-          </div>
-
-          {% comment %} Preço {% endcomment %}
-          <div class="pdp__price">
-            {% assign variant = product.selected_or_first_available_variant %}
-            {% if variant.compare_at_price > variant.price %}
-              <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
-            {% endif %}
-            <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
-              {{ variant.price | money }}
-            </span>
-          </div>
-
-          {% comment %} Parcelamento {% endcomment %}
-          {% assign installment_value = variant.price | divided_by: 5 %}
-          <div class="pdp__installments">
-            ou 5x de {{ installment_value | money }} sem juros
-          </div>
-        {% endif %}
-
-        {% unless is_conjunto %}
-        {% comment %} Formulário de variantes (só produto normal, não conjunto) {% endcomment %}
-        <form class="pdp__form" id="product-form" action="/cart/add" method="post">
-          <input type="hidden" name="id" id="variant-id" value="{{ variant.id }}" />
-
-          {% for option in product.options_with_values %}
-            {% assign option_name_down = option.name | downcase %}
-
-            {% if option_name_down == 'cor' or option_name_down == 'color' %}
-              {% comment %} Cor — NÃO mostra swatches aqui (a seção siblings já cuida)
-                   Apenas mantém hidden input pro formulário funcionar {% endcomment %}
-              <input type="hidden" name="options[{{ option.name }}]" value="{{ option.selected_value | default: option.values.first }}" />
-
-            {% elsif option_name_down == 'tamanho' or option_name_down == 'size' %}
-              {% comment %} Tamanho – pills {% endcomment %}
-              <fieldset class="pdp__option">
-                <legend class="pdp__option-label">{{ option.name }}</legend>
-                <div class="pdp__sizes">
-                  {% for value in option.values %}
-                    {% assign opt_idx = option.position | minus: 1 %}
-                    {% assign val_avail = false %}
-                    {% for var in product.variants %}
-                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% endif %}
-                    {% endfor %}
-                    <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
-                      <span class="pdp__size-label">{{ value }}</span>
-                    </label>
-                  {% endfor %}
-                </div>
-              </fieldset>
-
-            {% else %}
-              {% comment %} Outras opções – select {% endcomment %}
-              <fieldset class="pdp__option">
-                <legend class="pdp__option-label">{{ option.name }}</legend>
-                <select name="options[{{ option.name }}]" class="pdp__select">
-                  {% for value in option.values %}
-                    <option value="{{ value }}" {% if value == option.selected_value %}selected{% endif %}>{{ value }}</option>
-                  {% endfor %}
-                </select>
-              </fieldset>
-            {% endif %}
-          {% endfor %}
-
-          {% comment %} Aviso de pré-venda / prazo de envio {% endcomment %}
-          {% assign is_pre_venda = false %}
-          {% assign data_envio = '' %}
-          {% for tag in product.tags %}
-            {% assign tag_up = tag | upcase %}
-            {% if tag_up == 'PRE-VENDA' or tag_up == 'PRÉ-VENDA' or tag_up == 'PREVENDA' %}
-              {% assign is_pre_venda = true %}
-            {% endif %}
-            {% assign tag_prefix = tag | slice: 0, 6 | upcase %}
-            {% if tag_prefix == 'ENVIO:' %}
-              {% assign data_envio = tag | split: ':' | last | strip %}
-            {% endif %}
-          {% endfor %}
-          {% assign pv_meta = product.metafields.custom.data_pre_venda.value %}
-          {% assign is_pre_venda = false %}
-          {% if pv_meta != blank %}
-            {% assign pv_now = 'now' | date: '%s' | plus: 0 %}
-            {% assign pv_dts = pv_meta | date: '%s' | plus: 0 %}
-            {% if pv_dts > pv_now %}
-              {% assign is_pre_venda = true %}
-              {% assign data_envio = pv_meta | date: '%d/%m/%Y' %}
-            {% endif %}
-          {% endif %}
-
-          {% if is_pre_venda %}
-            <div class="pdp__pre-venda">
-              <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
-              {% if data_envio != '' %}
-                <div class="pdp__pre-venda-date">Será enviado dia {{ data_envio }}</div>
-              {% else %}
-                <div class="pdp__pre-venda-date">Prazo de envio será informado após a compra</div>
-              {% endif %}
-            </div>
-          {% endif %}
-
-          {% comment %} Botão comprar {% endcomment %}
-          <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
-            {% unless product.available %}disabled{% endunless %}>
-            {% if product.available %}
-              ADICIONAR À SACOLA
-            {% else %}
-              ESGOTADO
-            {% endif %}
-          </button>
-        </form>
-
-        {% endunless %}
-
-        {% comment %} Acordeões {% endcomment %}
-        {% comment %} Separar descrição e composição — muitos produtos têm "COMPOSIÇÃO:" dentro do body {% endcomment %}
-        {% assign desc_full = product.description %}
-        {% assign desc_only = desc_full %}
-        {% assign comp_from_desc = '' %}
-        {% if desc_full contains 'COMPOSIÇÃO:' %}
-          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO:' %}
-          {% assign desc_only = desc_parts[0] %}
-          {% assign comp_from_desc = desc_parts[1] %}
-        {% elsif desc_full contains 'COMPOSIÇÃO :' %}
-          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO :' %}
-          {% assign desc_only = desc_parts[0] %}
-          {% assign comp_from_desc = desc_parts[1] %}
-        {% elsif desc_full contains 'Composição:' %}
-          {% assign desc_parts = desc_full | split: 'Composição:' %}
-          {% assign desc_only = desc_parts[0] %}
-          {% assign comp_from_desc = desc_parts[1] %}
-        {% endif %}
-
-        <div class="pdp__accordions">
-          {% comment %} Guia de tamanhos {% endcomment %}
-          <details class="pdp__accordion">
-            <summary class="pdp__accordion-trigger">Como escolher seu tamanho</summary>
-            <div class="pdp__accordion-body">
-              <p><strong>PARA ESCOLHER SEU TAMANHO, CONSIDERE:</strong></p>
-              <p>PP = 36<br>P = 38<br>M = 40<br>G = 42 a 44</p>
-              <p><strong>AO ESCOLHER SEU TAMANHO CONFORME ACIMA:</strong></p>
-              <p>Vestidos longos ficam rente ao chão para altura da cliente de 1,70m<br>
-              Vestidos midi ficam abaixo do joelho para altura da cliente de 1,70m<br>
-              Vestidos curtos ficam no meio da coxa para altura da cliente de 1,70m</p>
-              <p>Se você tem entre 1,70m e 1,75m recomendamos escolher um tamanho acima do seu (o vestido não fica largo pois, sobrando dos lados, estica para baixo)</p>
-              <p>Se você tem entre 1,75m e 1,80m recomendamos escolher 2 tamanhos acima do seu.</p>
-            </div>
-          </details>
-
-          <details class="pdp__accordion">
-            <summary class="pdp__accordion-trigger">Calcular frete e prazo</summary>
-            <div class="pdp__accordion-body">
-              <div class="pdp-frete">
-                <div class="pdp-frete__row">
-                  <input type="text" id="pdp-frete-cep" class="pdp-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
-                  <button type="button" id="pdp-frete-btn" class="pdp-frete__btn">Calcular</button>
-                </div>
-                <div id="pdp-frete-result" class="pdp-frete__result" aria-live="polite"></div>
-                
-              </div>
-
-              <style>
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
                 .pdp-frete__row { display:flex; gap:8px; }
                 .pdp-frete__input { flex:1; min-width:0; padding:10px 12px; border:1px solid #E0DCD4; font-family:inherit; font-size:14px; outline:none; }
                 .pdp-frete__input:focus { border-color:#4A3222; }
@@ -331,173 +15,6 @@
                 .pdp-frete__erro { color:#B3261E; font-size:13px; }
                 .pdp-frete__nota { margin-top:12px; font-size:13px; color:#999; }
               </style>
-
-              <script>
-                (function() {
-                  var faixas = [
-                    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
-                    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
-                    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
-                    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
-                    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
-                    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
-                    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
-                    [88000,89999,'SC'],[90000,99999,'RS']
-                  ];
-                  var zonas = [
-                    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
-                    { ufs:['GO'], eco:34.10, exp:47.74 },
-                    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
-                    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
-                    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
-                    { ufs:['AC'], eco:73.04, exp:96.03 }
-                  ];
-                  var input = document.getElementById('pdp-frete-cep');
-                  var btn = document.getElementById('pdp-frete-btn');
-                  var out = document.getElementById('pdp-frete-result');
-                  if (!input || !btn) return;
-                  input.addEventListener('input', function() {
-                    var d = input.value.replace(/\D/g,'').slice(0,8);
-                    input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d;
-                  });
-                  input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
-                  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
-                  btn.addEventListener('click', function() {
-                    var d = input.value.replace(/\D/g,'');
-                    if (d.length !== 8) { out.innerHTML = '<span class="pdp-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
-                    btn.disabled = true; var txt = btn.textContent; btn.textContent = 'Calculando...';
-                    setTimeout(function() {
-                      var n = parseInt(d.slice(0,5),10), uf = null;
-                      for (var i=0;i<faixas.length;i++){ if(n>=faixas[i][0]&&n<=faixas[i][1]){ uf=faixas[i][2]; break; } }
-                      var z = null;
-                      if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
-                      if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
-                      else {
-                        out.innerHTML =
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">5 a 8 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">3 a 5 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
-                      }
-                      btn.disabled = false; btn.textContent = txt;
-                    }, 400);
-                  });
-                })();
-              </script>
-            </div>
-          </details>
-
-          <details class="pdp__accordion">
-            <summary class="pdp__accordion-trigger">Composição</summary>
-            <div class="pdp__accordion-body">
-              {% if comp_from_desc != blank %}
-                {% assign comp_text = comp_from_desc | strip %}
-                {% comment %} Separar composição de peças diferentes em linhas {% endcomment %}
-                {% assign comp_text = comp_text | replace: 'Calça', '<br><strong>Calça</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Calca', '<br><strong>Calça</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Blusa', '<br><strong>Blusa</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Saia', '<br><strong>Saia</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Shorts', '<br><strong>Shorts</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Regata', '<br><strong>Regata</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Casaco', '<br><strong>Casaco</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Vestido', '<br><strong>Vestido</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Colete', '<br><strong>Colete</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Top', '<br><strong>Top</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Body', '<br><strong>Body</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Macacão', '<br><strong>Macacão</strong>' %}
-                {% assign comp_text = comp_text | replace: 'Bermuda', '<br><strong>Bermuda</strong>' %}
-                {{ comp_text }}
-              {% elsif product.metafields.custom.composition %}
-                {{ product.metafields.custom.composition }}
-              {% else %}
-                Consulte a descrição do produto.
-              {% endif %}
-            </div>
-          </details>
-
-          <details class="pdp__accordion">
-            <summary class="pdp__accordion-trigger">Sobre a peça</summary>
-            <div class="pdp__accordion-body">
-              {% assign desc_clean = desc_only | replace: '<details', '<div' | replace: '</details>', '</div>' | replace: '<summary', '<div hidden' | replace: '</summary>', '</div>' %}
-              {{ desc_clean }}
-            </div>
-          </details>
-
-
-        </div>
-
-        {% comment %} WhatsApp Personal Shopper — estilo BP {% endcomment %}
-        <div class="pdp__personal-shopper">
-          <h2 class="pdp__ps-title">PRECISA DE AJUDA?</h2>
-          <a href="https://wa.me/553598543079?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366">
-              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8.01 12.27C8.14 12.44 9.76 14.94 12.25 16.08C14.28 16.99 14.74 16.82 15.18 16.77C15.62 16.72 16.62 16.1 16.83 15.45C17.04 14.81 17.04 14.26 16.97 14.14C16.9 14.02 16.73 13.96 16.48 13.83C16.23 13.71 15.01 13.11 14.78 13.03C14.56 12.95 14.39 12.91 14.23 13.16C14.07 13.41 13.57 13.96 13.43 14.14C13.29 14.31 13.15 14.33 12.9 14.21C12.65 14.08 11.87 13.83 10.95 13.01C10.22 12.35 9.72 11.54 9.58 11.29C9.44 11.04 9.57 10.91 9.69 10.78C9.8 10.67 9.94 10.49 10.07 10.35C10.19 10.21 10.24 10.11 10.32 9.94C10.4 9.77 10.36 9.63 10.29 9.5C10.23 9.38 9.73 8.15 9.53 7.65C9.33 7.18 9.13 7.23 8.98 7.23C8.84 7.22 8.68 7.33 8.53 7.33Z"/>
-            </svg>
-            <span>PERSONAL SHOPPER</span>
-          </a>
-        </div>
-
-        {% comment %} Compartilhar {% endcomment %}
-        <div class="pdp__share">
-          <button class="pdp__share-btn" id="share-btn" aria-label="Compartilhar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-              <polyline points="16 6 12 2 8 6"/>
-              <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-            <span>Compartilhar</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  {% comment %} ===== COMPRE O LOOK (carregado via JS — busca API Shopify) ===== {% endcomment %}
-  <section class="pdp__look" id="look-section" style="display:none;">
-    <h2 class="pdp__look-title">COMPRE O LOOK COMPLETO</h2>
-    <div class="pdp__look-container" id="look-container"></div>
-  </section>
-
-  {% comment %} Recomendações {% endcomment %}
-  <section class="pdp__recommendations">
-    <h2 class="pdp__recommendations-title">VOCÊ TAMBÉM VAI AMAR</h2>
-    <div class="pdp__recommendations-grid">
-      {% comment %} Regra: peça da Sale → mesma aba da Sale; peça de coleção → mesma coleção; senão, geral {% endcomment %}
-      {% assign rec_collection = blank %}
-      {% assign sale_abas = 'sale-blusas,sale-calcas,sale-casacos,sale-conjuntos,sale-saias,sale-shorts,sale-vestidos,outlet-blusas,outlet-calcas,outlet-casacos,outlet-conjuntos,outlet-saias,outlet-shorts,outlet-vestidos,conjuntos-outlet' | split: ',' %}
-      {% for c in product.collections %}
-        {% if sale_abas contains c.handle %}
-          {% assign rec_collection = c %}
-          {% break %}
-        {% endif %}
-      {% endfor %}
-      {% if rec_collection == blank %}
-        {% for c in product.collections %}
-          {% if c.handle contains 'sale' or c.handle contains 'outlet' or c.handle contains 'off-tricot' %}
-            {% assign rec_collection = c %}
-            {% break %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      {% if rec_collection == blank %}
-        {% for c in product.collections %}
-          {% if c.handle == 'novidades' or c.handle == 'aerolooks' or c.handle == 'mom-edit' or c.handle == 'snow-trip-collab' or c.handle == 'euro-summer' %}
-            {% assign rec_collection = c %}
-            {% break %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      {% if rec_collection == blank %}{% assign rec_collection = collections['all'] %}{% endif %}
-      {% assign rec_shown = 0 %}
-      {% for p in rec_collection.products limit: 12 %}
-        {% if p.id != product.id and rec_shown < 8 %}
-          {% render 'product-card', product: p %}
-          {% assign rec_shown = rec_shown | plus: 1 %}
-        {% endif %}
-      {% endfor %}
-    </div>
-  </section>
-</div>
-
 <style>
   /* ========================================
      PDP – Página de Produto (estilo BP)
@@ -1546,6 +1063,492 @@
     }
   }
 </style>
+{% comment %}
+  Product page (PDP) – estilo BP
+  Layout: galeria à esquerda (scroll vertical de imagens grandes) + info à direita (sticky)
+  Medidas conferidas na BP via getComputedStyle em 22/abr/2026
+{% endcomment %}
+
+<div class="pdp">
+  {% comment %} Breadcrumb {% endcomment %}
+  <nav class="pdp__breadcrumb" aria-label="breadcrumb">
+    <a href="/">Início</a>
+    <span class="pdp__breadcrumb-sep">›</span>
+    {% if collection %}
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+      <span class="pdp__breadcrumb-sep">›</span>
+    {% endif %}
+    <span>{{ product.title }}</span>
+  </nav>
+
+  <div class="pdp__container">
+    {% comment %} ===== GALERIA (esquerda, 50%) — carrossel horizontal como BP ===== {% endcomment %}
+    <div class="pdp__gallery">
+      <div class="pdp__gallery-track" id="gallery-track">
+        {% for image in product.images %}
+          <div class="pdp__gallery-item" data-index="{{ forloop.index0 }}">
+            <img
+              src="{{ image | image_url: width: 1200 }}"
+              alt="{{ image.alt | default: product.title }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              class="pdp__gallery-img"
+            />
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        {% comment %} Setas de navegação {% endcomment %}
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L7 10L13 16"/></svg>
+        </button>
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--next" id="gallery-next" aria-label="Próxima imagem">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4L13 10L7 16"/></svg>
+        </button>
+
+        {% comment %} Dots {% endcomment %}
+        <div class="pdp__gallery-dots" id="gallery-dots">
+          {% assign img_count = product.images.size %}
+          {% if img_count > 10 %}{% assign dot_count = 10 %}{% else %}{% assign dot_count = img_count %}{% endif %}
+          {% assign last_dot = dot_count | minus: 1 %}
+          {% for j in (0..last_dot) %}
+            <button class="pdp__gallery-dot {% if j == 0 %}is-active{% endif %}" data-index="{{ j }}" aria-label="Imagem {{ j | plus: 1 }}"></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Detectar se é Conjunto {% endcomment %}
+    {% assign is_conjunto = false %}
+    {% assign title_first_word = product.title | split: ' ' | first | downcase %}
+    {% if title_first_word == 'conjunto' %}
+      {% assign is_conjunto = true %}
+    {% endif %}
+
+    {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
+    <div class="pdp__info-wrapper">
+      <div class="pdp__info">
+
+        {% comment %} Vendor — oculto, todo o site é Galeria Tricot {% endcomment %}
+
+        {% comment %} Título {% endcomment %}
+        <h1 class="pdp__title">{{ product.title }}</h1>
+
+        {% if is_conjunto %}
+          {% comment %} ===== MODO CONJUNTO — layout bundle (server-side via metafield) ===== {% endcomment %}
+          {% assign conjunto_pecas = product.metafields.custom.conjunto_pecas.value %}
+
+          {% if conjunto_pecas and conjunto_pecas.size > 0 %}
+            {% comment %} Calcular total das pecas {% endcomment %}
+            {% assign conjunto_total = 0 %}
+            {% for peca in conjunto_pecas %}
+              {% assign conjunto_total = conjunto_total | plus: peca.price %}
+            {% endfor %}
+
+            <div class="conjunto" id="conjunto-section">
+              <div class="conjunto__header">
+                <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
+                {% assign inst_total_header = conjunto_total | divided_by: 500 | times: 100 %}
+                <div class="conjunto__header-installments">ou 5x de {{ inst_total_header | money }} sem juros</div>
+              </div>
+
+              <div class="conjunto__items" id="conjunto-items">
+                {% for peca in conjunto_pecas %}
+                  {% assign peca_variant = peca.selected_or_first_available_variant %}
+                  {% assign peca_price = peca_variant.price %}
+                  {% assign peca_installment = peca_price | divided_by: 500 | times: 100 %}
+                  <div class="conjunto__item" data-product-id="{{ peca.id }}" data-handle="{{ peca.handle }}">
+                    <input type="checkbox" class="conjunto__item-check" data-idx="{{ forloop.index0 }}" checked>
+                    <a href="/products/{{ peca.handle }}">
+                      {% if peca.featured_image %}
+                        <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
+                      {% else %}
+                        <div class="conjunto__item-img conjunto__item-img--placeholder">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                      {% endif %}
+                    </a>
+                    <div class="conjunto__item-info">
+                      <div class="conjunto__item-name">
+                        <a href="/products/{{ peca.handle }}">{{ peca.title }}</a>
+                      </div>
+                      <div class="conjunto__item-price">{{ peca_price | money }}</div>
+                      <div class="conjunto__item-installments">ou 5x de {{ peca_installment | money }}</div>
+                      <div class="conjunto__item-sizes-label">Tamanho</div>
+                      <div class="conjunto__item-sizes">
+                        {% for variant in peca.variants %}
+                          <button type="button"
+                            class="conjunto__size-pill {% if variant == peca_variant %}is-selected{% endif %} {% unless variant.available %}is-soldout{% endunless %}"
+                            data-variant-id="{{ variant.id }}"
+                            data-price="{{ variant.price }}"
+                            data-available="{{ variant.available }}"
+                            {% unless variant.available %}disabled{% endunless %}>
+                            {{ variant.title | split: ' / ' | last }}
+                          </button>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <button class="conjunto__add-btn" id="conjunto-add-btn" type="button">
+                ADICIONAR CONJUNTO À SACOLA
+              </button>
+              <div class="conjunto__installments" id="conjunto-installments" style="display:none;"></div>
+            </div>
+          {% else %}
+            {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
+            <div class="conjunto" id="conjunto-section">
+              <p class="conjunto__loading">Este conjunto ainda não tem peças associadas. Entre em contato.</p>
+            </div>
+          {% endif %}
+        {% else %}
+          {% comment %} ===== MODO NORMAL ===== {% endcomment %}
+
+          {% comment %} Cores (produtos irmãos — mesmo nome, cores diferentes) {% endcomment %}
+          {% comment %} Sempre mostra a cor atual; JS adiciona as outras cores se existirem {% endcomment %}
+          {% assign cor_atual = '' %}
+          {% for option in product.options_with_values %}
+            {% assign opt_down = option.name | downcase %}
+            {% if opt_down == 'cor' or opt_down == 'color' %}
+              {% assign cor_atual = option.selected_value | default: option.values.first %}
+            {% endif %}
+          {% endfor %}
+          <div class="pdp__siblings" id="color-siblings">
+            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name">{{ cor_atual }}</span></div>
+            <div class="pdp__sibling-swatches" id="sibling-swatches">
+              {% comment %} Swatch do produto atual renderizado server-side; JS adiciona irmãos {% endcomment %}
+            </div>
+          </div>
+
+          {% comment %} Preço {% endcomment %}
+          <div class="pdp__price">
+            {% assign variant = product.selected_or_first_available_variant %}
+            {% if variant.compare_at_price > variant.price %}
+              <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
+            {% endif %}
+            <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
+              {{ variant.price | money }}
+            </span>
+          </div>
+
+          {% comment %} Parcelamento {% endcomment %}
+          {% assign installment_value = variant.price | divided_by: 5 %}
+          <div class="pdp__installments">
+            ou 5x de {{ installment_value | money }} sem juros
+          </div>
+        {% endif %}
+
+        {% unless is_conjunto %}
+        {% comment %} Formulário de variantes (só produto normal, não conjunto) {% endcomment %}
+        <form class="pdp__form" id="product-form" action="/cart/add" method="post">
+          <input type="hidden" name="id" id="variant-id" value="{{ variant.id }}" />
+
+          {% for option in product.options_with_values %}
+            {% assign option_name_down = option.name | downcase %}
+
+            {% if option_name_down == 'cor' or option_name_down == 'color' %}
+              {% comment %} Cor — NÃO mostra swatches aqui (a seção siblings já cuida)
+                   Apenas mantém hidden input pro formulário funcionar {% endcomment %}
+              <input type="hidden" name="options[{{ option.name }}]" value="{{ option.selected_value | default: option.values.first }}" />
+
+            {% elsif option_name_down == 'tamanho' or option_name_down == 'size' %}
+              {% comment %} Tamanho – pills {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <div class="pdp__sizes">
+                  {% for value in option.values %}
+                    {% assign opt_idx = option.position | minus: 1 %}
+                    {% assign val_avail = false %}
+                    {% for var in product.variants %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% endif %}
+                    {% endfor %}
+                    <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
+                      <span class="pdp__size-label">{{ value }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+
+            {% else %}
+              {% comment %} Outras opções – select {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <select name="options[{{ option.name }}]" class="pdp__select">
+                  {% for value in option.values %}
+                    <option value="{{ value }}" {% if value == option.selected_value %}selected{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </fieldset>
+            {% endif %}
+          {% endfor %}
+
+          {% comment %} Aviso de pré-venda / prazo de envio {% endcomment %}
+          {% assign is_pre_venda = false %}
+          {% assign data_envio = '' %}
+          {% for tag in product.tags %}
+            {% assign tag_up = tag | upcase %}
+            {% if tag_up == 'PRE-VENDA' or tag_up == 'PRÉ-VENDA' or tag_up == 'PREVENDA' %}
+              {% assign is_pre_venda = true %}
+            {% endif %}
+            {% assign tag_prefix = tag | slice: 0, 6 | upcase %}
+            {% if tag_prefix == 'ENVIO:' %}
+              {% assign data_envio = tag | split: ':' | last | strip %}
+            {% endif %}
+          {% endfor %}
+          {% assign pv_meta = product.metafields.custom.data_pre_venda.value %}
+          {% assign is_pre_venda = false %}
+          {% if pv_meta != blank %}
+            {% assign pv_now = 'now' | date: '%s' | plus: 0 %}
+            {% assign pv_dts = pv_meta | date: '%s' | plus: 0 %}
+            {% if pv_dts > pv_now %}
+              {% assign is_pre_venda = true %}
+              {% assign data_envio = pv_meta | date: '%d/%m/%Y' %}
+            {% endif %}
+          {% endif %}
+
+          {% if is_pre_venda %}
+            <div class="pdp__pre-venda">
+              <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+              {% if data_envio != '' %}
+                <div class="pdp__pre-venda-date">Será enviado dia {{ data_envio }}</div>
+              {% else %}
+                <div class="pdp__pre-venda-date">Prazo de envio será informado após a compra</div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% comment %} Botão comprar {% endcomment %}
+          <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
+            {% unless product.available %}disabled{% endunless %}>
+            {% if product.available %}
+              ADICIONAR À SACOLA
+            {% else %}
+              ESGOTADO
+            {% endif %}
+          </button>
+        </form>
+
+        {% endunless %}
+
+        {% comment %} Acordeões {% endcomment %}
+        {% comment %} Separar descrição e composição — muitos produtos têm "COMPOSIÇÃO:" dentro do body {% endcomment %}
+        {% assign desc_full = product.description %}
+        {% assign desc_only = desc_full %}
+        {% assign comp_from_desc = '' %}
+        {% if desc_full contains 'COMPOSIÇÃO:' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'COMPOSIÇÃO :' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO :' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'Composição:' %}
+          {% assign desc_parts = desc_full | split: 'Composição:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% endif %}
+
+        <div class="pdp__accordions">
+          {% comment %} Guia de tamanhos {% endcomment %}
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Como escolher seu tamanho</summary>
+            <div class="pdp__accordion-body">
+              <p><strong>PARA ESCOLHER SEU TAMANHO, CONSIDERE:</strong></p>
+              <p>PP = 36<br>P = 38<br>M = 40<br>G = 42 a 44</p>
+              <p><strong>AO ESCOLHER SEU TAMANHO CONFORME ACIMA:</strong></p>
+              <p>Vestidos longos ficam rente ao chão para altura da cliente de 1,70m<br>
+              Vestidos midi ficam abaixo do joelho para altura da cliente de 1,70m<br>
+              Vestidos curtos ficam no meio da coxa para altura da cliente de 1,70m</p>
+              <p>Se você tem entre 1,70m e 1,75m recomendamos escolher um tamanho acima do seu (o vestido não fica largo pois, sobrando dos lados, estica para baixo)</p>
+              <p>Se você tem entre 1,75m e 1,80m recomendamos escolher 2 tamanhos acima do seu.</p>
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Calcular frete e prazo</summary>
+            <div class="pdp__accordion-body">
+              <div class="pdp-frete">
+                <div class="pdp-frete__row">
+                  <input type="text" id="pdp-frete-cep" class="pdp-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
+                  <button type="button" id="pdp-frete-btn" class="pdp-frete__btn">Calcular</button>
+                </div>
+                <div id="pdp-frete-result" class="pdp-frete__result" aria-live="polite"></div>
+                
+              </div>
+
+              
+
+              <script>
+                (function() {
+                  var faixas = [
+                    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
+                    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
+                    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
+                    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
+                    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
+                    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
+                    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
+                    [88000,89999,'SC'],[90000,99999,'RS']
+                  ];
+                  var zonas = [
+                    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
+                    { ufs:['GO'], eco:34.10, exp:47.74 },
+                    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
+                    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
+                    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
+                    { ufs:['AC'], eco:73.04, exp:96.03 }
+                  ];
+                  var input = document.getElementById('pdp-frete-cep');
+                  var btn = document.getElementById('pdp-frete-btn');
+                  var out = document.getElementById('pdp-frete-result');
+                  if (!input || !btn) return;
+                  input.addEventListener('input', function() {
+                    var d = input.value.replace(/\D/g,'').slice(0,8);
+                    input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d;
+                  });
+                  input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+                  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
+                  btn.addEventListener('click', function() {
+                    var d = input.value.replace(/\D/g,'');
+                    if (d.length !== 8) { out.innerHTML = '<span class="pdp-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
+                    btn.disabled = true; var txt = btn.textContent; btn.textContent = 'Calculando...';
+                    setTimeout(function() {
+                      var n = parseInt(d.slice(0,5),10), uf = null;
+                      for (var i=0;i<faixas.length;i++){ if(n>=faixas[i][0]&&n<=faixas[i][1]){ uf=faixas[i][2]; break; } }
+                      var z = null;
+                      if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
+                      if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
+                      else {
+                        out.innerHTML =
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">5 a 8 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">3 a 5 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
+                      }
+                      btn.disabled = false; btn.textContent = txt;
+                    }, 400);
+                  });
+                })();
+              </script>
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Composição</summary>
+            <div class="pdp__accordion-body">
+              {% if comp_from_desc != blank %}
+                {% assign comp_text = comp_from_desc | strip %}
+                {% comment %} Separar composição de peças diferentes em linhas {% endcomment %}
+                {% assign comp_text = comp_text | replace: 'Calça', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Calca', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Blusa', '<br><strong>Blusa</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Saia', '<br><strong>Saia</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Shorts', '<br><strong>Shorts</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Regata', '<br><strong>Regata</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Casaco', '<br><strong>Casaco</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Vestido', '<br><strong>Vestido</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Colete', '<br><strong>Colete</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Top', '<br><strong>Top</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Body', '<br><strong>Body</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Macacão', '<br><strong>Macacão</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Bermuda', '<br><strong>Bermuda</strong>' %}
+                {{ comp_text }}
+              {% elsif product.metafields.custom.composition %}
+                {{ product.metafields.custom.composition }}
+              {% else %}
+                Consulte a descrição do produto.
+              {% endif %}
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Sobre a peça</summary>
+            <div class="pdp__accordion-body">
+              {% assign desc_clean = desc_only | replace: '<details', '<div' | replace: '</details>', '</div>' | replace: '<summary', '<div hidden' | replace: '</summary>', '</div>' %}
+              {{ desc_clean }}
+            </div>
+          </details>
+
+
+        </div>
+
+        {% comment %} WhatsApp Personal Shopper — estilo BP {% endcomment %}
+        <div class="pdp__personal-shopper">
+          <h2 class="pdp__ps-title">PRECISA DE AJUDA?</h2>
+          <a href="https://wa.me/553598543079?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8.01 12.27C8.14 12.44 9.76 14.94 12.25 16.08C14.28 16.99 14.74 16.82 15.18 16.77C15.62 16.72 16.62 16.1 16.83 15.45C17.04 14.81 17.04 14.26 16.97 14.14C16.9 14.02 16.73 13.96 16.48 13.83C16.23 13.71 15.01 13.11 14.78 13.03C14.56 12.95 14.39 12.91 14.23 13.16C14.07 13.41 13.57 13.96 13.43 14.14C13.29 14.31 13.15 14.33 12.9 14.21C12.65 14.08 11.87 13.83 10.95 13.01C10.22 12.35 9.72 11.54 9.58 11.29C9.44 11.04 9.57 10.91 9.69 10.78C9.8 10.67 9.94 10.49 10.07 10.35C10.19 10.21 10.24 10.11 10.32 9.94C10.4 9.77 10.36 9.63 10.29 9.5C10.23 9.38 9.73 8.15 9.53 7.65C9.33 7.18 9.13 7.23 8.98 7.23C8.84 7.22 8.68 7.33 8.53 7.33Z"/>
+            </svg>
+            <span>PERSONAL SHOPPER</span>
+          </a>
+        </div>
+
+        {% comment %} Compartilhar {% endcomment %}
+        <div class="pdp__share">
+          <button class="pdp__share-btn" id="share-btn" aria-label="Compartilhar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            <span>Compartilhar</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {% comment %} ===== COMPRE O LOOK (carregado via JS — busca API Shopify) ===== {% endcomment %}
+  <section class="pdp__look" id="look-section" style="display:none;">
+    <h2 class="pdp__look-title">COMPRE O LOOK COMPLETO</h2>
+    <div class="pdp__look-container" id="look-container"></div>
+  </section>
+
+  {% comment %} Recomendações {% endcomment %}
+  <section class="pdp__recommendations">
+    <h2 class="pdp__recommendations-title">VOCÊ TAMBÉM VAI AMAR</h2>
+    <div class="pdp__recommendations-grid">
+      {% comment %} Regra: peça da Sale → mesma aba da Sale; peça de coleção → mesma coleção; senão, geral {% endcomment %}
+      {% assign rec_collection = blank %}
+      {% assign sale_abas = 'sale-blusas,sale-calcas,sale-casacos,sale-conjuntos,sale-saias,sale-shorts,sale-vestidos,outlet-blusas,outlet-calcas,outlet-casacos,outlet-conjuntos,outlet-saias,outlet-shorts,outlet-vestidos,conjuntos-outlet' | split: ',' %}
+      {% for c in product.collections %}
+        {% if sale_abas contains c.handle %}
+          {% assign rec_collection = c %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle contains 'sale' or c.handle contains 'outlet' or c.handle contains 'off-tricot' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle == 'novidades' or c.handle == 'aerolooks' or c.handle == 'mom-edit' or c.handle == 'snow-trip-collab' or c.handle == 'euro-summer' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}{% assign rec_collection = collections['all'] %}{% endif %}
+      {% assign rec_shown = 0 %}
+      {% for p in rec_collection.products limit: 12 %}
+        {% if p.id != product.id and rec_shown < 8 %}
+          {% render 'product-card', product: p %}
+          {% assign rec_shown = rec_shown | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

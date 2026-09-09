@@ -1,153 +1,4 @@
-{% comment %}
-  Customer account section - main-account.liquid
-{% endcomment %}
-
-<div class="account-page">
-  <div class="account-header">
-    <h1 class="account-title">MEU PERFIL</h1>
-    <a href="/account/logout" class="logout-link">SAIR</a>
-  </div>
-
-  <div class="account-container">
-    {% comment %} Account Navigation {% endcomment %}
-    <nav class="account-nav">
-      <a href="#account-info" class="nav-link active">Meus Dados</a>
-      <a href="#addresses" class="nav-link">Endereços</a>
-      <a href="#orders" class="nav-link">Pedidos</a>
-      <a href="#wishlist" class="nav-link">Favoritos</a>
-    </nav>
-
-    {% comment %} Account Info Section {% endcomment %}
-    <section id="account-info" class="account-section active">
-      <h2>Meus Dados</h2>
-
-      <div class="account-info">
-        <div class="info-group">
-          <label>Nome:</label>
-          <p>{{ customer.first_name }} {{ customer.last_name }}</p>
-        </div>
-
-        <div class="info-group">
-          <label>E-mail:</label>
-          <p>{{ customer.email }}</p>
-        </div>
-
-        <div class="info-group">
-          <label>CPF:</label>
-          <p>{% if customer.metafields.custom.cpf %}{{ customer.metafields.custom.cpf }}{% else %}Não informado{% endif %}</p>
-        </div>
-
-        <button class="btn btn--secondary" id="edit-profile-btn">EDITAR PERFIL</button>
-      </div>
-
-      {% comment %} Edit Profile Form {% endcomment %}
-      <form id="edit-profile-form" class="edit-form" style="display: none;">
-        <div class="form-group">
-          <label for="first-name">Nome *</label>
-          <input type="text" id="first-name" name="customer[first_name]" value="{{ customer.first_name }}" required />
-        </div>
-
-        <div class="form-group">
-          <label for="last-name">Sobrenome *</label>
-          <input type="text" id="last-name" name="customer[last_name]" value="{{ customer.last_name }}" required />
-        </div>
-
-        <div class="form-group">
-          <label for="email">E-mail *</label>
-          <input type="email" id="email" name="customer[email]" value="{{ customer.email }}" required />
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn--primary">SALVAR</button>
-          <button type="button" class="btn btn--secondary" id="cancel-edit">CANCELAR</button>
-        </div>
-      </form>
-    </section>
-
-    {% comment %} Addresses Section {% endcomment %}
-    <section id="addresses" class="account-section">
-      <h2>Meus Endereços</h2>
-
-      {% if customer.addresses.size > 0 %}
-        <div class="addresses-grid">
-          {% for address in customer.addresses %}
-            <div class="address-card">
-              <p>
-                {{ address.street }}, {{ address.number }}
-                {% if address.apartment %}Apt. {{ address.apartment }}{% endif %}<br>
-                {{ address.city }}, {{ address.province }} {{ address.zip }}
-              </p>
-              <a href="/account/addresses/{{ address.id }}" class="link-text">Editar</a>
-              <a href="#" class="link-text" onclick="deleteAddress({{ address.id }})">Excluir</a>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <button class="btn btn--secondary" id="add-address-btn">ADICIONAR NOVO ENDEREÇO</button>
-    </section>
-
-    {% comment %} Orders Section {% endcomment %}
-    <section id="orders" class="account-section">
-      <h2>Meus Pedidos</h2>
-
-      {% if customer.orders.size > 0 %}
-        <table class="orders-table">
-          <thead>
-            <tr>
-              <th>Número do Pedido</th>
-              <th>Data</th>
-              <th>Status</th>
-              <th>Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order in customer.orders %}
-              <tr>
-                <td>#{{ order.order_number }}</td>
-                <td>{{ order.created_at | date: '%d/%m/%Y' }}</td>
-                <td>
-                  <span class="order-status status-{{ order.fulfillment_status | downcase }}">
-                    {{ order.fulfillment_status | capitalize }}
-                  </span>
-                </td>
-                <td>{{ order.total_price | money_with_currency }}</td>
-                <td>
-                  <a href="{{ order.customer_url }}" class="link-text">Ver Detalhes</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>Você ainda não fez nenhum pedido.</p>
-        <a href="/collections/all" class="btn btn--primary">COMEÇAR A COMPRAR</a>
-      {% endif %}
-    </section>
-
-    {% comment %} Wishlist Section {% endcomment %}
-    <section id="wishlist" class="account-section">
-      <h2>Meus Favoritos</h2>
-
-      {% if customer.metafields.custom.wishlist %}
-        <div class="wishlist-grid">
-          {% assign wishlist = customer.metafields.custom.wishlist | split: ',' %}
-          {% for product_id in wishlist %}
-            {% assign product = all_products[product_id] %}
-            {% if product %}
-              {% render 'product-card', product: product %}
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>Você ainda não tem itens nos favoritos.</p>
-        <a href="/collections/all" class="btn btn--primary">EXPLORAR COLEÇÕES</a>
-      {% endif %}
-    </section>
-  </div>
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .account-page {
     max-width: 1200px;
@@ -425,6 +276,157 @@
     }
   }
 </style>
+{% comment %}
+  Customer account section - main-account.liquid
+{% endcomment %}
+
+<div class="account-page">
+  <div class="account-header">
+    <h1 class="account-title">MEU PERFIL</h1>
+    <a href="/account/logout" class="logout-link">SAIR</a>
+  </div>
+
+  <div class="account-container">
+    {% comment %} Account Navigation {% endcomment %}
+    <nav class="account-nav">
+      <a href="#account-info" class="nav-link active">Meus Dados</a>
+      <a href="#addresses" class="nav-link">Endereços</a>
+      <a href="#orders" class="nav-link">Pedidos</a>
+      <a href="#wishlist" class="nav-link">Favoritos</a>
+    </nav>
+
+    {% comment %} Account Info Section {% endcomment %}
+    <section id="account-info" class="account-section active">
+      <h2>Meus Dados</h2>
+
+      <div class="account-info">
+        <div class="info-group">
+          <label>Nome:</label>
+          <p>{{ customer.first_name }} {{ customer.last_name }}</p>
+        </div>
+
+        <div class="info-group">
+          <label>E-mail:</label>
+          <p>{{ customer.email }}</p>
+        </div>
+
+        <div class="info-group">
+          <label>CPF:</label>
+          <p>{% if customer.metafields.custom.cpf %}{{ customer.metafields.custom.cpf }}{% else %}Não informado{% endif %}</p>
+        </div>
+
+        <button class="btn btn--secondary" id="edit-profile-btn">EDITAR PERFIL</button>
+      </div>
+
+      {% comment %} Edit Profile Form {% endcomment %}
+      <form id="edit-profile-form" class="edit-form" style="display: none;">
+        <div class="form-group">
+          <label for="first-name">Nome *</label>
+          <input type="text" id="first-name" name="customer[first_name]" value="{{ customer.first_name }}" required />
+        </div>
+
+        <div class="form-group">
+          <label for="last-name">Sobrenome *</label>
+          <input type="text" id="last-name" name="customer[last_name]" value="{{ customer.last_name }}" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail *</label>
+          <input type="email" id="email" name="customer[email]" value="{{ customer.email }}" required />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">SALVAR</button>
+          <button type="button" class="btn btn--secondary" id="cancel-edit">CANCELAR</button>
+        </div>
+      </form>
+    </section>
+
+    {% comment %} Addresses Section {% endcomment %}
+    <section id="addresses" class="account-section">
+      <h2>Meus Endereços</h2>
+
+      {% if customer.addresses.size > 0 %}
+        <div class="addresses-grid">
+          {% for address in customer.addresses %}
+            <div class="address-card">
+              <p>
+                {{ address.street }}, {{ address.number }}
+                {% if address.apartment %}Apt. {{ address.apartment }}{% endif %}<br>
+                {{ address.city }}, {{ address.province }} {{ address.zip }}
+              </p>
+              <a href="/account/addresses/{{ address.id }}" class="link-text">Editar</a>
+              <a href="#" class="link-text" onclick="deleteAddress({{ address.id }})">Excluir</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <button class="btn btn--secondary" id="add-address-btn">ADICIONAR NOVO ENDEREÇO</button>
+    </section>
+
+    {% comment %} Orders Section {% endcomment %}
+    <section id="orders" class="account-section">
+      <h2>Meus Pedidos</h2>
+
+      {% if customer.orders.size > 0 %}
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Número do Pedido</th>
+              <th>Data</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in customer.orders %}
+              <tr>
+                <td>#{{ order.order_number }}</td>
+                <td>{{ order.created_at | date: '%d/%m/%Y' }}</td>
+                <td>
+                  <span class="order-status status-{{ order.fulfillment_status | downcase }}">
+                    {{ order.fulfillment_status | capitalize }}
+                  </span>
+                </td>
+                <td>{{ order.total_price | money_with_currency }}</td>
+                <td>
+                  <a href="{{ order.customer_url }}" class="link-text">Ver Detalhes</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>Você ainda não fez nenhum pedido.</p>
+        <a href="/collections/all" class="btn btn--primary">COMEÇAR A COMPRAR</a>
+      {% endif %}
+    </section>
+
+    {% comment %} Wishlist Section {% endcomment %}
+    <section id="wishlist" class="account-section">
+      <h2>Meus Favoritos</h2>
+
+      {% if customer.metafields.custom.wishlist %}
+        <div class="wishlist-grid">
+          {% assign wishlist = customer.metafields.custom.wishlist | split: ',' %}
+          {% for product_id in wishlist %}
+            {% assign product = all_products[product_id] %}
+            {% if product %}
+              {% render 'product-card', product: product %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Você ainda não tem itens nos favoritos.</p>
+        <a href="/collections/all" class="btn btn--primary">EXPLORAR COLEÇÕES</a>
+      {% endif %}
+    </section>
+  </div>
+</div>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

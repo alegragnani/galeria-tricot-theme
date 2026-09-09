@@ -1,32 +1,4 @@
-{% comment %}
-  404 page section - main-404.liquid — Galeria Tricot (estilo BP)
-{% endcomment %}
-
-<div class="page-404">
-  <div class="error-container">
-    <h1 class="error-code">404</h1>
-    <h2 class="error-title">PÁGINA NÃO ENCONTRADA</h2>
-    <p class="error-message">Desculpe, a página que você está procurando não existe ou foi movida.</p>
-
-    <div class="error-actions">
-      <a href="/" class="error-btn error-btn--primary">VOLTAR À PÁGINA INICIAL</a>
-      <a href="/collections/all" class="error-btn error-btn--secondary">EXPLORAR COLEÇÕES</a>
-    </div>
-  </div>
-
-  <div class="error-suggestions">
-    <div class="error-suggestions__inner">
-      <h3 class="error-suggestions__title">TALVEZ VOCÊ PROCURE POR:</h3>
-      <div class="error-suggestions__grid">
-        {%- assign suggestion_collection = collections['best-sellers'] | default: collections['all'] -%}
-        {%- for product in suggestion_collection.products limit: 4 -%}
-          {% render 'product-card', product: product %}
-        {%- endfor -%}
-      </div>
-    </div>
-  </div>
-</div>
-
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
   .page-404 {
     background: #ffffff;
@@ -181,6 +153,36 @@
     }
   }
 </style>
+{% comment %}
+  404 page section - main-404.liquid — Galeria Tricot (estilo BP)
+{% endcomment %}
+
+<div class="page-404">
+  <div class="error-container">
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">PÁGINA NÃO ENCONTRADA</h2>
+    <p class="error-message">Desculpe, a página que você está procurando não existe ou foi movida.</p>
+
+    <div class="error-actions">
+      <a href="/" class="error-btn error-btn--primary">VOLTAR À PÁGINA INICIAL</a>
+      <a href="/collections/all" class="error-btn error-btn--secondary">EXPLORAR COLEÇÕES</a>
+    </div>
+  </div>
+
+  <div class="error-suggestions">
+    <div class="error-suggestions__inner">
+      <h3 class="error-suggestions__title">TALVEZ VOCÊ PROCURE POR:</h3>
+      <div class="error-suggestions__grid">
+        {%- assign suggestion_collection = collections['best-sellers'] | default: collections['all'] -%}
+        {%- for product in suggestion_collection.products limit: 4 -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 {% schema %}
 {
