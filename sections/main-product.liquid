@@ -1261,11 +1261,12 @@
                   {% for value in option.values %}
                     {% assign opt_idx = option.position | minus: 1 %}
                     {% assign val_avail = false %}
+                    {% assign val_pv = false %}
                     {% for var in product.variants %}
-                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% endif %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% if var.metafields.custom.pre_venda.value == true %}{% assign val_pv = true %}{% endif %}{% endif %}
                     {% endfor %}
                     <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-prevenda="{{ val_pv }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
                       <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
@@ -1285,40 +1286,29 @@
             {% endif %}
           {% endfor %}
 
-          {% comment %} Aviso de pré-venda / prazo de envio {% endcomment %}
-          {% assign is_pre_venda = false %}
-          {% assign data_envio = '' %}
-          {% for tag in product.tags %}
-            {% assign tag_up = tag | upcase %}
-            {% if tag_up == 'PRE-VENDA' or tag_up == 'PRÉ-VENDA' or tag_up == 'PREVENDA' %}
-              {% assign is_pre_venda = true %}
-            {% endif %}
-            {% assign tag_prefix = tag | slice: 0, 6 | upcase %}
-            {% if tag_prefix == 'ENVIO:' %}
-              {% assign data_envio = tag | split: ':' | last | strip %}
-            {% endif %}
-          {% endfor %}
-          {% assign pv_meta = product.metafields.custom.data_pre_venda.value %}
-          {% assign is_pre_venda = false %}
-          {% if pv_meta != blank %}
-            {% assign pv_now = 'now' | date: '%s' | plus: 0 %}
-            {% assign pv_dts = pv_meta | date: '%s' | plus: 0 %}
-            {% if pv_dts > pv_now %}
-              {% assign is_pre_venda = true %}
-              {% assign data_envio = pv_meta | date: '%d/%m/%Y' %}
-            {% endif %}
-          {% endif %}
-
-          {% if is_pre_venda %}
-            <div class="pdp__pre-venda">
-              <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
-              {% if data_envio != '' %}
-                <div class="pdp__pre-venda-date">Será enviado dia {{ data_envio }}</div>
-              {% else %}
-                <div class="pdp__pre-venda-date">Prazo de envio será informado após a compra</div>
-              {% endif %}
-            </div>
-          {% endif %}
+          {% comment %} PREVENDA-SIZE: pré-venda por TAMANHO = estoque só no depósito Estoque Pré-Venda (espelho da VTEX, que soma 12 dias úteis) {% endcomment %}
+          {% assign sel_pv = false %}
+          {% assign sel_var = product.selected_or_first_available_variant %}
+          {% if sel_var.metafields.custom.pre_venda.value == true %}{% assign sel_pv = true %}{% endif %}
+          <div class="pdp__pre-venda" id="pdp-pre-venda" data-dias="12" {% unless sel_pv %}hidden{% endunless %}>
+            <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+            <div class="pdp__pre-venda-date">Será enviado dia <span id="pdp-pre-venda-data"></span></div>
+          </div>
+          <script>
+            (function(){
+              var box = document.getElementById('pdp-pre-venda'); if (!box) return;
+              var DIAS = parseInt(box.getAttribute('data-dias') || '12', 10);
+              function addBd(n){ var d = new Date(); var c = 0; while (c < n) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w !== 0 && w !== 6) c++; } return d; }
+              function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+              var el = document.getElementById('pdp-pre-venda-data'); if (el) el.textContent = fmt(addBd(DIAS));
+              var temPills = !!document.querySelector('.pdp__sizes');
+              function atual(){ var r = document.querySelector('.pdp__sizes input[type=radio]:checked'); return r ? r.getAttribute('data-prevenda') === 'true' : false; }
+              window.pdpPreVendaDias = function(){ return (temPills ? atual() : !box.hidden) ? DIAS : 0; };
+              function upd(){ if (temPills) box.hidden = !atual(); }
+              document.querySelectorAll('.pdp__sizes input[type=radio]').forEach(function(r){ r.addEventListener('change', upd); });
+              upd();
+            })();
+          </script>
 
           {% comment %} Botão comprar {% endcomment %}
           <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
@@ -1423,9 +1413,11 @@
                       if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
                       if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
                       else {
+                        var pv = (window.pdpPreVendaDias ? window.pdpPreVendaDias() : 0); /* pré-venda: soma os dias úteis do depósito, igual à VTEX */
+                        var pvTxt = pv ? ' (inclui ' + pv + ' dias úteis da pré-venda)' : '';
                         out.innerHTML =
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">5 a 8 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
-                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">3 a 5 dias úteis</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">' + (5 + pv) + ' a ' + (8 + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">' + (3 + pv) + ' a ' + (5 + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
                       }
                       btn.disabled = false; btn.textContent = txt;
                     }, 400);
