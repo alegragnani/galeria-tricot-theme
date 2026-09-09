@@ -262,10 +262,11 @@
         (function() {
           var grid = document.getElementById('search-grid');
           if (!grid) return;
-          var norm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' '); };
+          var RE_ACENTO = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
+          var norm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(RE_ACENTO,'').replace(/[^a-z0-9 ]/g,' '); };
           var STOP = {de:1,da:1,do:1,das:1,dos:1,e:1,com:1,em:1,para:1,a:1,o:1,as:1,os:1};
           var termo = {{ search.terms | json }};
-          var terms = norm(termo).split(/\s+/).filter(function(t){ return t.length >= 2 && !STOP[t]; });
+          var terms = norm(termo).split(' ').filter(function(t){ return t.length >= 2 && !STOP[t]; });
           var wraps = Array.prototype.slice.call(grid.querySelectorAll('.search-results__card-wrap'));
           var visiveis = 0;
           wraps.forEach(function(w) {
@@ -286,9 +287,10 @@
           });
           vis.forEach(function(c) { grid.appendChild(c); });
           if (visiveis === 0 && wraps.length > 0) {
+            var pg = parseInt((new URLSearchParams(location.search)).get('page') || '1', 10);
             var msg = document.createElement('p');
             msg.className = 'search-results__empty';
-            msg.textContent = 'Nenhum resultado para "' + termo + '"';
+            msg.textContent = pg > 1 ? 'Não há mais resultados para "' + termo + '".' : 'Nenhum resultado para "' + termo + '"';
             grid.parentNode.insertBefore(msg, grid);
           }
         })();
