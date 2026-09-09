@@ -55,6 +55,8 @@
     min-width: 200px;
     scroll-snap-align: start;
   }
+  /* No carrossel da home, produto com foto_extra_vitrine mostra só 1 card (o 2o empilharia no mesmo slot) */
+  .featured-collection__item > .product-card + .product-card { display: none; }
 
   /* Tablet: 2 colunas (BP: grid--2-col-tablet-down) */
   @media (max-width: 1024px) {
