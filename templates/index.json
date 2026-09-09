@@ -63,7 +63,7 @@
         "cat2": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/conjunto_yara_vinho_3.jpg",
+            "image": "shopify://shop_images/3.jpg",
             "heading": "Casacos e Blusas",
             "link": "/collections/roupas-blusas"
           }
@@ -71,7 +71,7 @@
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/juju-_new_gisele_marinho_9_914c55e6-e9fa-40c1-a1a7-ae45d6197f2a.jpg",
+            "image": "shopify://shop_images/2.jpg",
             "heading": "Vestidos",
             "link": "/collections/roupas-vestidos"
           }
