@@ -1262,11 +1262,12 @@
                     {% assign opt_idx = option.position | minus: 1 %}
                     {% assign val_avail = false %}
                     {% assign val_pv = false %}
+                    {% assign val_pv_data = '' %}
                     {% for var in product.variants %}
-                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% if var.metafields.custom.pre_venda.value == true %}{% assign val_pv = true %}{% endif %}{% endif %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% if var.metafields.custom.pre_venda.value == true %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value %}{% endif %}{% endif %}
                     {% endfor %}
                     <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-prevenda="{{ val_pv }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-prevenda="{{ val_pv }}" data-prevenda-data="{{ val_pv_data }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
                       <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
@@ -1286,25 +1287,26 @@
             {% endif %}
           {% endfor %}
 
-          {% comment %} PREVENDA-SIZE: pré-venda por TAMANHO = estoque só no depósito Estoque Pré-Venda (espelho da VTEX, que soma 12 dias úteis) {% endcomment %}
+          {% comment %} PREVENDA-SIZE: pré-venda por TAMANHO, igual à VTEX = o SKU tem 'data prevista de chegada' futura (metafield custom.pre_venda_data, sincronizado da VTEX). O prazo de entrega soma os dias úteis até essa data. {% endcomment %}
           {% assign sel_pv = false %}
+          {% assign sel_pv_data = '' %}
           {% assign sel_var = product.selected_or_first_available_variant %}
-          {% if sel_var.metafields.custom.pre_venda.value == true %}{% assign sel_pv = true %}{% endif %}
-          <div class="pdp__pre-venda" id="pdp-pre-venda" data-dias="12" {% unless sel_pv %}hidden{% endunless %}>
+          {% if sel_var.metafields.custom.pre_venda.value == true %}{% assign sel_pv = true %}{% assign sel_pv_data = sel_var.metafields.custom.pre_venda_data.value %}{% endif %}
+          <div class="pdp__pre-venda" id="pdp-pre-venda" data-prevenda-data="{{ sel_pv_data }}" {% unless sel_pv %}hidden{% endunless %}>
             <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
             <div class="pdp__pre-venda-date">Será enviado dia <span id="pdp-pre-venda-data"></span></div>
           </div>
           <script>
             (function(){
               var box = document.getElementById('pdp-pre-venda'); if (!box) return;
-              var DIAS = parseInt(box.getAttribute('data-dias') || '12', 10);
-              function addBd(n){ var d = new Date(); var c = 0; while (c < n) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w !== 0 && w !== 6) c++; } return d; }
-              function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
-              var el = document.getElementById('pdp-pre-venda-data'); if (el) el.textContent = fmt(addBd(DIAS));
+              var el = document.getElementById('pdp-pre-venda-data');
               var temPills = !!document.querySelector('.pdp__sizes');
-              function atual(){ var r = document.querySelector('.pdp__sizes input[type=radio]:checked'); return r ? r.getAttribute('data-prevenda') === 'true' : false; }
-              window.pdpPreVendaDias = function(){ return (temPills ? atual() : !box.hidden) ? DIAS : 0; };
-              function upd(){ if (temPills) box.hidden = !atual(); }
+              function parse(s){ if (!s) return null; var p = s.slice(0, 10).split('-'); if (p.length < 3) return null; return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)); }
+              function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+              function diasUteis(ate){ var d = new Date(); d.setHours(0,0,0,0); var n = 0; while (d < ate) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w !== 0 && w !== 6) n++; } return n; }
+              function sel(){ if (!temPills) return { pv: !box.hidden, data: box.getAttribute('data-prevenda-data') }; var r = document.querySelector('.pdp__sizes input[type=radio]:checked'); return r ? { pv: r.getAttribute('data-prevenda') === 'true', data: r.getAttribute('data-prevenda-data') } : { pv: false, data: '' }; }
+              window.pdpPreVendaDias = function(){ var s = sel(); if (!s.pv) return 0; var d = parse(s.data); return d && d > new Date() ? diasUteis(d) : 0; };
+              function upd(){ var s = sel(); var d = parse(s.data); var ativo = s.pv && d && d > new Date(); box.hidden = !ativo; if (ativo && el) el.textContent = fmt(d); }
               document.querySelectorAll('.pdp__sizes input[type=radio]').forEach(function(r){ r.addEventListener('change', upd); });
               upd();
             })();
@@ -1413,7 +1415,7 @@
                       if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
                       if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
                       else {
-                        var pv = (window.pdpPreVendaDias ? window.pdpPreVendaDias() : 0); /* pré-venda: soma os dias úteis do depósito, igual à VTEX */
+                        var pv = (window.pdpPreVendaDias ? window.pdpPreVendaDias() : 0); /* pré-venda: soma os dias úteis até a data de chegada do SKU, igual à VTEX */
                         var pvTxt = pv ? ' (inclui ' + pv + ' dias úteis da pré-venda)' : '';
                         /* prazos por estado (dias úteis) copiados da simulação da VTEX em 09/09/2026: [econômico, expresso] */
                         var prazos = { SP:[7,3], RJ:[9,4], MG:[7,3], ES:[9,5], PR:[11,3], SC:[10,3], RS:[13,3], DF:[9,4], GO:[9,5], MT:[14,5], MS:[11,5], BA:[12,5], SE:[13,5], PE:[12,5], AL:[13,5], PB:[13,5], RN:[14,5], CE:[12,5], PI:[10,5], MA:[13,5], PA:[11,5], AP:[24,4], AM:[25,5], RR:[28,5], AC:[21,11], RO:[20,6], TO:[10,5] };
