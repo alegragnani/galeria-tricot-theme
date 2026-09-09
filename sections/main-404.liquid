@@ -182,7 +182,34 @@
   </div>
 </div>
 
-
+<script>
+/* DE-PARA VTEX: links antigos que nao estao na tabela de redirecionamentos (ex.: /nome-do-produto/p?skuId=..., /categoria/subcategoria).
+   1) URL de produto VTEX (termina em /p): se existe produto ativo com o mesmo handle no Shopify, vai pra ele;
+   2) outras URLs: se existe colecao com o mesmo handle, vai pra ela;
+   3) senao, cai na busca com as palavras do link (mostra as pecas parecidas em vez de uma pagina de erro). */
+(function(){
+  var p = location.pathname.replace(/\/+$/, '');
+  var segs = p.split('/').filter(Boolean);
+  if (!segs.length) return;
+  var vtexProduto = segs.length >= 2 && segs[segs.length - 1].toLowerCase() === 'p';
+  var slug = (vtexProduto ? segs[segs.length - 2] : segs[segs.length - 1]).toLowerCase();
+  if (!slug || slug === 'products' || slug === 'collections') return;
+  function busca(){
+    var q = slug.replace(/-/g, ' ').replace(/\b(tricot)\b/g, '').replace(/\s+/g, ' ').trim();
+    if (q.length > 2) location.replace('/search?q=' + encodeURIComponent(q));
+  }
+  if (vtexProduto) {
+    fetch('/products/' + slug + '.js', { headers: { 'Accept': 'application/json' } })
+      .then(function(r){ if (r.ok) location.replace('/products/' + slug + location.search.replace(/[?&]skuId=\d+/i, '').replace(/^&/, '?')); else busca(); })
+      .catch(busca);
+  } else {
+    fetch('/collections/' + slug + '/products.json?limit=1')
+      .then(function(r){ if (!r.ok) throw 0; return r.json(); })
+      .then(function(j){ if (j && j.products && j.products.length) location.replace('/collections/' + slug); else busca(); })
+      .catch(busca);
+  }
+})();
+</script>
 
 {% schema %}
 {
