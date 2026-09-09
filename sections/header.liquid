@@ -856,7 +856,7 @@
       {% else %}
         <a href="{{ '/' | absolute_url }}" class="site-header__logo-link">
           <img
-            src="https://mundodasmalhas.vtexassets.com/assets/vtex/assets-builder/mundodasmalhas.store/3.25.160/logo-gt___c2eb9df48d06eba042153a5c93a107a0.svg"
+            src="{{ 'logo-galeria-tricot.png' | asset_url }}"
             alt="{{ shop.name }}"
             width="180"
             height="40"
@@ -998,7 +998,7 @@
         {%- if section.settings.logo -%}
           <img src="{{ section.settings.logo | image_url: width: 120 }}" alt="{{ shop.name }}" height="36">
         {%- else -%}
-          <span class="search-bar__logo-text">{{ shop.name }}</span>
+          <img src="{{ 'logo-galeria-tricot.png' | asset_url }}" alt="{{ shop.name }}" height="36">
         {%- endif -%}
       </a>
       <button type="button" class="search-bar__close" data-search-close aria-label="Fechar busca">
