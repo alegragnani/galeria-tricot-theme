@@ -55,7 +55,7 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/Design_sem_nome.jpg",
+            "image": "shopify://shop_images/1_86346208-a1a3-4aa1-85d8-3acff7d8dc07.jpg",
             "heading": "Conjuntos",
             "link": "/collections/roupas-conjuntos"
           }
@@ -63,7 +63,7 @@
         "cat2": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/3.jpg",
+            "image": "shopify://shop_images/3_631b9ed3-ef99-464e-82da-d019f0da9fa7.jpg",
             "heading": "Casacos e Blusas",
             "link": "/collections/roupas-blusas"
           }
@@ -71,7 +71,7 @@
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/2.jpg",
+            "image": "shopify://shop_images/2_d10398b0-7da3-4e0f-ae12-c23177e313b5.jpg",
             "heading": "Vestidos",
             "link": "/collections/roupas-vestidos"
           }
@@ -79,7 +79,7 @@
         "cat4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/4.jpg",
+            "image": "shopify://shop_images/4_01efb7f0-6f01-4438-94c6-1275e8bada1a.jpg",
             "heading": "MACACÕES",
             "link": "/collections/roupas-macacoes"
           }
