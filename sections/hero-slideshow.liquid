@@ -16,22 +16,34 @@
     position: relative;
     width: 100%;
     display: grid;
+    overflow: hidden;
   }
 
+  /* HERO-SLIDE: transição deslizando pro lado (pedido da Ale 09/09/2026). Slides escondidos ficam à direita (+100%);
+     o ativo em 0; o que sai vai pra esquerda (-100%). 'from-left' posiciona à esquerda pra entrar quando clica "anterior". */
   .hero-slideshow__slide {
     grid-area: 1 / 1;
     position: relative;
     width: 100%;
-    opacity: 0;
+    transform: translateX(100%);
     visibility: hidden;
-    transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.9s;
   }
 
   .hero-slideshow__slide.active {
-    opacity: 1;
+    transform: translateX(0);
     visibility: visible;
     z-index: 1;
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
   }
+  .hero-slideshow__slide.is-leaving {
+    transform: translateX(-100%);
+    visibility: visible;
+    z-index: 0;
+  }
+  .hero-slideshow__slide.is-leaving.to-right { transform: translateX(100%); }
+  .hero-slideshow__slide.from-left { transform: translateX(-100%); }
+  .hero-slideshow__slide.no-anim { transition: none !important; }
 
   /* Moldura na proporcao EXATA da arte enviada — nao corta e nao pula */
   .hero-slideshow__slide picture {
@@ -254,7 +266,7 @@
               src="{{ block.settings.image | image_url: width: 1920 }}"
               alt="{{ block.settings.heading }}"
               class="hero-slideshow__image"
-              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              loading="eager"
             >
           </picture>
           {%- if block.settings.button_link != blank -%}</a>{%- endif -%}
@@ -326,31 +338,69 @@
 
     let currentIndex = 0;
     let autoplayInterval;
+    const DURACAO_MS = 900;   // tempo do deslize (igual ao CSS)
+    const ESPERA_MS = 15000;  // 15 s parado em cada slide (pedido da Ale)
 
-    function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === index);
-      });
+    // dir: 'next' (entra pela direita), 'prev' (entra pela esquerda) ou 'init'
+    function showSlide(index, dir) {
+      const from = slides[currentIndex];
+      const to = slides[index];
+      dir = dir || 'next';
 
       dots.forEach((dot, i) => {
         dot.classList.toggle('hero-slideshow__dot--active', i === index);
       });
+
+      if (dir === 'init' || from === to) {
+        slides.forEach((s, i) => {
+          s.classList.add('no-anim');
+          s.classList.remove('is-leaving', 'to-right', 'from-left');
+          s.classList.toggle('active', i === index);
+        });
+        void to.offsetWidth;
+        slides.forEach((s) => s.classList.remove('no-anim'));
+        currentIndex = index;
+        return;
+      }
+
+      // posiciona os outros slides sem animar
+      slides.forEach((s) => {
+        if (s === from) return;
+        s.classList.add('no-anim');
+        s.classList.remove('active', 'is-leaving', 'to-right', 'from-left');
+      });
+      if (dir === 'prev') to.classList.add('from-left');
+      void to.offsetWidth; // aplica a posição inicial antes de animar
+      slides.forEach((s) => s.classList.remove('no-anim'));
+
+      to.classList.remove('from-left');
+      to.classList.add('active');
+      from.classList.remove('active');
+      from.classList.add('is-leaving');
+      if (dir === 'prev') from.classList.add('to-right');
+      setTimeout(() => {
+        from.classList.add('no-anim');
+        from.classList.remove('is-leaving', 'to-right');
+        void from.offsetWidth;
+        from.classList.remove('no-anim');
+      }, DURACAO_MS + 50);
 
       currentIndex = index;
     }
 
     function nextSlide() {
       const nextIndex = (currentIndex + 1) % slides.length;
-      showSlide(nextIndex);
+      showSlide(nextIndex, 'next');
     }
 
     function prevSlide() {
       const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
-      showSlide(prevIndex);
+      showSlide(prevIndex, 'prev');
     }
 
     function startAutoplay() {
-      autoplayInterval = setInterval(nextSlide, 5000);
+      if (slides.length < 2) return;
+      autoplayInterval = setInterval(nextSlide, ESPERA_MS);
     }
 
     function resetAutoplay() {
@@ -371,13 +421,13 @@
 
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
-        showSlide(index);
+        showSlide(index, index > currentIndex ? 'next' : 'prev');
         resetAutoplay();
       });
     });
 
     // Initialize
-    showSlide(0);
+    showSlide(0, 'init');
     startAutoplay();
   });
 </script>
