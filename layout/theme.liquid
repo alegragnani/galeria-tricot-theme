@@ -19,8 +19,12 @@
 
   <link rel="canonical" href="{{ canonical_url }}">
 
+  {%- comment -%} FAVICON-GT: icone da aba (mesmo do site VTEX) {%- endcomment -%}
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- else -%}
+    <link rel="icon" type="image/x-icon" href="{{ 'favicon.ico' | asset_url }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.ico' | asset_url }}">
   {%- endif -%}
 
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
