@@ -480,7 +480,7 @@
         {% endfor %}
 
         {% if paginate.next %}
-          <a href="{{ paginate.next.url }}" class="collection-page__page-link">›</a>
+          <a href="{{ paginate.next.url }}" rel="next" class="collection-page__page-link">›</a>
         {% endif %}
       </nav>
       <nav class="collection-page__pagination-mobile" aria-label="Paginação">
@@ -755,6 +755,52 @@
   });
 </script>
 
+
+{%- comment -%} ROLAGEM-CONTINUA-GT: carrega as próximas páginas automaticamente (pedido da Ale, 10/09/2026). Sem JS, a paginação normal continua funcionando. {%- endcomment -%}
+{% if paginate.pages > 1 %}
+<style>
+  .collection-page--infinite .collection-page__pagination,
+  .collection-page--infinite .collection-page__pagination-mobile { display: none !important; }
+  .gt-infinite-sentinel { height: 1px; }
+  .gt-infinite-loading { text-align: center; padding: 24px 0; font-size: 13px; letter-spacing: 1px; color: #777; }
+</style>
+<div class="gt-infinite-sentinel" data-gt-sentinel></div>
+<script>
+  (function () {
+    var page = document.querySelector('.collection-page');
+    var grid = document.querySelector('.collection-page__grid');
+    var sentinel = document.querySelector('[data-gt-sentinel]');
+    if (!page || !grid || !sentinel || !('IntersectionObserver' in window)) return;
+    function nextUrl(doc) {
+      var a = doc.querySelector('.collection-page__pagination--desktop a[rel="next"]');
+      return a ? a.getAttribute('href') : null;
+    }
+    var next = nextUrl(document);
+    if (!next) return;
+    page.classList.add('collection-page--infinite');
+    var loading = false;
+    var msg = document.createElement('div');
+    msg.className = 'gt-infinite-loading'; msg.textContent = 'CARREGANDO...'; msg.hidden = true;
+    sentinel.parentNode.insertBefore(msg, sentinel);
+    function load() {
+      if (loading || !next) return;
+      loading = true; msg.hidden = false;
+      fetch(next, { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var items = doc.querySelectorAll('.collection-page__grid > .collection-page__item');
+        for (var i = 0; i < items.length; i++) grid.appendChild(items[i]);
+        next = nextUrl(doc);
+        loading = false; msg.hidden = true;
+        if (!next) io.disconnect();
+      }).catch(function () { loading = false; msg.hidden = true; page.classList.remove('collection-page--infinite'); io.disconnect(); });
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) if (entries[i].isIntersecting) load();
+    }, { rootMargin: '900px 0px' });
+    io.observe(sentinel);
+  })();
+</script>
+{% endif %}
 {% endpaginate %}
 
 {% schema %}
