@@ -51,8 +51,6 @@
 
   {% render 'cart-drawer' %}
   {% render 'whatsapp-flutuante' %}
-  {%- comment -%} VIDEO-STORIES: widget de videos das pecas (substituto da Widde), so em pagina de produto {%- endcomment -%}
-  {%- if template.name == 'product' -%}<script src="{{ 'video-stories.js' | asset_url }}" defer></script>{%- endif -%}
   {% render 'search-modal' %}
 
   <script src="{{ 'global.js' | asset_url }}" defer></script>

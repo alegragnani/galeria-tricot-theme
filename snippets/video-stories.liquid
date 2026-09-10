@@ -13,9 +13,10 @@
       z-index: 9000 !important;
     }
     /* Fullscreen do video pode ficar acima de tudo */
-    [class*="stories-modal"], [class*="stories-fullscreen"], [class*="stories-overlay"] {
+    [class*="stories-modal"], [class*="stories-fullscreen"], [class*="stories-overlay"], #video-stories-overlay {
       z-index: 10001 !important;
     }
   </style>
-  <script src="https://admin-videos-87c119.netlify.app/widget-shopify.js" defer></script>
+  {%- comment -%} 10/09/2026: script agora e asset do tema (o arquivo na Netlify dava 404 e os videos sumiram) {%- endcomment -%}
+  <script src="{{ 'video-stories.js' | asset_url }}" defer></script>
 {% endif %}
