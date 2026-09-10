@@ -199,6 +199,11 @@
     position: static;
   }
 
+  /* Números do menu (ex.: 2027) na mesma altura das letras: a Raleway usa algarismos "antigos" (mais baixos) por padrão */
+  .site-header__nav-link, .mega-menu__link, .mobile-drawer__link, .mobile-drawer__sublink, .mega-menu__link--all {
+    font-variant-numeric: lining-nums;
+    font-feature-settings: "lnum" 1;
+  }
   .site-header__nav-link {
     position: relative;
     z-index: 10000;
