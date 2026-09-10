@@ -379,7 +379,8 @@
      ================================================================ */
   @media (max-width: 749px) {
     .site-header__container {
-      grid-template-columns: 1fr 1fr 1fr;
+      /* coluna do meio = largura natural do logo (antes 1fr 1fr 1fr espremia o logo) */
+      grid-template-columns: 1fr auto 1fr;
       padding: 6px 16px;
       gap: 0;
       min-height: 67px;
@@ -391,7 +392,10 @@
       display: none !important;
     }
     .site-header__logo-img {
-      height: 36px;
+      height: 34px;
+      width: auto;
+      max-width: none;
+      object-fit: contain;
     }
     .mega-menu { min-width: 280px; padding: 16px; }
     .mega-menu__content { grid-template-columns: 1fr; gap: 16px; }
