@@ -92,6 +92,9 @@
       font-size: 12px;
     }
   }
+  /* TARJA-GT: texto em caixa normal; setas so quando ha mais de uma mensagem */
+  .announcement-bar__message, .announcement-bar__message p { text-transform: none !important; letter-spacing: 0.5px; }
+  {% if section.blocks.size <= 1 %}.announcement-bar__button { display: none !important; }{% endif %}
 </style>
 <div class="announcement-bar" data-announcement-bar>
   <div class="announcement-bar__wrapper">
