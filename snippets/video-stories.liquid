@@ -16,6 +16,15 @@
     [class*="stories-modal"], [class*="stories-fullscreen"], [class*="stories-overlay"], #video-stories-overlay {
       z-index: 10001 !important;
     }
+
+    /* 11/09/2026 (Ale: nao tinha botao de fechar): a regra geral acima (z-index 9000 !important)
+       achatava o empilhamento interno do player, e o botao X ficava ATRAS do video.
+       Aqui os controles voltam para cima do video. */
+    #video-stories-overlay .video-stories-close,
+    #video-stories-overlay .video-stories-nav,
+    #video-stories-overlay .video-stories-actions {
+      z-index: 9999 !important;
+    }
   </style>
   {%- comment -%} 10/09/2026: script agora e asset do tema (o arquivo na Netlify dava 404 e os videos sumiram) {%- endcomment -%}
   <script src="{{ 'video-stories.js' | asset_url }}" defer></script>
