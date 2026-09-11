@@ -1355,7 +1355,7 @@
       let html = '<div class="search-bar__live-results">';
       products.forEach(p => {
         const img = p.image || p.featured_image?.url || '';
-        const price = p.price ? ('R$ ' + (parseFloat(p.price) / 100).toFixed(2).replace('.', ',')) : '';
+        const price = p.price ? ('R$ ' + Number(p.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : ''; /* preco da API ja vem em reais (GT, 11/09/2026) */
         html += '<a href="' + p.url + '" class="search-bar__result-item">';
         if (img) html += '<img src="' + img + '" alt="" class="search-bar__result-img" loading="lazy">';
         html += '<div class="search-bar__result-info">';
