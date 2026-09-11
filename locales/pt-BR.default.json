@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "general": {
     "search": "Buscar",
@@ -68,5 +77,14 @@
     "title": "Página não encontrada",
     "text": "A página que você está procurando não existe ou foi removida.",
     "back_home": "Voltar para a home"
+  },
+  "shopify": {
+    "checkout": {
+      "contact": {
+        "phone_label": "Celular",
+        "optional_phone_label": "Celular",
+        "phone_placeholder": "Celular"
+      }
+    }
   }
 }
