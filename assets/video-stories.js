@@ -211,9 +211,9 @@
         background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
         pointer-events: none;
       }
-      #video-stories-widget iframe.widget-mini-video {
-        position: absolute; top: 50%; left: 50%; width: 180%; height: 180%;
-        transform: translate(-50%, -50%); border: none; pointer-events: none; z-index: 1;
+      #video-stories-widget video.widget-mini-video {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover; object-position: center; border: none; pointer-events: none; z-index: 1; background: #000;
       }
       #video-stories-close-widget {
         position: absolute; top: -6px; right: -6px; width: 18px; height: 18px;
@@ -374,14 +374,20 @@
     // Mini vídeo autoplay (muted) dentro da bolha — Bunny only
     if (widgetState.videos.length > 0 && widgetState.videos[0].bunnyGuid) {
       const guid = widgetState.videos[0].bunnyGuid;
-      const miniIframe = document.createElement('iframe');
-      miniIframe.className = 'widget-mini-video';
-      miniIframe.src = `https://iframe.mediadelivery.net/embed/${CONFIG.BUNNY_LIBRARY_ID}/${guid}?autoplay=true&muted=true&loop=true&preload=true&responsive=true&controls=false&playsinline=true`;
-      miniIframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
-      miniIframe.setAttribute('playsinline', '');
-      miniIframe.setAttribute('webkit-playsinline', '');
-      miniIframe.setAttribute('loading', 'lazy');
-      widget.appendChild(miniIframe);
+      // 13/09/2026 (Ale: preview do video com a imagem deslocada): o player da Bunny dentro de um
+      // iframe esticado a 180% nao centralizava o video na bolha. Agora e um <video> nativo com
+      // object-fit: cover (MP4 240p direto da CDN; poster = thumbnail; se falhar, mostra a thumbnail).
+      const thumb = widgetState.videos[0].thumbnailUrl || `https://${CONFIG.BUNNY_CDN}/${guid}/thumbnail.jpg`;
+      const mini = document.createElement('video');
+      mini.className = 'widget-mini-video';
+      mini.muted = true; mini.loop = true; mini.autoplay = true; mini.playsInline = true;
+      mini.setAttribute('muted', ''); mini.setAttribute('playsinline', ''); mini.setAttribute('webkit-playsinline', '');
+      mini.preload = 'auto';
+      mini.poster = thumb;
+      mini.src = `https://${CONFIG.BUNNY_CDN}/${guid}/play_240p.mp4`;
+      mini.addEventListener('error', () => { mini.remove(); widget.style.backgroundImage = `url('${thumb}')`; });
+      widget.appendChild(mini);
+      mini.play().catch(() => {});
     } else if (widgetState.videos.length > 0 && widgetState.videos[0].thumbnailUrl) {
       widget.style.backgroundImage = `url('${widgetState.videos[0].thumbnailUrl}')`;
     }
