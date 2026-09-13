@@ -958,7 +958,8 @@
       min-width: 0;
     }
     .pdp__look-sizes-label { display: none; }
-    .pdp__look-sizes { justify-content: center; padding: 6px 4px; }
+    .pdp__look-sizes { justify-content: center; padding: 6px 2px; gap: 4px; }
+    .pdp__look-size-opt { min-width: 30px; height: 28px; line-height: 28px; font-size: 13px; }
     .pdp__look-equals { display: none; }
     .pdp__look-summary { width: 100%; justify-content: center; }
   }
@@ -970,8 +971,10 @@
     .pdp__look-title {
       font-size: 26px;
     }
+    /* 13/09/2026 (Ale: look bagunçado no celular): o item já é uma coluna da grade 2x2;
+       o max-width 45% encolhia cada card para ~22% da tela. */
     .pdp__look-item {
-      max-width: 45%;
+      max-width: none;
     }
   }
 
