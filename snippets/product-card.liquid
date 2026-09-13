@@ -359,6 +359,17 @@
       {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
       {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
     {%- endif -%}
+    {%- comment -%} 13/09/2026 (Ale): a pré-venda agora é por TAMANHO (metafield da variante custom.pre_venda_data, a mesma que a página do produto usa). Se algum tamanho tiver data futura, o card ganha a etiqueta. {%- endcomment -%}
+    {%- unless gt_ispv -%}
+      {%- assign gt_now2 = 'now' | date: '%s' | plus: 0 -%}
+      {%- for gt_v in product.variants -%}
+        {%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data.value -%}
+        {%- if gt_vpv != blank -%}
+          {%- assign gt_vts = gt_vpv | date: '%s' | plus: 0 -%}
+          {%- if gt_vts > gt_now2 -%}{%- assign gt_ispv = true -%}{%- break -%}{%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
     {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
 
     <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
