@@ -1121,7 +1121,9 @@
     const _annBar = document.querySelector('.announcement-bar'); const ANNOUNCEMENT_HEIGHT = _annBar ? _annBar.offsetHeight : 0; // altura da barra de anúncio
 
     function onScroll() {
-      const currentY = window.scrollY;
+      // 13/09/2026 (Ale: menu tremia ao puxar a tela pra atualizar no iPhone): no "elastico" do iOS o
+      // scrollY fica NEGATIVO e o top do header era recalculado a cada frame. Abaixo de 0 tratamos como 0.
+      const currentY = Math.max(0, window.scrollY);
 
       // Top dinâmico: header acompanha a barra de anúncio suavemente
       const dynamicTop = Math.max(0, ANNOUNCEMENT_HEIGHT - currentY);
