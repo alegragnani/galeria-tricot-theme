@@ -26,6 +26,20 @@
             "text_color": "rgba(0,0,0,0)"
           }
         },
+        "slide_U7eAWd": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20-03_banner_8__jpg.jpg",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_1.png",
+            "heading": "NOVA COLEÇÃO",
+            "subheading": "Descubra as peças da estação",
+            "button_text": "COMPRAR AGORA",
+            "button_link": "",
+            "text_position": "center",
+            "text_vertical": "middle",
+            "text_color": "#ffffff"
+          }
+        },
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
@@ -43,6 +57,7 @@
       },
       "block_order": [
         "slide_amicLw",
+        "slide_U7eAWd",
         "slide_6nkhtY"
       ],
       "settings": {
