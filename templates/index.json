@@ -31,9 +31,9 @@
           "settings": {
             "image": "shopify://shop_images/20-03_banner_8__jpg.jpg",
             "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_1.png",
-            "heading": "NOVA COLEÇÃO",
-            "subheading": "Descubra as peças da estação",
-            "button_text": "COMPRAR AGORA",
+            "heading": "",
+            "subheading": "",
+            "button_text": "",
             "button_link": "",
             "text_position": "center",
             "text_vertical": "middle",
