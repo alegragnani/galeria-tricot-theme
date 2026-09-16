@@ -26,20 +26,6 @@
             "text_color": "rgba(0,0,0,0)"
           }
         },
-        "slide_NidW7J": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/20-03_banner_8__jpg_9bba381e-838b-46d2-a0f6-e7d90d30353a.jpg",
-            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_1_b0e315f6-2382-4cb7-82af-aa225e19edfb.png",
-            "heading": "",
-            "subheading": "",
-            "button_text": "",
-            "button_link": "https://www.galeriatricot.com.br/collections/roupas",
-            "text_position": "center",
-            "text_vertical": "middle",
-            "text_color": "#ffffff"
-          }
-        },
         "slide_6nkhtY": {
           "type": "slide",
           "settings": {
@@ -57,7 +43,6 @@
       },
       "block_order": [
         "slide_amicLw",
-        "slide_NidW7J",
         "slide_6nkhtY"
       ],
       "settings": {
