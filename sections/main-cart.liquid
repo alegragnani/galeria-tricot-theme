@@ -300,7 +300,7 @@
                   {%- assign hoje_ts = 'now' | date: '%s' | plus: 0 -%}
                   {%- if it_ts > hoje_ts -%}{%- assign it_pv = item.variant.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' -%}{%- endif -%}
                 {%- endif -%}
-                <span class="cart-page__item-entrega{% if it_pv != '' %} cart-page__item-entrega--pv{% endif %}" data-prevenda-data="{{ it_pv }}">{% if it_pv != '' %}Pré-venda · envio a partir de {{ it_pv | date: '%d/%m' }}{% else %}Pronta entrega{% endif %}</span>
+                <span class="cart-page__item-entrega{% if it_pv != '' %} cart-page__item-entrega--pv{% endif %}" data-variant-id="{{ item.variant.id }}" data-qty="{{ item.quantity }}" data-prevenda-data="{{ it_pv }}">{% if it_pv != '' %}Pré-venda · envio a partir de {{ it_pv | date: '%d/%m' }}{% else %}Pronta entrega{% endif %}</span>
 
                 <div class="cart-page__item-qty">
                   <button class="cart-page__qty-btn" data-action="decrease" aria-label="Diminuir">−</button>
@@ -320,6 +320,25 @@
         </div>
       </div>
 
+      <script>
+        // FILA DE PRAZO (21/09/2026, Ale): prazo de cada item da sacola ao vivo por local (pronta entrega -> Estoque Pre-Venda -> Estoque Pre-Venda 2), pela quantidade.
+        (function(){
+          var els = Array.prototype.slice.call(document.querySelectorAll('.cart-page__item-entrega[data-variant-id]'));
+          var ids = els.map(function(e){ return e.getAttribute('data-variant-id'); }).filter(Boolean);
+          if (!ids.length) return;
+          fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+            if (!j || j.erro) return;
+            els.forEach(function(el){
+              var q = j[el.getAttribute('data-variant-id')]; if (!q || !q.tracked || !q.fila) return;
+              var need = parseInt(el.getAttribute('data-qty') || '1', 10) || 1, data = null, f = q.fila;
+              for (var i = 0; i < f.length; i++) { if (need <= f[i][0]) { data = f[i][1]; break; } need -= f[i][0]; if (i === f.length - 1) data = f[i][1] || (f[1] && f[1][1]) || null; }
+              el.setAttribute('data-prevenda-data', data || '');
+              if (data) el.classList.add('cart-page__item-entrega--pv'); else el.classList.remove('cart-page__item-entrega--pv');
+              el.textContent = data ? ('Pré-venda · envio a partir de ' + data.slice(8, 10) + '/' + data.slice(5, 7)) : 'Pronta entrega';
+            });
+          }).catch(function(){});
+        })();
+      </script>
       <!-- COLUNA DIREITA: Resumo -->
       <aside class="cart-page__summary">
         <h2 class="cart-page__summary-title">RESUMO DO PEDIDO</h2>

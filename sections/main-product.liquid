@@ -1266,12 +1266,12 @@
                     {% assign val_avail = false %}
                     {% assign val_pv = false %}
                     {% assign val_pv_data = '' %}
-                    {% assign pv_hoje_ts = 'now' | date: '%s' | plus: 0 %}
+                    {% assign pv_hoje_ts = 'now' | date: '%s' | plus: 0 %}{% assign val_vid = '' %}
                     {% for var in product.variants %}
-                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% assign pvd_ts = var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}{% if var.metafields.custom.pre_venda_data.value != blank and pvd_ts > pv_hoje_ts %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}{% endif %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% assign val_vid = var.id %}{% assign pvd_ts = var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}{% if var.metafields.custom.pre_venda_data.value != blank and pvd_ts > pv_hoje_ts %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}{% endif %}
                     {% endfor %}
                     <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
-                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-prevenda="{{ val_pv }}" data-prevenda-data="{{ val_pv_data }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-variant-id="{{ val_vid }}" data-prevenda="{{ val_pv }}" data-prevenda-data="{{ val_pv_data }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
                       <span class="pdp__size-label">{{ value }}</span>
                     </label>
                   {% endfor %}
@@ -1314,6 +1314,19 @@
               window.pdpPreVendaDias = function(){ var s = sel(); if (!s.pv) return 0; var d = parse(s.data); return d && d > new Date() ? diasUteis(d) : 0; };
               function upd(){ var s = sel(); var d = parse(s.data); var ativo = s.pv && d && d > new Date(); box.hidden = !ativo; if (ativo && el) el.textContent = fmt(d); }
               document.querySelectorAll('.pdp__sizes input[type=radio]').forEach(function(r){ r.addEventListener('change', upd); });
+              // FILA DE PRAZO (21/09/2026, Ale): consulta ao vivo por local (pronta entrega -> Estoque Pre-Venda -> Estoque Pre-Venda 2) e corrige o aviso por tamanho.
+              try {
+                var radios = Array.prototype.slice.call(document.querySelectorAll('.pdp__sizes input[type=radio][data-variant-id]'));
+                var ids = radios.map(function(r){ return r.getAttribute('data-variant-id'); }).filter(Boolean);
+                var hid = document.getElementById('variant-id'); if (!temPills && hid && hid.value) ids.push(hid.value);
+                if (ids.length) fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+                  if (!j || j.erro) return;
+                  function aplica(el, vid){ var q = j[vid]; if (!q || !q.tracked) return; el.setAttribute('data-prevenda', q.proximo ? 'true' : 'false'); el.setAttribute('data-prevenda-data', q.proximo || ''); }
+                  radios.forEach(function(r){ aplica(r, r.getAttribute('data-variant-id')); });
+                  if (!temPills && hid) { var q0 = j[hid.value]; if (q0 && q0.tracked) { box.setAttribute('data-prevenda-data', q0.proximo || ''); box.hidden = !q0.proximo; } }
+                  window.pdpFilaPrazo = j; upd();
+                }).catch(function(){});
+              } catch (e) {}
               upd();
             })();
           </script>

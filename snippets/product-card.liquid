@@ -363,7 +363,7 @@
     {%- unless gt_ispv -%}
       {%- assign gt_now2 = 'now' | date: '%s' | plus: 0 -%}
       {%- for gt_v in product.variants -%}
-        {%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data.value -%}
+        {%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data.value -%}{%- if gt_vpv == blank -%}{%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data_2.value -%}{%- endif -%}
         {%- if gt_vpv != blank -%}
           {%- assign gt_vts = gt_vpv | date: '%s' | plus: 0 -%}
           {%- if gt_vts > gt_now2 -%}{%- assign gt_ispv = true -%}{%- break -%}{%- endif -%}
