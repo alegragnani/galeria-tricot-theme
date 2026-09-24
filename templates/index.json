@@ -15,8 +15,8 @@
         "slide_amicLw": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/20-03_banner_2_57bcd9f8-380a-4ce0-bee0-d53bc9275b00.jpg",
-            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER.png",
+            "image": "shopify://shop_images/20-03_banner.jpg",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER.jpg",
             "heading": "",
             "subheading": "",
             "button_text": "",
@@ -99,7 +99,7 @@
         "b1": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Editavel_Pequeno_5.jpg",
+            "image": "shopify://shop_images/Editavel_Pequeno_1.jpg",
             "subheading": "",
             "heading": "",
             "cta_text": "",
@@ -112,7 +112,7 @@
         "b2": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Editavel_Pequeno_4.jpg",
+            "image": "shopify://shop_images/Editavel_Pequeno_827d92b3-0b33-4035-a59b-f84101ef2c36.jpg",
             "subheading": "",
             "heading": "",
             "cta_text": "",
