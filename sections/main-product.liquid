@@ -1742,6 +1742,25 @@
       });
     }
 
+    // Sempre abrir na 1a foto (30/09/2026): no celular (Safari iOS) o navegador restaura a posicao do carrossel
+    // ao voltar/recarregar/abrir de novo e a pagina abria na ultima foto. Zera a galeria ao carregar, sem animacao.
+    if (track) {
+      let galeriaTocada = false;
+      track.addEventListener('touchstart', () => { galeriaTocada = true; }, { passive: true });
+      track.addEventListener('pointerdown', () => { galeriaTocada = true; }, { passive: true });
+      const galeriaInicio = () => {
+        if (galeriaTocada) return;
+        track.style.scrollBehavior = 'auto';
+        track.scrollLeft = 0;
+        track.style.scrollBehavior = '';
+        currentSlide = 0;
+        setActiveDot(0);
+      };
+      galeriaInicio();
+      window.addEventListener('pageshow', galeriaInicio);
+      window.addEventListener('load', () => setTimeout(galeriaInicio, 60));
+    }
+
     /* ---- Share ---- */
     document.getElementById('share-btn')?.addEventListener('click', function() {
       if (navigator.share) {
