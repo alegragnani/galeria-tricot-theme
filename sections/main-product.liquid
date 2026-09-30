@@ -82,6 +82,7 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     gap: 0;
+    overflow-anchor: none;
   }
   .pdp__gallery-track::-webkit-scrollbar {
     display: none;
@@ -94,8 +95,7 @@
     width: 100%;
     height: auto;
     display: block;
-    aspect-ratio: auto !important;
-    object-fit: contain !important;
+    object-fit: contain !important; /* proporcao real vem do style inline de cada <img> (reserva o espaco antes da foto carregar) */
   }
   /* Desktop estilo Revolve: 2 fotos por vez (andando de 1 em 1), texto mais a direita */
   @media (min-width: 750px) {
@@ -934,7 +934,7 @@
   @media (max-width: 749px) {
     /* foto do produto cabe inteira na tela, sem cortar */
     .pdp__gallery-img {
-      width: auto;
+      width: 100%;
       max-width: 100%;
       max-height: 80vh;
       height: auto;
@@ -1019,9 +1019,6 @@
     .pdp__gallery-item {
       flex: 0 0 100%;
     }
-    .pdp__gallery-img {
-      aspect-ratio: 3 / 4;
-    }
     .pdp__gallery-arrow {
       width: 36px;
       height: 36px;
@@ -1096,6 +1093,7 @@
               loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
               class="pdp__gallery-img"
               width="{{ image.width }}" height="{{ image.height }}"
+              style="aspect-ratio: {{ image.width }} / {{ image.height }};"
             />
           </div>
         {% endfor %}
