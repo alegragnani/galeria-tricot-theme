@@ -1,3 +1,16 @@
+<script>
+/* GT-DIAG-GALERIA (temporario, remover) */
+(function(){
+  var D = window.__galDiag = { tl: [], calls: [], t0: performance.now() };
+  function st(){ return (new Error().stack||'').split('\n').slice(2,6).join(' / '); }
+  var siv = Element.prototype.scrollIntoView; Element.prototype.scrollIntoView = function(){ D.calls.push(['SIV', this.id||this.className, st()]); return siv.apply(this, arguments); };
+  var sto = Element.prototype.scrollTo; Element.prototype.scrollTo = function(){ D.calls.push(['STO', this.id||this.className, JSON.stringify(arguments[0]), st()]); return sto.apply(this, arguments); };
+  var d = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollLeft');
+  Object.defineProperty(Element.prototype, 'scrollLeft', { configurable: true, get: d.get, set: function(v){ if (this.id === 'gallery-track') D.calls.push(['SL', v, st()]); return d.set.call(this, v); } });
+  var iv = setInterval(function(){ var t = document.getElementById('gallery-track'); if (!t) return; D.tl.push([Math.round(performance.now()-D.t0), d.get.call(t), t.scrollWidth, t.offsetHeight, document.readyState]); if (performance.now()-D.t0 > 8000) clearInterval(iv); }, 30);
+  ['DOMContentLoaded','load','pageshow'].forEach(function(ev){ window.addEventListener(ev, function(){ D.calls.push(['EV', ev, Math.round(performance.now()-D.t0)]); }); });
+})();
+</script>
 {%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>
                 .pdp-frete__row { display:flex; gap:8px; }
