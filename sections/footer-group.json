@@ -32,7 +32,7 @@
           "type": "text",
           "settings": {
             "heading": "PRECISA DE AJUDA?",
-            "text": "<p><a href=\"/account\">Acompanhe seu pedido</a><br><a href=\"/pages/fale-conosco\">Fale com o SAC</a><br>Dúvidas frequentes</p>"
+            "text": "<p><a href=\"/account\">Acompanhe seu pedido</a><br><a href=\"/pages/fale-conosco\">Fale com o SAC</a><br><a href=\"/pages/duvidas-frequentes\">Dúvidas frequentes</a></p>"
           }
         }
       },
