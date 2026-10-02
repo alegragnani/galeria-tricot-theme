@@ -25,14 +25,14 @@
           "type": "text",
           "settings": {
             "heading": "NOSSAS POLÍTICAS",
-            "text": "<p>Trocas e devoluções<br>Política de privacidade<br>Entregas e frete<br>Ouvidoria</p>"
+            "text": "<p><a href=\"/policies/refund-policy\">Trocas e devoluções</a><br><a href=\"/policies/shipping-policy\">Entregas e frete</a><br><a href=\"/policies/privacy-policy\">Política de privacidade</a><br><a href=\"/pages/fale-conosco\">Ouvidoria</a></p>"
           }
         },
         "ajuda": {
           "type": "text",
           "settings": {
             "heading": "PRECISA DE AJUDA?",
-            "text": "<p>Acompanhe seu pedido<br>Fale com o SAC<br>Dúvidas frequentes</p>"
+            "text": "<p><a href=\"/account\">Acompanhe seu pedido</a><br><a href=\"/pages/fale-conosco\">Fale com o SAC</a><br>Dúvidas frequentes</p>"
           }
         }
       },
@@ -40,7 +40,7 @@
       "settings": {
         "show_newsletter": true,
         "newsletter_heading": "ENTRE NA NOSSA LISTA",
-        "newsletter_text": "Novidades, ofertas exclusivas e inspiração direto no seu e-mail.",
+        "newsletter_text": "Lançamentos, ofertas exclusivas e inspiração em tricot, direto no seu e-mail.",
         "show_payment_icons": true,
         "social_instagram": "https://www.instagram.com/galeriatricot",
         "social_whatsapp": "https://api.whatsapp.com/send?phone=5535998543079&text=Ola%20Equipe%20GT!",
