@@ -155,6 +155,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_N7cXzf": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju---amora-cinza-6_75e4835e-c1df-4dad-92af-fa1c831f368b.jpg",
+            "product": "conjunto-tricot-amora-cinza-mescla"
+          }
+        },
         "look_6tNp8y": {
           "type": "look",
           "settings": {
@@ -206,6 +213,7 @@
         }
       },
       "block_order": [
+        "look_N7cXzf",
         "look_6tNp8y",
         "look_AfwMDM",
         "look_FGrJYb",
