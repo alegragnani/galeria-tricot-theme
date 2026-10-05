@@ -155,6 +155,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_FGrJYb": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/MONICA_SALGADO_-_CARINA_BEGE_AREIA_1_1165856d-9665-483c-9549-95001afc79c3.jpg",
+            "product": "conjunto-tricot-carina-bege-areia"
+          }
+        },
         "look_atWktq": {
           "type": "look",
           "settings": {
@@ -185,6 +192,7 @@
         }
       },
       "block_order": [
+        "look_FGrJYb",
         "look_atWktq",
         "look_bGKapH",
         "look_4mGrGj",
