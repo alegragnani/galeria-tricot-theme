@@ -155,6 +155,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_6tNp8y": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/luiza-sobral---leda-marinho_624859ff-d5da-45d2-adf0-2abcf1337c67.jpg",
+            "product": "conjunto-tricot-leda-manga-longa-marinho"
+          }
+        },
         "look_AfwMDM": {
           "type": "look",
           "settings": {
@@ -199,6 +206,7 @@
         }
       },
       "block_order": [
+        "look_6tNp8y",
         "look_AfwMDM",
         "look_FGrJYb",
         "look_atWktq",
