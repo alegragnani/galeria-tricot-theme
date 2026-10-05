@@ -155,6 +155,27 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_bGKapH": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg",
+            "product": "conjunto-tricot-flora-rosa-primula"
+          }
+        },
+        "look_4mGrGj": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_cleo_verde_militar_38de8545-416b-4aec-b2a0-4c74608b0cbb.jpg",
+            "product": "conjunto-tricot-cleo-verde-militar"
+          }
+        },
+        "look_EUBiWQ": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju-norremose---heloisa-marinho_c696e422-2634-4ab5-a1ad-25c364d7cd65.jpg",
+            "product": "conjunto-tricot-heloisa-marinho"
+          }
+        },
         "look_hFpwmD": {
           "type": "look",
           "settings": {
@@ -203,40 +224,19 @@
             "lifestyle_image": "shopify://shop_images/Ana_Paula_A-_Heloisa_Off_White_4_f6061c51-b9f5-4a8c-a8a9-82876d586d11.jpg",
             "product": "conjunto-tricot-heloisa-off-white"
           }
-        },
-        "look_bGKapH": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg",
-            "product": "conjunto-tricot-flora-rosa-primula"
-          }
-        },
-        "look_4mGrGj": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_cleo_verde_militar_38de8545-416b-4aec-b2a0-4c74608b0cbb.jpg",
-            "product": "conjunto-tricot-cleo-verde-militar"
-          }
-        },
-        "look_EUBiWQ": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju-norremose---heloisa-marinho_c696e422-2634-4ab5-a1ad-25c364d7cd65.jpg",
-            "product": "conjunto-tricot-heloisa-marinho"
-          }
         }
       },
       "block_order": [
+        "look_bGKapH",
+        "look_4mGrGj",
+        "look_EUBiWQ",
         "look_hFpwmD",
         "look_9d4XfD",
         "look_N7cXzf",
         "look_6tNp8y",
         "look_AfwMDM",
         "look_FGrJYb",
-        "look_atWktq",
-        "look_bGKapH",
-        "look_4mGrGj",
-        "look_EUBiWQ"
+        "look_atWktq"
       ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
