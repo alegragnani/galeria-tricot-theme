@@ -39,11 +39,26 @@
             "text_vertical": "top",
             "text_color": "rgba(0,0,0,0)"
           }
+        },
+        "slide_tKVGPa": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20-03_banner_d5943d42-24b1-45f8-8c4c-19c776b07c0c.png",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_8cb0555a-4bf8-4439-a747-425ac2b6eb21.png",
+            "heading": "",
+            "subheading": "",
+            "button_text": "",
+            "button_link": "",
+            "text_position": "center",
+            "text_vertical": "middle",
+            "text_color": "#ffffff"
+          }
         }
       },
       "block_order": [
         "slide_amicLw",
-        "slide_6nkhtY"
+        "slide_6nkhtY",
+        "slide_tKVGPa"
       ],
       "settings": {
         "title": "Hero Slideshow"
