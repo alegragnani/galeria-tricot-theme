@@ -504,8 +504,26 @@
       track.scrollTo({ left: slideWidth * current, behavior: 'smooth' });
     }
 
-    prevBtn.addEventListener('click', function() { goTo(current - 1); });
-    nextBtn.addEventListener('click', function() { goTo(current + 1); });
+    /* GIRO-AUTOMATICO-GT (07/10/2026, Ale: "por que nao ta rodando esse carrossel"): troca de look sozinho a cada 6 s;
+       pausa com o mouse em cima, ao tocar no celular e por 15 s depois de clicar nas setas; so roda com a secao visivel. */
+    var autoTimer = null, pausadoAte = 0, hover = false, visivel = true;
+    function autoStart() { if (autoTimer) return; autoTimer = setInterval(function() {
+      if (hover || !visivel || Date.now() < pausadoAte || document.hidden) return;
+      goTo(current + 1);
+    }, 6000); }
+    var sliderEl = document.getElementById('stl-slider-' + sectionId);
+    if (sliderEl) {
+      sliderEl.addEventListener('mouseenter', function() { hover = true; });
+      sliderEl.addEventListener('mouseleave', function() { hover = false; });
+      sliderEl.addEventListener('touchstart', function() { pausadoAte = Date.now() + 15000; }, { passive: true });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function(es) { visivel = es[0].isIntersecting; }, { threshold: 0.2 }).observe(sliderEl);
+      }
+    }
+    if (total > 1) autoStart();
+
+    prevBtn.addEventListener('click', function() { pausadoAte = Date.now() + 15000; goTo(current - 1); });
+    nextBtn.addEventListener('click', function() { pausadoAte = Date.now() + 15000; goTo(current + 1); });
 
     /* Sync current index quando usuario arrasta manualmente */
     var scrollTimer;
