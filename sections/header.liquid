@@ -493,14 +493,24 @@
     position: relative;
   }
   .mobile-drawer__link-row .mobile-drawer__link {
-    flex: 1;
+    flex: 0 1 auto; /* 09/10: setinha colada ao nome (antes flex:1 jogava a seta pro canto) */
+    padding-right: 0;
     border-bottom: none;
     text-align: center;
+  }
+  .mobile-drawer__link-row .mobile-drawer__link:hover,
+  .mobile-drawer__link-row .mobile-drawer__link:active {
+    background: none;
+  }
+  .mobile-drawer__expand svg {
+    width: 14px;
+    height: 14px;
+    display: block;
   }
   .mobile-drawer__expand {
     background: none;
     border: none;
-    padding: 0 0 0 8px;
+    padding: 12px 8px 12px 12px;
     cursor: pointer;
     color: #545454;
     transition: transform 0.3s ease;
