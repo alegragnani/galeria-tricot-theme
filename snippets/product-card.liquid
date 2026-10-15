@@ -270,7 +270,7 @@
     .pc-mslider { display: block; position: absolute; inset: 0; }
     .pc-mtrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%; }
     .pc-mtrack::-webkit-scrollbar { display: none; }
-    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; cursor: pointer; }
+    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; cursor: pointer; background: #f4f1ec; }
     .pc-mslide img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .pc-mdots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 2; }
     .pc-mdot { width: 14px; height: 2px; background: rgba(255,255,255,0.55); box-shadow: 0 0 2px rgba(0,0,0,0.35); }
@@ -319,12 +319,12 @@
         {%- assign gt_slide_n = 0 -%}
         {%- if gt_card == 2 -%}
         {%- assign gt_slide_n = 1 -%}
-        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 450 }}" srcset="{{ gt_extra.value | image_url: width: 450 }} 450w, {{ gt_extra.value | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ product.title | escape }}" loading="lazy" width="450" height="675"></span>
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_extra.value | image_url: width: 450 }}" data-srcset="{{ gt_extra.value | image_url: width: 450 }} 450w, {{ gt_extra.value | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ product.title | escape }}" width="450" height="675"></span>
         {%- endif -%}
         {%- for gt_img in product.images limit: 4 -%}
         {%- assign gt_slide_n = gt_slide_n | plus: 1 -%}
         {%- if gt_slide_n == 1 -%}
-        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 450 }}" srcset="{{ gt_img | image_url: width: 450 }} 450w, {{ gt_img | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ gt_img.alt | escape }}" loading="lazy" width="450" height="675"></span>
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_img | image_url: width: 450 }}" data-srcset="{{ gt_img | image_url: width: 450 }} 450w, {{ gt_img | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ gt_img.alt | escape }}" width="450" height="675"></span>
         {%- else -%}
         <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_img | image_url: width: 450 }}" alt="{{ gt_img.alt | escape }}" width="450" height="675"></span>
         {%- endif -%}
@@ -463,15 +463,23 @@ function quickAddSize(btn, e) {
   if (!url) return;
   window.location.href = url.split('?')[0] + (variantId ? '?variant=' + variantId : '');
 }
-function pcHydrate(track, so2) {
+function pcHydrate(track, n) {
+  /* n = quantas fotos carregar (sem n = todas) */
   var im = track.querySelectorAll('img[data-src]');
-  for (var i = 0; i < im.length; i++) { im[i].src = im[i].getAttribute('data-src'); im[i].removeAttribute('data-src'); if (so2) break; }
+  var ja = track.querySelectorAll('img:not([data-src])').length;
+  for (var i = 0; i < im.length; i++) {
+    if (n && ja >= n) break;
+    if (im[i].getAttribute('data-srcset')) { im[i].srcset = im[i].getAttribute('data-srcset'); im[i].removeAttribute('data-srcset'); }
+    im[i].src = im[i].getAttribute('data-src'); im[i].removeAttribute('data-src'); ja++;
+  }
 }
 (function(){
   if (window.__gtPcIO) return; window.__gtPcIO = 1;
   if (!('IntersectionObserver' in window)) return;
-  var io = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, true); io.unobserve(es[k].target); } }, { rootMargin: '250px 0px' });
-  function obs(){ var ts = document.querySelectorAll('.pc-mtrack:not([data-gt-io])'); for (var k = 0; k < ts.length; k++) { ts[k].setAttribute('data-gt-io', '1'); io.observe(ts[k]); } }
+  /* 15/10: 1ª foto carrega bem antes de aparecer (2 telas de antecedência, para não ficar branco ao rolar); a 2ª carrega quando o card está quase na tela; as outras só no toque/arrasto */
+  var ioLonge = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, 1); ioLonge.unobserve(es[k].target); } }, { rootMargin: '1600px 0px' });
+  var ioPerto = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, 2); ioPerto.unobserve(es[k].target); } }, { rootMargin: '150px 0px' });
+  function obs(){ var ts = document.querySelectorAll('.pc-mtrack:not([data-gt-io])'); for (var k = 0; k < ts.length; k++) { ts[k].setAttribute('data-gt-io', '1'); ioLonge.observe(ts[k]); ioPerto.observe(ts[k]); } }
   if (document.readyState !== 'loading') obs(); else document.addEventListener('DOMContentLoaded', obs);
   document.addEventListener('gt:cards', obs);
 })();
