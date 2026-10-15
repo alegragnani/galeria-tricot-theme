@@ -315,11 +315,19 @@
     {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
     <div class="pc-mslider">
       <div class="pc-mtrack" data-url="{{ product.url }}" onscroll="pcDots(this)">
+        {%- comment -%} 15/10/2026 (Ale: Chrome do iPhone mostrava "Can't open this page" ao rolar): no celular só a 1ª foto carrega de cara (450px); as outras ficam em data-src e só carregam quando o card aparece (2ª) ou quando a cliente toca/arrasta (todas). Antes eram até 5 fotos de 600px por card, vezes centenas de cards da rolagem infinita = estouro de memória. {%- endcomment -%}
+        {%- assign gt_slide_n = 0 -%}
         {%- if gt_card == 2 -%}
-        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" width="600" height="900"></span>
+        {%- assign gt_slide_n = 1 -%}
+        <span class="pc-mslide"><img src="{{ gt_extra.value | image_url: width: 450 }}" srcset="{{ gt_extra.value | image_url: width: 450 }} 450w, {{ gt_extra.value | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ product.title | escape }}" loading="lazy" width="450" height="675"></span>
         {%- endif -%}
         {%- for gt_img in product.images limit: 4 -%}
-        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 600 }}" alt="{{ gt_img.alt | escape }}" loading="lazy" width="600" height="900"></span>
+        {%- assign gt_slide_n = gt_slide_n | plus: 1 -%}
+        {%- if gt_slide_n == 1 -%}
+        <span class="pc-mslide"><img src="{{ gt_img | image_url: width: 450 }}" srcset="{{ gt_img | image_url: width: 450 }} 450w, {{ gt_img | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ gt_img.alt | escape }}" loading="lazy" width="450" height="675"></span>
+        {%- else -%}
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_img | image_url: width: 450 }}" alt="{{ gt_img.alt | escape }}" width="450" height="675"></span>
+        {%- endif -%}
         {%- endfor -%}
       </div>
       <div class="pc-mdots">
@@ -455,10 +463,23 @@ function quickAddSize(btn, e) {
   if (!url) return;
   window.location.href = url.split('?')[0] + (variantId ? '?variant=' + variantId : '');
 }
+function pcHydrate(track, so2) {
+  var im = track.querySelectorAll('img[data-src]');
+  for (var i = 0; i < im.length; i++) { im[i].src = im[i].getAttribute('data-src'); im[i].removeAttribute('data-src'); if (so2) break; }
+}
+(function(){
+  if (window.__gtPcIO) return; window.__gtPcIO = 1;
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, true); io.unobserve(es[k].target); } }, { rootMargin: '250px 0px' });
+  function obs(){ var ts = document.querySelectorAll('.pc-mtrack:not([data-gt-io])'); for (var k = 0; k < ts.length; k++) { ts[k].setAttribute('data-gt-io', '1'); io.observe(ts[k]); } }
+  if (document.readyState !== 'loading') obs(); else document.addEventListener('DOMContentLoaded', obs);
+  document.addEventListener('gt:cards', obs);
+})();
 function pcDots(track) {
+  pcHydrate(track);
   var i = Math.round(track.scrollLeft / track.clientWidth);
   var dots = track.parentElement.querySelectorAll('.pc-mdot');
   for (var j = 0; j < dots.length; j++) { dots[j].classList.toggle('pc-mdot--on', j === i); }
 }
-(function(){var sx=0,sy=0,mv=false,cur=null;document.addEventListener("pointerdown",function(e){cur=e.target.closest(".pc-mtrack");if(cur){sx=e.clientX;sy=e.clientY;mv=false;}},true);document.addEventListener("pointermove",function(e){if(cur&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8))mv=true;},true);document.addEventListener("pointerup",function(e){if(cur&&!mv){var u=cur.getAttribute("data-url");if(u)window.location.href=u;}cur=null;},true);})();
+(function(){if(window.__gtPcPtr)return;window.__gtPcPtr=1;var sx=0,sy=0,mv=false,cur=null;document.addEventListener("pointerdown",function(e){cur=e.target.closest(".pc-mtrack");if(cur){sx=e.clientX;sy=e.clientY;mv=false;pcHydrate(cur);}},true);document.addEventListener("pointermove",function(e){if(cur&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8))mv=true;},true);document.addEventListener("pointerup",function(e){if(cur&&!mv){var u=cur.getAttribute("data-url");if(u)window.location.href=u;}cur=null;},true);})();
 </script>

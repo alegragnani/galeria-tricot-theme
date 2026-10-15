@@ -791,8 +791,22 @@
         for (var i = 0; i < items.length; i++) grid.appendChild(items[i]);
         next = nextUrl(doc);
         loading = false; msg.hidden = true;
-        if (!next) io.disconnect();
+        try { document.dispatchEvent(new Event('gt:cards')); } catch (e) {}
+        autoCount++;
+        if (!next) { io.disconnect(); if (btn) btn.hidden = true; }
+        else if (autoCount >= autoMax) { io.disconnect(); mostrarBotao(); }
       }).catch(function () { loading = false; msg.hidden = true; page.classList.remove('collection-page--infinite'); io.disconnect(); });
+    }
+    /* 15/10/2026: no celular a rolagem infinita carrega sozinha só 2 páginas extras (72 produtos) e depois mostra o botão VER MAIS PRODUTOS — centenas de cards de uma vez estouravam a memória do Chrome no iPhone ("Can't open this page"). No computador: 4 páginas. */
+    var autoCount = 0, autoMax = window.matchMedia('(max-width: 768px)').matches ? 2 : 4, btn = null;
+    function mostrarBotao() {
+      if (!btn) {
+        btn = document.createElement('button'); btn.type = 'button'; btn.className = 'gt-infinite-more'; btn.textContent = 'VER MAIS PRODUTOS';
+        btn.style.cssText = 'display:block;margin:24px auto;padding:14px 32px;background:#fff;border:1px solid #545454;color:#545454;font-family:Raleway,sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;';
+        btn.addEventListener('click', function () { btn.hidden = true; load(); });
+        sentinel.parentNode.insertBefore(btn, sentinel);
+      }
+      btn.hidden = false;
     }
     var io = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) if (entries[i].isIntersecting) load();
