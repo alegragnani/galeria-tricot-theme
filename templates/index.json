@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_MHQMiQ": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Cris_Buffara_-_Blanche_Marinho_5_b2f0beb0-7564-4d7d-b509-02d618c3f7a0.jpg",
+            "product": "conjunto-tricot-blanche-azul-marinho"
+          }
+        },
         "look_WfK8ey": {
           "type": "look",
           "settings": {
@@ -277,6 +284,7 @@
         }
       },
       "block_order": [
+        "look_MHQMiQ",
         "look_WfK8ey",
         "look_39CnpN",
         "look_GgaDP7",
