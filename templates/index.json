@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_aNxaEV": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg",
+            "product": "vestido-tricot-aira-marrom"
+          }
+        },
         "look_bGKapH": {
           "type": "look",
           "settings": {
@@ -242,6 +249,7 @@
         }
       },
       "block_order": [
+        "look_aNxaEV",
         "look_bGKapH",
         "look_4mGrGj",
         "look_EUBiWQ",
