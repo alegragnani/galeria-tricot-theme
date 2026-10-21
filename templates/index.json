@@ -170,6 +170,34 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_39CnpN": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg",
+            "product": "conjunto-tricot-olivia-fendi"
+          }
+        },
+        "look_cP7Nir": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg",
+            "product": "conjunto-tricot-olivia-marinho"
+          }
+        },
+        "look_GgaDP7": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg",
+            "product": "vestido-tricot-aira-dourado"
+          }
+        },
+        "look_aNxaEV": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg",
+            "product": "vestido-tricot-aira-marrom"
+          }
+        },
         "look_MHQMiQ": {
           "type": "look",
           "settings": {
@@ -184,60 +212,11 @@
             "product": "conjunto-tricot-amora-off-white"
           }
         },
-        "look_39CnpN": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg",
-            "product": "conjunto-tricot-olivia-fendi"
-          }
-        },
-        "look_GgaDP7": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg",
-            "product": "vestido-tricot-aira-dourado"
-          }
-        },
-        "look_cP7Nir": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg",
-            "product": "conjunto-tricot-olivia-marinho"
-          }
-        },
-        "look_aNxaEV": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg",
-            "product": "vestido-tricot-aira-marrom"
-          }
-        },
         "look_bGKapH": {
           "type": "look",
           "settings": {
             "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg",
             "product": "conjunto-tricot-flora-rosa-primula"
-          }
-        },
-        "look_4mGrGj": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_cleo_verde_militar_38de8545-416b-4aec-b2a0-4c74608b0cbb.jpg",
-            "product": "conjunto-tricot-cleo-verde-militar"
-          }
-        },
-        "look_EUBiWQ": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju-norremose---heloisa-marinho_c696e422-2634-4ab5-a1ad-25c364d7cd65.jpg",
-            "product": "conjunto-tricot-heloisa-marinho"
-          }
-        },
-        "look_hFpwmD": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/bruna-biancardi---leda-off-2.jpg",
-            "product": "conjunto-tricot-leda-manga-longa-off-white"
           }
         },
         "look_9d4XfD": {
@@ -254,52 +233,25 @@
             "product": "conjunto-tricot-amora-cinza-mescla"
           }
         },
-        "look_6tNp8y": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/luiza-sobral---leda-marinho_624859ff-d5da-45d2-adf0-2abcf1337c67.jpg",
-            "product": "conjunto-tricot-leda-manga-longa-marinho"
-          }
-        },
         "look_AfwMDM": {
           "type": "look",
           "settings": {
             "lifestyle_image": "shopify://shop_images/thassia-naves---cora-off-7_d2dfe9f2-1160-442b-9ffa-361b1474e172.jpg",
             "product": "conjunto-tricot-cora-off-white"
           }
-        },
-        "look_FGrJYb": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/MONICA_SALGADO_-_CARINA_BEGE_AREIA_1_1165856d-9665-483c-9549-95001afc79c3.jpg",
-            "product": "conjunto-tricot-carina-bege-areia"
-          }
-        },
-        "look_atWktq": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Ana_Paula_A-_Heloisa_Off_White_4_f6061c51-b9f5-4a8c-a8a9-82876d586d11.jpg",
-            "product": "conjunto-tricot-heloisa-off-white"
-          }
         }
       },
       "block_order": [
+        "look_39CnpN",
+        "look_cP7Nir",
+        "look_GgaDP7",
+        "look_aNxaEV",
         "look_MHQMiQ",
         "look_WfK8ey",
-        "look_39CnpN",
-        "look_GgaDP7",
-        "look_cP7Nir",
-        "look_aNxaEV",
         "look_bGKapH",
-        "look_4mGrGj",
-        "look_EUBiWQ",
-        "look_hFpwmD",
         "look_9d4XfD",
         "look_N7cXzf",
-        "look_6tNp8y",
-        "look_AfwMDM",
-        "look_FGrJYb",
-        "look_atWktq"
+        "look_AfwMDM"
       ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
