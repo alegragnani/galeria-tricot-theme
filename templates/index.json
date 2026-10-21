@@ -154,8 +154,8 @@
     "image_banner_lancamento": {
       "type": "image-banner",
       "settings": {
-        "image": "shopify://shop_images/20-03_banner_86ad65bf-ce58-4f15-accf-9ef52620909c.png",
-        "image_mobile": "shopify://shop_images/rodape_mobile_ef353661-e10e-493d-a473-c4270ef701c0.jpg",
+        "image": "shopify://shop_images/RODAPE_SHOPIFY.png",
+        "image_mobile": "shopify://shop_images/RODAPE_SHOPIFY_MOBILE.jpg",
         "subtitle": "",
         "subtitle_size": 14,
         "heading": "",
