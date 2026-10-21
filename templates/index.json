@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_GgaDP7": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg",
+            "product": "vestido-tricot-aira-dourado"
+          }
+        },
         "look_cP7Nir": {
           "type": "look",
           "settings": {
@@ -256,6 +263,7 @@
         }
       },
       "block_order": [
+        "look_GgaDP7",
         "look_cP7Nir",
         "look_aNxaEV",
         "look_bGKapH",
