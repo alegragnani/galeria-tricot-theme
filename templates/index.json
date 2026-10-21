@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_cP7Nir": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg",
+            "product": "conjunto-tricot-olivia-marinho"
+          }
+        },
         "look_aNxaEV": {
           "type": "look",
           "settings": {
@@ -249,6 +256,7 @@
         }
       },
       "block_order": [
+        "look_cP7Nir",
         "look_aNxaEV",
         "look_bGKapH",
         "look_4mGrGj",
