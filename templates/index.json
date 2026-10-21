@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_39CnpN": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg",
+            "product": "conjunto-tricot-olivia-fendi"
+          }
+        },
         "look_GgaDP7": {
           "type": "look",
           "settings": {
@@ -263,6 +270,7 @@
         }
       },
       "block_order": [
+        "look_39CnpN",
         "look_GgaDP7",
         "look_cP7Nir",
         "look_aNxaEV",
