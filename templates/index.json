@@ -170,6 +170,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_WfK8ey": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Luiza_sobral_-_amora_off_4_db759654-3336-4065-aee1-51c4047edd3e.jpg",
+            "product": "conjunto-tricot-amora-off-white"
+          }
+        },
         "look_39CnpN": {
           "type": "look",
           "settings": {
@@ -270,6 +277,7 @@
         }
       },
       "block_order": [
+        "look_WfK8ey",
         "look_39CnpN",
         "look_GgaDP7",
         "look_cP7Nir",
