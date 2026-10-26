@@ -310,7 +310,6 @@
           }
           aplicar();
           if (pagAtual !== 1 || totalPags < 2) return;
-          var nav = document.querySelector('.search-results__pagination');
           var pedidos = [];
           for (var p = 2; p <= Math.min(totalPags, MAX_PAGS); p++) {
             var u = new URL(location.href); u.searchParams.set('page', String(p));
@@ -325,7 +324,7 @@
               });
             });
             aplicar();
-            if (nav && totalPags <= MAX_PAGS) nav.style.display = 'none';
+            var nav = document.querySelector('.search-results__pagination'); if (nav && totalPags <= MAX_PAGS) nav.style.display = 'none';
           });
         })();
       </script>
