@@ -244,7 +244,7 @@
       <div class="search-results__grid" id="search-grid">
         {% for item in search.results %}
           {% if item.object_type == 'product' %}
-            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.release_ts | default: item.created_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
+            <div class="search-results__card-wrap" data-release="{{ item.metafields.custom.data_lancamento | default: item.created_at | date: '%s' }}" data-created="{{ item.created_at | date: '%s' }}">
               {% render 'product-card', product: item %}
             </div>
           {% else %}
@@ -284,7 +284,8 @@
               if (k) vistos[k] = 1;
               var t = w.querySelector('.product-card__title');
               var titulo = norm(t ? t.textContent : '');
-              /* v3 (31/10/2026, Ale: busca "isa" trazia Camisa e Heloisa): a palavra buscada tem que estar no COMECO de uma palavra do titulo. */
+              /* v3 (31/10/2026, Ale: busca "isa" trazia Camisa e Heloisa): a palavra buscada tem que estar no COMECO de uma palavra do titulo.
+                 Ordem: pelo campo "Data de lancamento" (custom.data_lancamento, o mesmo das vitrines); o release_ts antigo da VTEX tinha valores errados. */
               var palavras = titulo.split(' ');
               var ok = terms.every(function(term){
                 var sing = term.replace(/s$/,'');
