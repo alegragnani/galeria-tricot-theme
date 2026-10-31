@@ -284,9 +284,11 @@
               if (k) vistos[k] = 1;
               var t = w.querySelector('.product-card__title');
               var titulo = norm(t ? t.textContent : '');
+              /* v3 (31/10/2026, Ale: busca "isa" trazia Camisa e Heloisa): a palavra buscada tem que estar no COMECO de uma palavra do titulo. */
+              var palavras = titulo.split(' ');
               var ok = terms.every(function(term){
                 var sing = term.replace(/s$/,'');
-                return titulo.indexOf(term) >= 0 || (sing.length >= 2 && titulo.indexOf(sing) >= 0);
+                return palavras.some(function(p){ return p.indexOf(term) === 0 || (sing.length >= 2 && p.indexOf(sing) === 0); });
               });
               if (ok) { w.removeAttribute('hidden'); visiveis++; } else { w.setAttribute('hidden', ''); }
             });
