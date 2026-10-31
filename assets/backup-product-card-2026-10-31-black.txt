@@ -1,0 +1,493 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+  .product-card {
+    position: relative;
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .product-card__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.4s ease;
+  }
+
+  .product-card__image--hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+
+  .product-card__image-wrapper:hover .product-card__image--hover {
+    opacity: 1;
+  }
+
+  /* A 1a foto NAO some no hover: a 2a foto (quando existe) fica por cima. Sem 2a foto, a 1a continua aparecendo. */
+  .product-card__image-wrapper:hover .product-card__image--primary {
+    opacity: 1;
+  }
+
+  /* Badge de desconto */
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    background: #000;
+    color: #fff;
+  }
+
+  .product-card__badge--prevenda {
+    background: rgba(74, 50, 34, 0.5);
+    color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 0 0 3px rgba(0,0,0,0.25);
+  }
+
+  /* Wishlist heart */
+  .product-card__wishlist {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card__image-wrapper:hover .product-card__wishlist {
+    opacity: 1;
+  }
+
+  .product-card__wishlist svg {
+    width: 20px;
+    height: 20px;
+    color: #545454;
+  }
+
+  /* Seletor de tamanho rapido — transparente sobre a imagem */
+  .product-card__quick-sizes {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px 10px;
+    background: rgba(255, 255, 255, 0.92);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .product-card__image-wrapper:hover .product-card__quick-sizes {
+    opacity: 1;
+  }
+
+  .product-card__sizes-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #545454;
+    margin-bottom: 4px;
+  }
+
+  .product-card__sizes-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .product-card__size-btn {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #121212;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    min-width: 35px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    transition: color 0.15s ease, background 0.15s ease;
+    position: relative;
+  }
+
+  .product-card__size-btn:hover {
+    background: #4A3222;
+    color: #ffffff;
+  }
+  .product-card__size-btn--sold-out:hover {
+    background: none;
+    color: #c0c0c0;
+  }
+
+  /* Tamanho selecionado — caixinha preenchida */
+  .product-card__size-btn--sel,
+  .product-card__size-btn--sel:hover {
+    background: #4A3222;
+    color: #ffffff;
+  }
+
+  /* Tamanho esgotado — riscado */
+  .product-card__size-btn--sold-out {
+    color: #c0c0c0;
+    cursor: default;
+    text-decoration: line-through;
+  }
+
+  /* Conjunto: botao unico que leva pra PDP */
+  .product-card__quick-sizes--link {
+    text-decoration: none;
+    cursor: pointer;
+    padding: 10px 12px;
+  }
+
+  .product-card__quick-sizes--link .product-card__sizes-label {
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #121212;
+    transition: color 0.15s ease;
+  }
+
+  .product-card__quick-sizes--link:hover .product-card__sizes-label {
+    color: #B3883D;
+  }
+
+  /* Info: titulo + preco (BP specs) */
+  .product-card__info {
+    padding: 12px 0 0;
+  }
+
+  .product-card__title-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: none;
+    color: #474745;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+  }
+
+  .product-card__price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    color: #474745;
+  }
+
+  .product-card__price--compare {
+    text-decoration: line-through;
+    color: #cccccc;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .product-card__price--sale {
+    color: #c1673a;
+  }
+
+  .product-card__mobile-btn { display: none; }
+
+  /* Mobile: sem seletor de tamanho no card (cliente escolhe na pagina do produto) */
+  @media (max-width: 768px) {
+    .product-card__quick-sizes {
+      display: none;
+    }
+    .product-card__mobile-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 2;
+      padding: 13px 8px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #4A3222;
+      font-family: 'Raleway', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+    /* Proporcao byNV mobile: foto ~2,1x mais alta que larga (cabem ~2 por tela) */
+    .product-card__image-wrapper {
+      aspect-ratio: 0.47 !important;
+      height: auto !important;
+    }
+    .product-card__image {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+  }
+  .pc-mslider { display: none; }
+  @media (max-width: 768px) {
+    .product-card__image-link { display: none !important; }
+    .pc-mslider { display: block; position: absolute; inset: 0; }
+    .pc-mtrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%; }
+    .pc-mtrack::-webkit-scrollbar { display: none; }
+    .pc-mslide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: block; cursor: pointer; background: #f4f1ec; }
+    .pc-mslide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pc-mdots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 2; }
+    .pc-mdot { width: 14px; height: 2px; background: rgba(255,255,255,0.55); box-shadow: 0 0 2px rgba(0,0,0,0.35); }
+    .pc-mdot--on { background: #FFFFFF; }
+  }
+</style>
+{%- comment -%}
+  Product Card Snippet — Galeria Tricot (estilo BP)
+  Usage: {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+{%- assign gt_extra = product.metafields.custom.foto_extra_vitrine -%}
+{%- assign gt_vezes = 1 -%}
+{%- if gt_extra != blank -%}{%- assign gt_vezes = 2 -%}{%- endif -%}
+{%- for gt_card in (1..gt_vezes) -%}
+<div class="product-card">
+  <div class="product-card__image-wrapper">
+    <a href="{{ product.url }}" class="product-card__image-link">
+      {%- if product.featured_image -%}
+        <img
+          src="{% if gt_card == 2 %}{{ gt_extra.value | image_url: width: 600 }}{% else %}{{ product.featured_image | image_url: width: 600 }}{% endif %}"
+          alt="{{ product.featured_image.alt | escape }}"
+          class="product-card__image product-card__image--primary"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
+
+      {%- if product.images.size > 1 -%}
+        <img
+          src="{{ product.images[1] | image_url: width: 600 }}"
+          alt="{{ product.images[1].alt | escape }}"
+          class="product-card__image product-card__image--hover"
+          loading="lazy"
+          width="600"
+          height="900"
+        >
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Mobile: carrossel com tracinhos (arrastar troca a foto; toque abre o produto) {%- endcomment -%}
+    <div class="pc-mslider">
+      <div class="pc-mtrack" data-url="{{ product.url }}" onscroll="pcDots(this)">
+        {%- comment -%} 15/10/2026 (Ale: Chrome do iPhone mostrava "Can't open this page" ao rolar): no celular só a 1ª foto carrega de cara (450px); as outras ficam em data-src e só carregam quando o card aparece (2ª) ou quando a cliente toca/arrasta (todas). Antes eram até 5 fotos de 600px por card, vezes centenas de cards da rolagem infinita = estouro de memória. {%- endcomment -%}
+        {%- assign gt_slide_n = 0 -%}
+        {%- if gt_card == 2 -%}
+        {%- assign gt_slide_n = 1 -%}
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_extra.value | image_url: width: 450 }}" data-srcset="{{ gt_extra.value | image_url: width: 450 }} 450w, {{ gt_extra.value | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ product.title | escape }}" width="450" height="675"></span>
+        {%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}
+        {%- assign gt_slide_n = gt_slide_n | plus: 1 -%}
+        {%- if gt_slide_n == 1 -%}
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_img | image_url: width: 450 }}" data-srcset="{{ gt_img | image_url: width: 450 }} 450w, {{ gt_img | image_url: width: 600 }} 600w" sizes="50vw" alt="{{ gt_img.alt | escape }}" width="450" height="675"></span>
+        {%- else -%}
+        <span class="pc-mslide"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ gt_img | image_url: width: 450 }}" alt="{{ gt_img.alt | escape }}" width="450" height="675"></span>
+        {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <div class="pc-mdots">
+        {%- if gt_card == 2 -%}<span class="pc-mdot pc-mdot--on"></span>{%- endif -%}
+        {%- for gt_img in product.images limit: 4 -%}<span class="pc-mdot{% if forloop.first and gt_card != 2 %} pc-mdot--on{% endif %}"></span>{%- endfor -%}
+      </div>
+    </div>
+
+    {%- if product.compare_at_price > product.price -%}
+      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+      <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
+    {%- elsif product.metafields.custom.conjunto_pecas != blank -%}
+      {%- comment -%} Conjunto: verificar se as pecas estao em sale {%- endcomment -%}
+      {%- assign conj_pecas = product.metafields.custom.conjunto_pecas.value -%}
+      {%- assign conj_compare_total = 0 -%}
+      {%- assign conj_price_total = 0 -%}
+      {%- assign conj_has_sale = false -%}
+      {%- for peca in conj_pecas -%}
+        {%- if peca.compare_at_price > peca.price -%}
+          {%- assign conj_has_sale = true -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.compare_at_price -%}
+        {%- else -%}
+          {%- assign conj_compare_total = conj_compare_total | plus: peca.price -%}
+        {%- endif -%}
+        {%- assign conj_price_total = conj_price_total | plus: peca.price -%}
+      {%- endfor -%}
+      {%- if conj_has_sale and conj_compare_total > conj_price_total -%}
+        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100 | divided_by: conj_compare_total -%}
+        <span class="product-card__badge product-card__badge--sale">- {{ conj_discount }}%</span>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- assign gt_ispv = false -%}
+    {%- assign gt_pvdate = product.metafields.custom.data_pre_venda.value -%}
+    {%- if gt_pvdate != blank -%}
+      {%- assign gt_now = 'now' | date: '%s' | plus: 0 -%}
+      {%- assign gt_dts = gt_pvdate | date: '%s' | plus: 0 -%}
+      {%- if gt_dts > gt_now -%}{%- assign gt_ispv = true -%}{%- endif -%}
+    {%- endif -%}
+    {%- comment -%} 13/09/2026 (Ale): a pré-venda agora é por TAMANHO (metafield da variante custom.pre_venda_data, a mesma que a página do produto usa). Se algum tamanho tiver data futura, o card ganha a etiqueta. {%- endcomment -%}
+    {%- unless gt_ispv -%}
+      {%- assign gt_now2 = 'now' | date: '%s' | plus: 0 -%}
+      {%- for gt_v in product.variants -%}
+        {%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data.value -%}{%- if gt_vpv == blank -%}{%- assign gt_vpv = gt_v.metafields.custom.pre_venda_data_2.value -%}{%- endif -%}
+        {%- if gt_vpv != blank -%}
+          {%- assign gt_vts = gt_vpv | date: '%s' | plus: 0 -%}
+          {%- if gt_vts > gt_now2 -%}{%- assign gt_ispv = true -%}{%- break -%}{%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
+    {%- if gt_ispv -%}<span class="product-card__badge product-card__badge--prevenda">Pré-venda</span>{%- endif -%}
+
+    <button class="product-card__wishlist" aria-label="Adicionar aos favoritos">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+
+
+    <!-- Seletor de tamanho rapido — hover -->
+    {%- assign is_conjunto = false -%}
+    {%- assign title_lower = product.title | downcase -%}
+    {%- if product.type == 'Conjuntos' or title_lower contains 'conjunto' or title_lower contains 'twin' -%}
+      {%- assign is_conjunto = true -%}
+    {%- endif -%}
+
+    {%- if is_conjunto -%}
+      {%- comment -%} Conjunto: botao que leva pra pagina do produto {%- endcomment -%}
+      <a href="{{ product.url }}" class="product-card__quick-sizes product-card__quick-sizes--link">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+      </a>
+    {%- else -%}
+      {%- comment -%} Peça avulsa: tamanhos direto no card {%- endcomment -%}
+      <div class="product-card__quick-sizes">
+        <span class="product-card__sizes-label">Selecionar tamanho</span>
+        <div class="product-card__sizes-row">
+          {%- for variant in product.variants -%}
+            {%- assign size_label = variant.title -%}
+            {%- if variant.available -%}
+              <button
+                class="product-card__size-btn"
+                data-variant-id="{{ variant.id }}"
+                data-url="{{ product.url }}"
+                onclick="quickAddSize(this, event)"
+              >{{ size_label }}</button>
+            {%- else -%}
+              <span class="product-card__size-btn product-card__size-btn--sold-out">{{ size_label }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__info">
+    <a href="{{ product.url }}" class="product-card__title-link">
+      <h3 class="product-card__title">{{ product.title }}</h3>
+    </a>
+
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="product-card__price--compare">
+          {{ product.compare_at_price | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ product.price | money }}
+        </span>
+      {%- elsif conj_has_sale and conj_compare_total > conj_price_total -%}
+        <span class="product-card__price--compare">
+          {{ conj_compare_total | money }}
+        </span>
+        <span class="product-card__price--sale">
+          {{ conj_price_total | money }}
+        </span>
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{%- endfor -%}
+
+
+
+<script>
+function quickAddSize(btn, e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  /* Clique no tamanho: abre a pagina do produto ja com o tamanho selecionado */
+  var variantId = btn.getAttribute('data-variant-id');
+  var url = btn.getAttribute('data-url') || '';
+  if (!url) return;
+  window.location.href = url.split('?')[0] + (variantId ? '?variant=' + variantId : '');
+}
+function pcHydrate(track, n) {
+  /* n = quantas fotos carregar (sem n = todas) */
+  var im = track.querySelectorAll('img[data-src]');
+  var ja = track.querySelectorAll('img:not([data-src])').length;
+  for (var i = 0; i < im.length; i++) {
+    if (n && ja >= n) break;
+    if (im[i].getAttribute('data-srcset')) { im[i].srcset = im[i].getAttribute('data-srcset'); im[i].removeAttribute('data-srcset'); }
+    im[i].src = im[i].getAttribute('data-src'); im[i].removeAttribute('data-src'); ja++;
+  }
+}
+(function(){
+  if (window.__gtPcIO) return; window.__gtPcIO = 1;
+  if (!('IntersectionObserver' in window)) return;
+  /* 15/10: 1ª foto carrega bem antes de aparecer (2 telas de antecedência, para não ficar branco ao rolar); a 2ª carrega quando o card está quase na tela; as outras só no toque/arrasto */
+  var ioLonge = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, 1); ioLonge.unobserve(es[k].target); } }, { rootMargin: '1600px 0px' });
+  var ioPerto = new IntersectionObserver(function(es){ for (var k = 0; k < es.length; k++) { if (!es[k].isIntersecting) continue; pcHydrate(es[k].target, 2); ioPerto.unobserve(es[k].target); } }, { rootMargin: '150px 0px' });
+  function obs(){ var ts = document.querySelectorAll('.pc-mtrack:not([data-gt-io])'); for (var k = 0; k < ts.length; k++) { ts[k].setAttribute('data-gt-io', '1'); ioLonge.observe(ts[k]); ioPerto.observe(ts[k]); } }
+  if (document.readyState !== 'loading') obs(); else document.addEventListener('DOMContentLoaded', obs);
+  document.addEventListener('gt:cards', obs);
+})();
+function pcDots(track) {
+  pcHydrate(track);
+  var i = Math.round(track.scrollLeft / track.clientWidth);
+  var dots = track.parentElement.querySelectorAll('.pc-mdot');
+  for (var j = 0; j < dots.length; j++) { dots[j].classList.toggle('pc-mdot--on', j === i); }
+}
+(function(){if(window.__gtPcPtr)return;window.__gtPcPtr=1;var sx=0,sy=0,mv=false,cur=null;document.addEventListener("pointerdown",function(e){cur=e.target.closest(".pc-mtrack");if(cur){sx=e.clientX;sy=e.clientY;mv=false;pcHydrate(cur);}},true);document.addEventListener("pointermove",function(e){if(cur&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8))mv=true;},true);document.addEventListener("pointerup",function(e){if(cur&&!mv){var u=cur.getAttribute("data-url");if(u)window.location.href=u;}cur=null;},true);})();
+</script>
