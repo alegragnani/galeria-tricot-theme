@@ -58,6 +58,17 @@
     color: #fff;
   }
 
+  /* BLACK NOVEMBER (31/10/2026, Ale): selo BRANCO "BLACK xx%" em Josefin Sans (opcao 5 do preview). Para voltar ao selo preto "- xx%": assets/backup-product-card-2026-10-31-black.txt */
+  .product-card__badge--sale {
+    background: #fff;
+    color: #000;
+    font-family: 'Josefin Sans', 'Raleway', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 9px 4px;
+  }
+
   .product-card__badge--prevenda {
     background: rgba(74, 50, 34, 0.5);
     color: #fff;
@@ -337,8 +348,8 @@
     </div>
 
     {%- if product.compare_at_price > product.price -%}
-      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
-      <span class="product-card__badge product-card__badge--sale">- {{ discount }}%</span>
+      {%- assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round -%}
+      <span class="product-card__badge product-card__badge--sale">BLACK {{ discount }}%</span>
     {%- elsif product.metafields.custom.conjunto_pecas != blank -%}
       {%- comment -%} Conjunto: verificar se as pecas estao em sale {%- endcomment -%}
       {%- assign conj_pecas = product.metafields.custom.conjunto_pecas.value -%}
@@ -355,8 +366,8 @@
         {%- assign conj_price_total = conj_price_total | plus: peca.price -%}
       {%- endfor -%}
       {%- if conj_has_sale and conj_compare_total > conj_price_total -%}
-        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100 | divided_by: conj_compare_total -%}
-        <span class="product-card__badge product-card__badge--sale">- {{ conj_discount }}%</span>
+        {%- assign conj_discount = conj_compare_total | minus: conj_price_total | times: 100.0 | divided_by: conj_compare_total | round -%}
+        <span class="product-card__badge product-card__badge--sale">BLACK {{ conj_discount }}%</span>
       {%- endif -%}
     {%- endif -%}
 
