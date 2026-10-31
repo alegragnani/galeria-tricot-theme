@@ -219,7 +219,6 @@
     {% comment %} Barra de busca persistente {% endcomment %}
     <form action="/search" method="get" class="search-results__form">
       <input type="hidden" name="type" value="product" />
-      <input type="hidden" name="sort_by" value="created-descending" />
       <div class="search-results__input-wrap">
         <input
           type="text"
@@ -255,82 +254,7 @@
           {% endif %}
         {% endfor %}
       </div>
-
-      
-      <script>
-        /* Busca igual VTEX: mostra so produtos cujo TITULO contem TODAS as palavras buscadas (sem acento, singular/plural); ordena por lancamento (mais novo primeiro).
-           v2 (26/10/2026, Ale: "conjunto olivia mais novo na frente"): o Shopify entrega no maximo 250 produtos por pagina e os lancamentos
-           podiam cair na pagina 2 ou 3 (nunca apareciam). Agora, na pagina 1, a busca junta as paginas seguintes (ate 6) antes de filtrar e ordenar,
-           e a paginacao some porque tudo ja aparece de uma vez. */
-        (function() {
-          var grid = document.getElementById('search-grid');
-          if (!grid) return;
-          var RE_ACENTO = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
-          var norm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(RE_ACENTO,'').replace(/[^a-z0-9 ]/g,' '); };
-          var STOP = {de:1,da:1,do:1,das:1,dos:1,e:1,com:1,em:1,para:1,a:1,o:1,as:1,os:1};
-          var termo = {{ search.terms | json }};
-          var terms = norm(termo).split(' ').filter(function(t){ return t.length >= 2 && !STOP[t]; });
-          var totalPags = {{ paginate.pages | default: 1 }};
-          var pagAtual = {{ paginate.current_page | default: 1 }};
-          var MAX_PAGS = 6;
-          function chave(w) { var a = w.querySelector('a[href*="/products/"]'); return a ? a.getAttribute('href').split('?')[0] : ''; }
-          function aplicar() {
-            var vistos = {};
-            var wraps = Array.prototype.slice.call(grid.querySelectorAll('.search-results__card-wrap'));
-            var visiveis = 0;
-            wraps.forEach(function(w) {
-              var k = chave(w);
-              if (k && vistos[k]) { w.setAttribute('hidden', ''); return; }
-              if (k) vistos[k] = 1;
-              var t = w.querySelector('.product-card__title');
-              var titulo = norm(t ? t.textContent : '');
-              /* v3 (31/10/2026, Ale: busca "isa" trazia Camisa e Heloisa): a palavra buscada tem que estar no COMECO de uma palavra do titulo.
-                 Ordem: pelo campo "Data de lancamento" (custom.data_lancamento, o mesmo das vitrines); o release_ts antigo da VTEX tinha valores errados. */
-              var palavras = titulo.split(' ');
-              var ok = terms.every(function(term){
-                var sing = term.replace(/s$/,'');
-                return palavras.some(function(p){ return p.indexOf(term) === 0 || (sing.length >= 2 && p.indexOf(sing) === 0); });
-              });
-              if (ok) { w.removeAttribute('hidden'); visiveis++; } else { w.setAttribute('hidden', ''); }
-            });
-            var vis = wraps.filter(function(w){ return !w.hasAttribute('hidden'); });
-            vis.sort(function(a, b) {
-              var pa = parseInt(a.dataset.release || '0', 10), pb = parseInt(b.dataset.release || '0', 10);
-              if (pa !== pb) return pb - pa;
-              var ca = parseInt(a.dataset.created || '0', 10), cb = parseInt(b.dataset.created || '0', 10);
-              return cb - ca;
-            });
-            vis.forEach(function(c) { grid.appendChild(c); });
-            var velho = document.getElementById('search-empty-msg');
-            if (velho) velho.parentNode.removeChild(velho);
-            if (visiveis === 0 && wraps.length > 0) {
-              var msg = document.createElement('p');
-              msg.id = 'search-empty-msg';
-              msg.className = 'search-results__empty';
-              msg.textContent = pagAtual > 1 ? 'Não há mais resultados para "' + termo + '".' : 'Nenhum resultado para "' + termo + '"';
-              grid.parentNode.insertBefore(msg, grid);
-            }
-          }
-          aplicar();
-          if (pagAtual !== 1 || totalPags < 2) return;
-          var pedidos = [];
-          for (var p = 2; p <= Math.min(totalPags, MAX_PAGS); p++) {
-            var u = new URL(location.href); u.searchParams.set('page', String(p));
-            pedidos.push(fetch(u.toString(), { credentials: 'same-origin' }).then(function(r){ return r.ok ? r.text() : ''; }).catch(function(){ return ''; }));
-          }
-          Promise.all(pedidos).then(function(htmls) {
-            htmls.forEach(function(h) {
-              if (!h) return;
-              var d = new DOMParser().parseFromString(h, 'text/html');
-              Array.prototype.forEach.call(d.querySelectorAll('#search-grid .search-results__card-wrap'), function(w) {
-                grid.appendChild(document.importNode(w, true));
-              });
-            });
-            aplicar();
-            var nav = document.querySelector('.search-results__pagination'); if (nav && totalPags <= MAX_PAGS) nav.style.display = 'none';
-          });
-        })();
-      </script>
+      {% comment %} Busca pura do Shopify (31/10/2026, decisao da Ale): sem filtro nem ordenacao no tema. Versoes anteriores em assets/backup-main-search-*.txt {% endcomment %}
 
       {% if paginate.pages > 1 %}
         <nav class="search-results__pagination">
