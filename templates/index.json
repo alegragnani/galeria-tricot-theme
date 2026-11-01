@@ -117,20 +117,6 @@
         "hero_slideshow": {
             "type": "hero-slideshow",
             "blocks": {
-                "slide_black": {
-                    "type": "slide",
-                    "settings": {
-                        "image": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_desktop_2700x1219_v2.jpg",
-                        "heading": "",
-                        "subheading": "",
-                        "text_color": "rgba(0,0,0,0)",
-                        "button_link": "/collections/black-november",
-                        "button_text": "",
-                        "image_mobile": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_mobile_1092x1800_v2.jpg",
-                        "text_position": "right",
-                        "text_vertical": "top"
-                    }
-                },
                 "slide_6nkhtY": {
                     "type": "slide",
                     "settings": {
@@ -164,7 +150,6 @@
                 "title": "Hero Slideshow"
             },
             "block_order": [
-                "slide_black",
                 "slide_amicLw",
                 "slide_6nkhtY"
             ]
