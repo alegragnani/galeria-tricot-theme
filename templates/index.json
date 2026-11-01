@@ -120,13 +120,13 @@
                 "slide_black": {
                     "type": "slide",
                     "settings": {
-                        "image": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_desktop_2700x1219_5cd7d413-111b-4dc8-8a68-f757c5106f00.jpg",
+                        "image": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_desktop_2700x1219_v2.jpg",
                         "heading": "",
                         "subheading": "",
                         "text_color": "rgba(0,0,0,0)",
                         "button_link": "/collections/black-november",
                         "button_text": "",
-                        "image_mobile": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_mobile_1092x1800_4c65dc8f-28a5-4249-943a-b2c8c6061b9a.jpg",
+                        "image_mobile": "shopify://shop_images/BLACK_NOVEMBER_-_banner_home_mobile_1092x1800_v2.jpg",
                         "text_position": "right",
                         "text_vertical": "top"
                     }
