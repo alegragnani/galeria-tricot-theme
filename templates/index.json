@@ -94,11 +94,11 @@
         "b1": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/Editavel_Pequeno_e844db1e-3f18-422a-89af-c2db97ef8d0c.jpg",
+            "image": "shopify://shop_images/Banner_Black_November_1402x1448_cf65442a-2e16-4258-9c53-268e26a609cf.png",
             "subheading": "",
             "heading": "",
             "cta_text": "",
-            "link": "/collections/novidades",
+            "link": "/collections/black-november",
             "text_horizontal": "left",
             "text_vertical": "top",
             "text_color": "#ffffff"
