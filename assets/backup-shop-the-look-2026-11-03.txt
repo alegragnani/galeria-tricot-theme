@@ -1,0 +1,582 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+  .shop-the-look {
+    padding: 0 0 36px;
+    margin: 0;
+    background-color: #ffffff;
+  }
+
+  .shop-the-look__header {
+    text-align: center;
+    padding: 26px 50px;
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+  }
+
+  .shop-the-look__section-title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #B3883D;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* Container com margem lateral igual BP */
+  .shop-the-look__container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 50px;
+  }
+
+  /* Slider wrapper — position relative pro nav absoluto */
+  .shop-the-look__slider {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Track: scroll horizontal, snap */
+  .shop-the-look__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
+  }
+
+  .shop-the-look__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Cada slide ocupa 100% */
+  .shop-the-look__slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: start;
+  }
+
+  /* Grid 2 colunas 50/50, gap 8px (BP) */
+  .shop-the-look__grid {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Esquerda: lifestyle 50% */
+  .shop-the-look__lifestyle {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .shop-the-look__lifestyle-image {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+    display: block;
+  }
+
+  .shop-the-look__placeholder {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Direita: produto 50%, centralizado */
+  .shop-the-look__product-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Moldura do produto (BP: borda dourada sutil + padding) */
+  .shop-the-look__card-frame {
+    width: 70%;
+    max-width: 522px;
+    padding: 15px;
+    border: 0.67px solid rgba(217, 200, 158, 0.4);
+  }
+
+  .shop-the-look__product-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .shop-the-look__product-image-wrapper {
+    position: relative;
+    overflow: visible;
+    background: rgb(249, 247, 240);
+  }
+
+  .shop-the-look__product-image {
+    width: 100%;
+    display: block;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .shop-the-look__product-link:hover .shop-the-look__product-image {
+    transform: scale(1.03);
+  }
+
+  /* Hover: "Adicionar a sacola" — metade sobre a imagem, metade sobre o titulo (BP) */
+  .shop-the-look__quick-add {
+    position: absolute;
+    bottom: -18px;
+    left: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 4;
+  }
+
+  .shop-the-look__product-link:hover .shop-the-look__quick-add {
+    opacity: 1;
+  }
+
+  .shop-the-look__quick-add-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #4a4a4a;
+  }
+
+  /* Info: titulo + preco (BP specs) */
+  .shop-the-look__product-info {
+    padding: 12px 0 0;
+  }
+
+  .shop-the-look__product-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #121212;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+  }
+
+  .shop-the-look__product-price {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .shop-the-look__price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #aaaaaa;
+  }
+
+  .shop-the-look__price--compare {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    text-decoration: line-through;
+    color: #cccccc;
+  }
+
+  /* === Setas de navegacao (BP: centralizadas na foto lifestyle, bottom 20px) === */
+  .shop-the-look__nav {
+    position: absolute;
+    bottom: 20px;
+    right: 50%; /* alinhado com o canto direito da foto lifestyle */
+    margin-right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .shop-the-look__arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    color: rgb(217, 200, 158);
+    pointer-events: all;
+    transition: background 0.25s ease;
+    padding: 0;
+  }
+
+  .shop-the-look__arrow:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .shop-the-look__arrow svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Prev: caret rotacionado pra esquerda */
+  .shop-the-look__arrow--prev svg {
+    transform: rotate(90deg);
+  }
+
+  /* Next: caret rotacionado pra direita */
+  .shop-the-look__arrow--next svg {
+    transform: rotate(-90deg);
+  }
+
+  /* Tablet */
+  @media (max-width: 1349px) {
+    .shop-the-look__container {
+      padding: 0 32px;
+    }
+
+    .shop-the-look__card-frame {
+      width: 80%;
+    }
+  }
+
+  /* Mobile: foto grande em cima + card produto horizontal embaixo (BP mobile) */
+  @media (max-width: 749px) {
+    .shop-the-look__grid {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .shop-the-look__container {
+      padding: 0;
+    }
+
+    .shop-the-look__header {
+      padding: 26px 16px;
+    }
+
+    .shop-the-look__lifestyle {
+      width: 100%;
+    }
+
+    .shop-the-look__lifestyle-image {
+      aspect-ratio: 3 / 4;
+    }
+
+    .shop-the-look__placeholder {
+      aspect-ratio: 3 / 4;
+    }
+
+    /* Card produto: BP usa card largo com sombra + cantos arredondados */
+    .shop-the-look__product-side {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 12px 16px 0;
+    }
+
+    .shop-the-look__card-frame {
+      width: 92%;
+      max-width: none;
+      padding: 12px;
+      border: 1px solid #E0DCD4;
+      background: #ffffff;
+      box-shadow: none;
+      border-radius: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shop-the-look__product-link {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    /* Thumbnail a esquerda */
+    .shop-the-look__product-image-wrapper {
+      width: 110px;
+      min-width: 110px;
+      flex-shrink: 0;
+      background: rgb(249, 247, 240);
+      position: static;
+      overflow: hidden;
+    }
+
+    .shop-the-look__product-image {
+      aspect-ratio: 2 / 3;
+      width: 110px;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* ADICIONAR A SACOLA: sobreposto no fundo do card, largura total (BP) */
+    .shop-the-look__quick-add {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 12px;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .shop-the-look__quick-add-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: #545454;
+      letter-spacing: 0.8px;
+    }
+
+    /* Info a direita do thumbnail */
+    .shop-the-look__product-info {
+      padding: 14px 14px 44px; /* padding-bottom pra nao ficar atras do botao */
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shop-the-look__product-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+      color: #333333;
+    }
+
+    .shop-the-look__product-price {
+      display: flex;
+      gap: 6px;
+    }
+
+    .shop-the-look__price {
+      font-size: 13px;
+      font-weight: 500;
+      color: #aaaaaa;
+    }
+
+    .shop-the-look__price--compare {
+      font-size: 12px;
+    }
+
+    /* Setas: sobre a foto lifestyle, canto inferior direito */
+    .shop-the-look__nav {
+      right: 16px;
+      bottom: auto;
+      top: calc(100vw * 4 / 3 - 56px); /* posiciona no final da foto 3:4 */
+      margin-right: 0;
+    }
+
+    .shop-the-look__arrow {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
+<!-- Escolhas das Blogueiras — carrossel BP "Escolhas da Pat" -->
+<section class="shop-the-look">
+  {% if section.settings.title != blank %}
+    <div class="shop-the-look__header">
+      <h2 class="shop-the-look__section-title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="shop-the-look__container">
+    <div class="shop-the-look__slider" id="stl-slider-{{ section.id }}">
+      <div class="shop-the-look__track" id="stl-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="shop-the-look__slide" {{ block.shopify_attributes }}>
+            <div class="shop-the-look__grid">
+              <!-- Esquerda: Foto lifestyle retrato -->
+              <div class="shop-the-look__lifestyle">
+                {% if block.settings.lifestyle_image %}
+                  <img
+                    src="{{ block.settings.lifestyle_image | image_url: width: 900 }}"
+                    srcset="{{ block.settings.lifestyle_image | image_url: width: 600 }} 600w, {{ block.settings.lifestyle_image | image_url: width: 900 }} 900w, {{ block.settings.lifestyle_image | image_url: width: 1200 }} 1200w"
+                    sizes="(max-width: 749px) 100vw, 50vw"
+                    alt="{{ block.settings.heading | default: section.settings.title | escape }}"
+                    class="shop-the-look__lifestyle-image"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Direita: Produto com moldura -->
+              <div class="shop-the-look__product-side">
+                {% if block.settings.product != blank %}
+                  {% assign product = block.settings.product %}
+                  <div class="shop-the-look__card-frame">
+                    <a href="{{ product.url }}" class="shop-the-look__product-link">
+                      <div class="shop-the-look__product-image-wrapper">
+                        {% if product.featured_image %}
+                          <img
+                            src="{{ product.featured_image | image_url: width: 600 }}"
+                            alt="{{ product.title | escape }}"
+                            class="shop-the-look__product-image"
+                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                          >
+                        {% endif %}
+
+                        <!-- Hover: Adicionar a sacola -->
+                        <div class="shop-the-look__quick-add">
+                          <span class="shop-the-look__quick-add-text">Adicionar à sacola</span>
+                        </div>
+                      </div>
+
+                      <div class="shop-the-look__product-info">
+                        <h3 class="shop-the-look__product-title">{{ product.title }}</h3>
+                        <div class="shop-the-look__product-price">
+                          {% if product.compare_at_price > product.price %}
+                            <span class="shop-the-look__price--compare">{{ product.compare_at_price | money }}</span>
+                          {% endif %}
+                          <span class="shop-the-look__price">{{ product.price | money }}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                {% else %}
+                  <div class="shop-the-look__placeholder">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Setas de navegacao (BP style: centralizadas embaixo da foto lifestyle) -->
+      {% if section.blocks.size > 1 %}
+        <div class="shop-the-look__nav">
+          <button class="shop-the-look__arrow shop-the-look__arrow--prev" aria-label="Anterior" data-stl-prev="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+          <button class="shop-the-look__arrow shop-the-look__arrow--next" aria-label="Próximo" data-stl-next="{{ section.id }}">
+            <svg viewBox="0 0 10 6" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  (function() {
+    var sectionId = '{{ section.id }}';
+    var track = document.getElementById('stl-track-' + sectionId);
+    if (!track) return;
+
+    var prevBtn = document.querySelector('[data-stl-prev="' + sectionId + '"]');
+    var nextBtn = document.querySelector('[data-stl-next="' + sectionId + '"]');
+    if (!prevBtn || !nextBtn) return;
+
+    var current = 0;
+    var total = track.children.length;
+
+    function goTo(index) {
+      if (index < 0) index = total - 1;
+      if (index >= total) index = 0;
+      current = index;
+      var slideWidth = track.children[0].offsetWidth;
+      track.scrollTo({ left: slideWidth * current, behavior: 'smooth' });
+    }
+
+    /* GIRO-AUTOMATICO-GT (07/10/2026, Ale: "por que nao ta rodando esse carrossel"): troca de look sozinho a cada 6 s;
+       pausa com o mouse em cima, ao tocar no celular e por 15 s depois de clicar nas setas; so roda com a secao visivel. */
+    var autoTimer = null, pausadoAte = 0, hover = false, visivel = true;
+    function autoStart() { if (autoTimer) return; autoTimer = setInterval(function() {
+      if (hover || !visivel || Date.now() < pausadoAte || document.hidden) return;
+      goTo(current + 1);
+    }, 6000); }
+    var sliderEl = document.getElementById('stl-slider-' + sectionId);
+    if (sliderEl) {
+      sliderEl.addEventListener('mouseenter', function() { hover = true; });
+      sliderEl.addEventListener('mouseleave', function() { hover = false; });
+      sliderEl.addEventListener('touchstart', function() { pausadoAte = Date.now() + 15000; }, { passive: true });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function(es) { visivel = es[0].isIntersecting; }, { threshold: 0.2 }).observe(sliderEl);
+      }
+    }
+    if (total > 1) autoStart();
+
+    prevBtn.addEventListener('click', function() { pausadoAte = Date.now() + 15000; goTo(current - 1); });
+    nextBtn.addEventListener('click', function() { pausadoAte = Date.now() + 15000; goTo(current + 1); });
+
+    /* Sync current index quando usuario arrasta manualmente */
+    var scrollTimer;
+    track.addEventListener('scroll', function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        var slideWidth = track.children[0].offsetWidth;
+        current = Math.round(track.scrollLeft / slideWidth);
+      }, 150);
+    }, { passive: true });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Escolhas das Blogueiras",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título da seção",
+      "default": "ESCOLHAS DAS BLOGUEIRAS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Look",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "lifestyle_image",
+          "label": "Foto lifestyle (retrato)",
+          "info": "Retrato 9:16. Tamanho ideal: 900x1600px"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Produto em destaque"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Escolhas das Blogueiras",
+      "blocks": [
+        { "type": "look" },
+        { "type": "look" },
+        { "type": "look" }
+      ]
+    }
+  ]
+}
+{% endschema %}
