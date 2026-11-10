@@ -8,249 +8,261 @@
  * ------------------------------------------------------------
  */
 {
-    "order": [
-        "hero_slideshow",
-        "category_grid",
-        "dual_banner",
-        "best_sellers",
-        "image_banner_lancamento",
-        "escolhas_blogueiras",
-        "outlet_destaques",
-        "trust_bar"
-    ],
-    "sections": {
-        "trust_bar": {
-            "type": "trust-bar",
-            "disabled": true,
-            "settings": {
-            }
+  "order": [
+    "hero_slideshow",
+    "category_grid",
+    "dual_banner",
+    "best_sellers",
+    "image_banner_lancamento",
+    "escolhas_blogueiras",
+    "outlet_destaques",
+    "trust_bar"
+  ],
+  "sections": {
+    "trust_bar": {
+      "type": "trust-bar",
+      "disabled": true,
+      "settings": {}
+    },
+    "dual_banner": {
+      "type": "dual-banner",
+      "blocks": {
+        "b1": {
+          "type": "banner",
+          "settings": {
+            "link": "/collections/black-november",
+            "image": "shopify://shop_images/BLACK_NOVEMBER_-_banner_pequeno_1402x1448_c3420c82-eae5-4a8e-a60f-31c24c9cb16d.jpg",
+            "heading": "",
+            "cta_text": "",
+            "subheading": "",
+            "text_color": "#ffffff",
+            "text_vertical": "top",
+            "text_horizontal": "left"
+          }
         },
-        "dual_banner": {
-            "type": "dual-banner",
-            "blocks": {
-                "b1": {
-                    "type": "banner",
-                    "settings": {
-                        "link": "/collections/black-november",
-                        "image": "shopify://shop_images/BLACK_NOVEMBER_-_banner_pequeno_1402x1448_c3420c82-eae5-4a8e-a60f-31c24c9cb16d.jpg",
-                        "heading": "",
-                        "cta_text": "",
-                        "subheading": "",
-                        "text_color": "#ffffff",
-                        "text_vertical": "top",
-                        "text_horizontal": "left"
-                    }
-                },
-                "b2": {
-                    "type": "banner",
-                    "settings": {
-                        "link": "/collections/roupas-conjuntos",
-                        "image": "shopify://shop_images/Editavel_Pequeno_2.jpg",
-                        "heading": "",
-                        "cta_text": "",
-                        "subheading": "",
-                        "text_color": "#ffffff",
-                        "text_vertical": "top",
-                        "text_horizontal": "left"
-                    }
-                }
-            },
-            "settings": {
-            },
-            "block_order": [
-                "b1",
-                "b2"
-            ]
-        },
-        "best_sellers": {
-            "type": "featured-collection",
-            "settings": {
-                "title": "BEST SELLERS",
-                "collection": "best-sellers"
-            }
-        },
-        "category_grid": {
-            "type": "category-grid",
-            "blocks": {
-                "cat1": {
-                    "type": "category",
-                    "settings": {
-                        "link": "/collections/roupas-conjuntos",
-                        "image": "shopify://shop_images/1_86346208-a1a3-4aa1-85d8-3acff7d8dc07.jpg",
-                        "heading": "Conjuntos"
-                    }
-                },
-                "cat2": {
-                    "type": "category",
-                    "settings": {
-                        "link": "/collections/roupas-blusas",
-                        "image": "shopify://shop_images/3_631b9ed3-ef99-464e-82da-d019f0da9fa7.jpg",
-                        "heading": "Casacos e Blusas"
-                    }
-                },
-                "cat3": {
-                    "type": "category",
-                    "settings": {
-                        "link": "/collections/roupas-vestidos",
-                        "image": "shopify://shop_images/2_d10398b0-7da3-4e0f-ae12-c23177e313b5.jpg",
-                        "heading": "Vestidos"
-                    }
-                },
-                "cat4": {
-                    "type": "category",
-                    "settings": {
-                        "link": "/collections/roupas-macacoes",
-                        "image": "shopify://shop_images/4_01efb7f0-6f01-4438-94c6-1275e8bada1a.jpg",
-                        "heading": "MACACÕES"
-                    }
-                }
-            },
-            "settings": {
-            },
-            "block_order": [
-                "cat1",
-                "cat2",
-                "cat3",
-                "cat4"
-            ]
-        },
-        "hero_slideshow": {
-            "type": "hero-slideshow",
-            "blocks": {
-                "slide_amicLw": {
-                    "type": "slide",
-                    "settings": {
-                        "image": "shopify://shop_images/20-03_banner_4_cab40dc8-0031-4e36-9ddc-f6cc56c857bf.jpg",
-                        "heading": "",
-                        "subheading": "",
-                        "text_color": "rgba(0,0,0,0)",
-                        "button_link": "/collections/roupas",
-                        "button_text": "",
-                        "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_1_f732463f-d2b4-4385-8101-1557fc9d26c4.png",
-                        "text_position": "right",
-                        "text_vertical": "top"
-                    }
-                }
-            },
-            "settings": {
-                "title": "Hero Slideshow"
-            },
-            "block_order": [
-                "slide_amicLw"
-            ]
-        },
-        "outlet_destaques": {
-            "type": "featured-collection",
-            "settings": {
-                "title": "DESTAQUES DO OUTLET",
-                "collection": "outlet-vestidos"
-            }
-        },
-        "escolhas_blogueiras": {
-            "type": "shop-the-look",
-            "blocks": {
-                "look_39CnpN": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-olivia-fendi",
-                        "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg"
-                    }
-                },
-                "look_9d4XfD": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-cora-azul-nuvem",
-                        "lifestyle_image": "shopify://shop_images/Maria_eleonora_-_cora_nuvem_2_7d192046-bdda-4024-a1bd-ae56ce07f4c1.jpg"
-                    }
-                },
-                "look_AfwMDM": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-cora-off-white",
-                        "lifestyle_image": "shopify://shop_images/thassia-naves---cora-off-7_d2dfe9f2-1160-442b-9ffa-361b1474e172.jpg"
-                    }
-                },
-                "look_GgaDP7": {
-                    "type": "look",
-                    "settings": {
-                        "product": "vestido-tricot-aira-dourado",
-                        "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg"
-                    }
-                },
-                "look_MHQMiQ": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-blanche-azul-marinho",
-                        "lifestyle_image": "shopify://shop_images/Cris_Buffara_-_Blanche_Marinho_5_b2f0beb0-7564-4d7d-b509-02d618c3f7a0.jpg"
-                    }
-                },
-                "look_N7cXzf": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-amora-cinza-mescla",
-                        "lifestyle_image": "shopify://shop_images/juju---amora-cinza-6_75e4835e-c1df-4dad-92af-fa1c831f368b.jpg"
-                    }
-                },
-                "look_WfK8ey": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-amora-off-white",
-                        "lifestyle_image": "shopify://shop_images/Luiza_sobral_-_amora_off_4_db759654-3336-4065-aee1-51c4047edd3e.jpg"
-                    }
-                },
-                "look_aNxaEV": {
-                    "type": "look",
-                    "settings": {
-                        "product": "vestido-tricot-aira-marrom",
-                        "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg"
-                    }
-                },
-                "look_bGKapH": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-flora-rosa-primula",
-                        "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg"
-                    }
-                },
-                "look_cP7Nir": {
-                    "type": "look",
-                    "settings": {
-                        "product": "conjunto-tricot-olivia-marinho",
-                        "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg"
-                    }
-                }
-            },
-            "settings": {
-                "title": "ESCOLHAS DAS BLOGUEIRAS"
-            },
-            "block_order": [
-                "look_39CnpN",
-                "look_cP7Nir",
-                "look_GgaDP7",
-                "look_aNxaEV",
-                "look_MHQMiQ",
-                "look_WfK8ey",
-                "look_bGKapH",
-                "look_9d4XfD",
-                "look_N7cXzf",
-                "look_AfwMDM"
-            ]
-        },
-        "image_banner_lancamento": {
-            "type": "image-banner",
-            "settings": {
-                "link": "/collections/roupas",
-                "image": "shopify://shop_images/RODAPE_SHOPIFY.png",
-                "heading": "",
-                "subtitle": "",
-                "link_text": "",
-                "text_color": "#ffffff",
-                "heading_size": 48,
-                "image_mobile": "shopify://shop_images/RODAPE_SHOPIFY_MOBILE.jpg",
-                "subtitle_size": 14,
-                "text_position": "left",
-                "text_vertical": "middle"
-            }
+        "b2": {
+          "type": "banner",
+          "settings": {
+            "link": "/collections/roupas-conjuntos",
+            "image": "shopify://shop_images/Editavel_Pequeno_2.jpg",
+            "heading": "",
+            "cta_text": "",
+            "subheading": "",
+            "text_color": "#ffffff",
+            "text_vertical": "top",
+            "text_horizontal": "left"
+          }
         }
+      },
+      "settings": {},
+      "block_order": [
+        "b1",
+        "b2"
+      ]
+    },
+    "best_sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "BEST SELLERS",
+        "collection": "best-sellers"
+      }
+    },
+    "category_grid": {
+      "type": "category-grid",
+      "blocks": {
+        "cat1": {
+          "type": "category",
+          "settings": {
+            "link": "/collections/roupas-conjuntos",
+            "image": "shopify://shop_images/1_86346208-a1a3-4aa1-85d8-3acff7d8dc07.jpg",
+            "heading": "Conjuntos"
+          }
+        },
+        "cat2": {
+          "type": "category",
+          "settings": {
+            "link": "/collections/roupas-blusas",
+            "image": "shopify://shop_images/3_631b9ed3-ef99-464e-82da-d019f0da9fa7.jpg",
+            "heading": "Casacos e Blusas"
+          }
+        },
+        "cat3": {
+          "type": "category",
+          "settings": {
+            "link": "/collections/roupas-vestidos",
+            "image": "shopify://shop_images/2_d10398b0-7da3-4e0f-ae12-c23177e313b5.jpg",
+            "heading": "Vestidos"
+          }
+        },
+        "cat4": {
+          "type": "category",
+          "settings": {
+            "link": "/collections/roupas-macacoes",
+            "image": "shopify://shop_images/4_01efb7f0-6f01-4438-94c6-1275e8bada1a.jpg",
+            "heading": "MACACÕES"
+          }
+        }
+      },
+      "settings": {},
+      "block_order": [
+        "cat1",
+        "cat2",
+        "cat3",
+        "cat4"
+      ]
+    },
+    "hero_slideshow": {
+      "type": "hero-slideshow",
+      "blocks": {
+        "slide_ski": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/SKI_banner_desktop_2700x1219_98d83005-1179-4bbb-b987-493e875bf585.jpg",
+            "heading": "",
+            "subheading": "",
+            "text_color": "rgba(0,0,0,0)",
+            "button_link": "/collections/colecao-ski-inverno-2027",
+            "button_text": "",
+            "image_mobile": "shopify://shop_images/SKI_banner_mobile_1092x1800_6d0f5142-5a7d-4965-8a6e-56913d8baf41.jpg",
+            "text_position": "right",
+            "text_vertical": "top"
+          }
+        },
+        "slide_amicLw": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20-03_banner_4_cab40dc8-0031-4e36-9ddc-f6cc56c857bf.jpg",
+            "heading": "",
+            "subheading": "",
+            "text_color": "rgba(0,0,0,0)",
+            "button_link": "/collections/roupas",
+            "button_text": "",
+            "image_mobile": "shopify://shop_images/20-03_MOBILE_BANNER_1_f732463f-d2b4-4385-8101-1557fc9d26c4.png",
+            "text_position": "right",
+            "text_vertical": "top"
+          }
+        }
+      },
+      "settings": {
+        "title": "Hero Slideshow"
+      },
+      "block_order": [
+        "slide_ski",
+        "slide_amicLw"
+      ]
+    },
+    "outlet_destaques": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "DESTAQUES DO OUTLET",
+        "collection": "outlet-vestidos"
+      }
+    },
+    "escolhas_blogueiras": {
+      "type": "shop-the-look",
+      "blocks": {
+        "look_39CnpN": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-olivia-fendi",
+            "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg"
+          }
+        },
+        "look_9d4XfD": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-cora-azul-nuvem",
+            "lifestyle_image": "shopify://shop_images/Maria_eleonora_-_cora_nuvem_2_7d192046-bdda-4024-a1bd-ae56ce07f4c1.jpg"
+          }
+        },
+        "look_AfwMDM": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-cora-off-white",
+            "lifestyle_image": "shopify://shop_images/thassia-naves---cora-off-7_d2dfe9f2-1160-442b-9ffa-361b1474e172.jpg"
+          }
+        },
+        "look_GgaDP7": {
+          "type": "look",
+          "settings": {
+            "product": "vestido-tricot-aira-dourado",
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg"
+          }
+        },
+        "look_MHQMiQ": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-blanche-azul-marinho",
+            "lifestyle_image": "shopify://shop_images/Cris_Buffara_-_Blanche_Marinho_5_b2f0beb0-7564-4d7d-b509-02d618c3f7a0.jpg"
+          }
+        },
+        "look_N7cXzf": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-amora-cinza-mescla",
+            "lifestyle_image": "shopify://shop_images/juju---amora-cinza-6_75e4835e-c1df-4dad-92af-fa1c831f368b.jpg"
+          }
+        },
+        "look_WfK8ey": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-amora-off-white",
+            "lifestyle_image": "shopify://shop_images/Luiza_sobral_-_amora_off_4_db759654-3336-4065-aee1-51c4047edd3e.jpg"
+          }
+        },
+        "look_aNxaEV": {
+          "type": "look",
+          "settings": {
+            "product": "vestido-tricot-aira-marrom",
+            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg"
+          }
+        },
+        "look_bGKapH": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-flora-rosa-primula",
+            "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg"
+          }
+        },
+        "look_cP7Nir": {
+          "type": "look",
+          "settings": {
+            "product": "conjunto-tricot-olivia-marinho",
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg"
+          }
+        }
+      },
+      "settings": {
+        "title": "ESCOLHAS DAS BLOGUEIRAS"
+      },
+      "block_order": [
+        "look_39CnpN",
+        "look_cP7Nir",
+        "look_GgaDP7",
+        "look_aNxaEV",
+        "look_MHQMiQ",
+        "look_WfK8ey",
+        "look_bGKapH",
+        "look_9d4XfD",
+        "look_N7cXzf",
+        "look_AfwMDM"
+      ]
+    },
+    "image_banner_lancamento": {
+      "type": "image-banner",
+      "settings": {
+        "link": "/collections/roupas",
+        "image": "shopify://shop_images/RODAPE_SHOPIFY.png",
+        "heading": "",
+        "subtitle": "",
+        "link_text": "",
+        "text_color": "#ffffff",
+        "heading_size": 48,
+        "image_mobile": "shopify://shop_images/RODAPE_SHOPIFY_MOBILE.jpg",
+        "subtitle_size": 14,
+        "text_position": "left",
+        "text_vertical": "middle"
+      }
     }
+  }
 }
