@@ -279,12 +279,28 @@
     transition: opacity 0.2s;
   }
   .cart-drawer__checkout-btn:hover { opacity: 0.85; }
+
+  /* ---- Embalagem de presente ---- */
+  .cart-drawer__gift {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; margin-bottom: 16px;
+    border: 1px solid #e0ddd8; cursor: pointer;
+    font-family: 'Raleway', sans-serif; font-size: 13px; color: #121212;
+    transition: background 0.2s, opacity 0.2s;
+  }
+  .cart-drawer__gift input { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #4A3222; }
+  .cart-drawer__gift-text { flex: 1; letter-spacing: 0.3px; }
+  .cart-drawer__gift-price { font-weight: 600; white-space: nowrap; }
+  .cart-drawer__gift.is-loading { background: #f0ede8; opacity: 0.6; pointer-events: none; }
 </style>
 {%- comment -%}
   Cart Drawer (mini cart) — Galeria Tricot (estilo BP)
   100% AJAX — não recarrega a página ao adicionar/remover/mudar quantidade
 {%- endcomment -%}
 
+{%- comment -%} EMBALAGEM DE PRESENTE (10/11/2026): caixinha na sacola, 1 por pedido. Produto: embalagem-de-presente {%- endcomment -%}
+{%- assign gift_prod = all_products['embalagem-de-presente'] -%}
+{%- assign gift_vid = gift_prod.selected_or_first_available_variant.id | default: 0 -%}
 <div class="cart-drawer__overlay" id="cart-overlay"></div>
 
 <aside class="cart-drawer" id="cart-drawer">
@@ -309,6 +325,13 @@
       </div>
       <p class="cart-drawer__coupon-msg" id="cart-coupon-msg"></p>
     </div>
+    {%- if gift_vid != 0 -%}
+    <label class="cart-drawer__gift" id="cart-gift-row">
+      <input type="checkbox" id="cart-gift-check" onchange="toggleGiftWrap(this)">
+      <span class="cart-drawer__gift-text">Adicionar embalagem de presente</span>
+      <span class="cart-drawer__gift-price">{{ gift_prod.price | money }}</span>
+    </label>
+    {%- endif -%}
     <div class="cart-drawer__subtotal">
       <span>SUBTOTAL</span>
       <span id="cart-drawer-total"></span>
@@ -328,6 +351,18 @@
   var itemsContainer = document.getElementById('cart-drawer-items');
   var footer = document.getElementById('cart-drawer-footer');
   var totalEl = document.getElementById('cart-drawer-total');
+
+  /* ---- Embalagem de presente ---- */
+  var GIFT_ID = {{ gift_vid }};
+  var giftFixTries = 0;
+  function giftPost(url, body) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  }
+  function giftBusy(on) {
+    var row = document.getElementById('cart-gift-row'), cb = document.getElementById('cart-gift-check');
+    if (row) row.classList.toggle('is-loading', on);
+    if (cb) cb.disabled = on;
+  }
 
   function fmt(cents) {
     return 'R$ ' + (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -363,8 +398,22 @@
           return;
         }
 
+        /* Embalagem: nunca sozinha na sacola e sempre 1 por pedido */
+        var giftItem = null, pieceQty = 0;
+        cart.items.forEach(function(it) { if (GIFT_ID && it.variant_id === GIFT_ID) giftItem = it; else pieceQty += it.quantity; });
+        if (giftItem && (pieceQty === 0 || giftItem.quantity > 1) && giftFixTries < 2) {
+          giftFixTries++;
+          giftPost('/cart/change.js', { id: String(GIFT_ID), quantity: pieceQty === 0 ? 0 : 1 }).then(function() { renderCart(); });
+          return;
+        }
+        giftFixTries = 0;
+        var giftCb = document.getElementById('cart-gift-check');
+        if (giftCb) giftCb.checked = !!giftItem;
+        giftBusy(false);
+
         var html = '';
         cart.items.forEach(function(item) {
+          if (giftCb && GIFT_ID && item.variant_id === GIFT_ID) return; /* embalagem aparece só como caixinha marcada */
           var variantText = item.variant_title && item.variant_title !== 'Default Title' ? item.variant_title : '';
           /* Shopify CDN: trocar tamanho na URL ou usar param &width= */
           var imgSrc = item.image || '';
@@ -426,6 +475,17 @@
       el.style.display = count > 0 ? '' : 'none';
     });
   }
+
+  window.toggleGiftWrap = function(cb) {
+    if (!GIFT_ID) return;
+    var want = cb.checked;
+    giftBusy(true);
+    var p = want
+      ? giftPost('/cart/add.js', { items: [{ id: GIFT_ID, quantity: 1 }] })
+      : giftPost('/cart/change.js', { id: String(GIFT_ID), quantity: 0 });
+    p.then(function(r) { if (!r.ok) throw new Error('gift'); renderCart(); })
+     .catch(function() { cb.checked = !want; giftBusy(false); });
+  };
 
   /* Carregar na abertura inicial se já tem itens */
   window.refreshCartDrawer = renderCart;

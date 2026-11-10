@@ -261,12 +261,30 @@
     .cart-page__item-title { font-size: 13px; }
     .cart-page__item-remove { top: 18px; }
   }
+
+  /* ---- Embalagem de presente ---- */
+  .cart-page__gift {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; margin: 16px 0;
+    border: 1px solid #e0ddd8; cursor: pointer;
+    font-family: 'Raleway', sans-serif; font-size: 13px; color: #121212;
+    transition: background 0.2s, opacity 0.2s;
+  }
+  .cart-page__gift input { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #4A3222; }
+  .cart-page__gift-text { flex: 1; letter-spacing: 0.3px; }
+  .cart-page__gift-price { font-weight: 600; white-space: nowrap; }
+  .cart-page__gift.is-loading { background: #f0ede8; opacity: 0.6; pointer-events: none; }
 </style>
 {% comment %}
   Cart page — Galeria Tricot (estilo BP)
   2 colunas: itens à esquerda, resumo à direita
 {% endcomment %}
 
+{%- comment -%} EMBALAGEM DE PRESENTE (10/11/2026): caixinha no resumo, 1 por pedido. Produto: embalagem-de-presente {%- endcomment -%}
+{%- assign gift_prod = all_products['embalagem-de-presente'] -%}
+{%- assign gift_vid = gift_prod.selected_or_first_available_variant.id | default: 0 -%}
+{%- assign gift_qty = 0 -%}
+{%- for it in cart.items -%}{%- if it.variant.id == gift_vid -%}{%- assign gift_qty = gift_qty | plus: it.quantity -%}{%- endif -%}{%- endfor -%}
 <div class="cart-page">
   {% if cart.item_count > 0 %}
     <h1 class="cart-page__title">Minha sacola</h1>
@@ -275,7 +293,7 @@
       <!-- COLUNA ESQUERDA: Itens -->
       <div class="cart-page__items-col">
         <div class="cart-page__items" id="cart-page-items">
-          {% for item in cart.items %}
+          {% for item in cart.items %}{% if gift_vid != 0 and item.variant.id == gift_vid %}{% continue %}{% endif %}
             <div class="cart-page__item" data-line="{{ forloop.index }}" data-key="{{ item.key }}">
               <a href="{{ item.url }}" class="cart-page__item-img-link">
                 {% if item.image %}
@@ -371,6 +389,13 @@
           ou 5x de {{ cart_installment | money }} sem juros
         </div>
 
+        {%- if gift_vid != 0 -%}
+        <label class="cart-page__gift" id="cart-page-gift-row">
+          <input type="checkbox" id="cart-page-gift-check"{% if gift_qty > 0 %} checked{% endif %}>
+          <span class="cart-page__gift-text">Adicionar embalagem de presente</span>
+          <span class="cart-page__gift-price">{{ gift_prod.price | money }}</span>
+        </label>
+        {%- endif -%}
         <a href="/checkout" class="cart-page__checkout-btn">FINALIZAR COMPRA</a>
         <a href="/collections/all" class="cart-page__continue">Continuar comprando</a>
       </aside>
@@ -398,6 +423,18 @@
     return 'R$ ' + (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
   }
 
+  /* Embalagem de presente: nunca fica sozinha na sacola */
+  var GT_GIFT = {{ gift_vid }};
+  function gtSoEmbalagem(cart) {
+    return !!GT_GIFT && cart.item_count > 0 && cart.items.every(function(it) { return it.variant_id === GT_GIFT; });
+  }
+  function gtRecarrega(cart) {
+    if (cart && gtSoEmbalagem(cart)) {
+      fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: String(GT_GIFT), quantity: 0 }) })
+        .then(function() { location.reload(); }).catch(function() { location.reload(); });
+    } else { location.reload(); }
+  }
+
   function updateItem(key, qty) {
     var row = container.querySelector('[data-key="' + key + '"]');
     if (row) row.style.opacity = '0.5';
@@ -409,8 +446,8 @@
     })
     .then(function(r) { return r.json(); })
     .then(function(cart) {
-      if (cart.item_count === 0) {
-        location.reload();
+      if (cart.item_count === 0 || gtSoEmbalagem(cart)) {
+        gtRecarrega(cart);
         return;
       }
       if (totalEl) totalEl.textContent = fmt(cart.total_price);
@@ -535,6 +572,28 @@
   btn.addEventListener('click', calcular);
   window.cartFreteRecalc = function(){ if (out.innerHTML && input.value.replace(/\D/g,'').length === 8) calcular(); };
   try { var s = sessionStorage.getItem('gt_cep'); if (s && s.length === 8) { input.value = s.slice(0,5) + '-' + s.slice(5); calcular(); } } catch (e) {}
+})();
+</script>
+
+<script>
+/* EMBALAGEM DE PRESENTE: marca/desmarca a caixinha do resumo (1 por pedido) */
+(function() {
+  var GIFT = {{ gift_vid }}, GQ = {{ gift_qty }}, TOT = {{ cart.item_count }};
+  var cb = document.getElementById('cart-page-gift-check'), row = document.getElementById('cart-page-gift-row');
+  function post(url, body) { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  if (!GIFT) return;
+  if (GQ > 0 && (GQ > 1 || TOT === GQ)) {
+    var feito = false; try { feito = sessionStorage.getItem('gt_gift_fix') === '1'; sessionStorage.setItem('gt_gift_fix', '1'); } catch (e) {}
+    if (!feito) { post('/cart/change.js', { id: String(GIFT), quantity: TOT === GQ ? 0 : 1 }).then(function() { location.reload(); }); return; }
+  } else { try { sessionStorage.removeItem('gt_gift_fix'); } catch (e) {} }
+  if (!cb) return;
+  cb.addEventListener('change', function() {
+    var want = cb.checked;
+    cb.disabled = true; if (row) row.classList.add('is-loading');
+    var p = want ? post('/cart/add.js', { items: [{ id: GIFT, quantity: 1 }] }) : post('/cart/change.js', { id: String(GIFT), quantity: 0 });
+    p.then(function(r) { if (!r.ok) throw new Error('gift'); location.reload(); })
+     .catch(function() { cb.checked = !want; cb.disabled = false; if (row) row.classList.remove('is-loading'); });
+  });
 })();
 </script>
 
