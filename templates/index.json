@@ -165,25 +165,11 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
-        "look_YNBTXC": {
+        "look_TW9D9M": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/Thassia_Naves-_aira_marrom_em_alta_4_cfdef622-aaa6-4d8c-bc24-cc3fb6effc1c.jpg",
-            "product": "vestido-tricot-aira-marrom"
-          }
-        },
-        "look_eynwap": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Juju-Norremose---Regata-Tricot-Elara-Cinza-Mescla.jpg",
-            "product": "conjunto-tricot-elara-cinza-mescla"
-          }
-        },
-        "look_EMay8p": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Suzana-gullo---new-gisele-marrom.jpg",
-            "product": "vestido-tricot-midi-new-gisele-marrom"
+            "lifestyle_image": "shopify://shop_images/Juju-Norremose---Blusa-Tricot-Melanie-Azul-Marinho---EDITADA_ce639591-ff67-4021-807e-a08c1be22ddf.jpg",
+            "product": "conjunto-tricot-melanie-azul-marinho"
           }
         },
         "look_ieyhgr": {
@@ -193,11 +179,25 @@
             "product": "conjunto-tricot-melanie-nuvem"
           }
         },
-        "look_TW9D9M": {
+        "look_EMay8p": {
           "type": "look",
           "settings": {
-            "lifestyle_image": "shopify://shop_images/Juju-Norremose---Blusa-Tricot-Melanie-Azul-Marinho---EDITADA_ce639591-ff67-4021-807e-a08c1be22ddf.jpg",
-            "product": "conjunto-tricot-melanie-azul-marinho"
+            "lifestyle_image": "shopify://shop_images/Suzana-gullo---new-gisele-marrom.jpg",
+            "product": "vestido-tricot-midi-new-gisele-marrom"
+          }
+        },
+        "look_eynwap": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Juju-Norremose---Regata-Tricot-Elara-Cinza-Mescla.jpg",
+            "product": "conjunto-tricot-elara-cinza-mescla"
+          }
+        },
+        "look_YNBTXC": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_Naves-_aira_marrom_em_alta_4_cfdef622-aaa6-4d8c-bc24-cc3fb6effc1c.jpg",
+            "product": "vestido-tricot-aira-marrom"
           }
         },
         "look_39CnpN": {
@@ -234,59 +234,19 @@
             "lifestyle_image": "shopify://shop_images/Cris_Buffara_-_Blanche_Marinho_5_b2f0beb0-7564-4d7d-b509-02d618c3f7a0.jpg",
             "product": "conjunto-tricot-blanche-azul-marinho"
           }
-        },
-        "look_WfK8ey": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Luiza_sobral_-_amora_off_4_db759654-3336-4065-aee1-51c4047edd3e.jpg",
-            "product": "conjunto-tricot-amora-off-white"
-          }
-        },
-        "look_bGKapH": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/thassia-naves---flora-primula-alta-_5_01e40149-77b6-4a9c-a36c-f37efa982909.jpg",
-            "product": "conjunto-tricot-flora-rosa-primula"
-          }
-        },
-        "look_9d4XfD": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Maria_eleonora_-_cora_nuvem_2_7d192046-bdda-4024-a1bd-ae56ce07f4c1.jpg",
-            "product": "conjunto-tricot-cora-azul-nuvem"
-          }
-        },
-        "look_N7cXzf": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju---amora-cinza-6_75e4835e-c1df-4dad-92af-fa1c831f368b.jpg",
-            "product": "conjunto-tricot-amora-cinza-mescla"
-          }
-        },
-        "look_AfwMDM": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/thassia-naves---cora-off-7_d2dfe9f2-1160-442b-9ffa-361b1474e172.jpg",
-            "product": "conjunto-tricot-cora-off-white"
-          }
         }
       },
       "block_order": [
-        "look_YNBTXC",
-        "look_eynwap",
-        "look_EMay8p",
-        "look_ieyhgr",
         "look_TW9D9M",
+        "look_ieyhgr",
+        "look_EMay8p",
+        "look_eynwap",
+        "look_YNBTXC",
         "look_39CnpN",
         "look_cP7Nir",
         "look_GgaDP7",
         "look_aNxaEV",
-        "look_MHQMiQ",
-        "look_WfK8ey",
-        "look_bGKapH",
-        "look_9d4XfD",
-        "look_N7cXzf",
-        "look_AfwMDM"
+        "look_MHQMiQ"
       ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
