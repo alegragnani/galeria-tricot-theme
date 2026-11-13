@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_EMay8p": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Suzana-gullo---new-gisele-marrom.jpg",
+            "product": "vestido-tricot-midi-new-gisele-marrom"
+          }
+        },
         "look_ieyhgr": {
           "type": "look",
           "settings": {
@@ -251,6 +258,7 @@
         }
       },
       "block_order": [
+        "look_EMay8p",
         "look_ieyhgr",
         "look_TW9D9M",
         "look_39CnpN",
