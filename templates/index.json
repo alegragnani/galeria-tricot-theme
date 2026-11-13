@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_ieyhgr": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_Naves_-_Melanie_Nuvem_8_41ad8d20-436f-4f91-974e-2849f915a3f1.jpg",
+            "product": "conjunto-tricot-melanie-nuvem"
+          }
+        },
         "look_TW9D9M": {
           "type": "look",
           "settings": {
@@ -244,6 +251,7 @@
         }
       },
       "block_order": [
+        "look_ieyhgr",
         "look_TW9D9M",
         "look_39CnpN",
         "look_cP7Nir",
