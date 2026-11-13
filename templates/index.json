@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_TW9D9M": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Juju-Norremose---Blusa-Tricot-Melanie-Azul-Marinho---EDITADA_ce639591-ff67-4021-807e-a08c1be22ddf.jpg",
+            "product": "conjunto-tricot-melanie-azul-marinho"
+          }
+        },
         "look_39CnpN": {
           "type": "look",
           "settings": {
@@ -237,6 +244,7 @@
         }
       },
       "block_order": [
+        "look_TW9D9M",
         "look_39CnpN",
         "look_cP7Nir",
         "look_GgaDP7",
