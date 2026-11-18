@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_tjxEBQ": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_Cris_marinho.jpg",
+            "product": "conjunto-tricot-cris-azul-marinho"
+          }
+        },
         "look_7qhiLc": {
           "type": "look",
           "settings": {
@@ -258,6 +265,7 @@
         }
       },
       "block_order": [
+        "look_tjxEBQ",
         "look_7qhiLc",
         "look_9mL7Kd",
         "look_cDmECk",
