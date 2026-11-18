@@ -234,41 +234,6 @@
             "lifestyle_image": "shopify://shop_images/Thassia_Naves-_aira_marrom_em_alta_4_cfdef622-aaa6-4d8c-bc24-cc3fb6effc1c.jpg",
             "product": "vestido-tricot-aira-marrom"
           }
-        },
-        "look_39CnpN": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/thassia_naves_-_olivia_fendi_-_alta_1_5a261624-f070-424c-933d-12d0fdfb8e3f.jpg",
-            "product": "conjunto-tricot-olivia-fendi"
-          }
-        },
-        "look_cP7Nir": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_olivia_marinho_3.jpg",
-            "product": "conjunto-tricot-olivia-marinho"
-          }
-        },
-        "look_GgaDP7": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/juju_norremose_-_aira_dourado_2d3cf2dc-cb8a-44e2-98ac-c5c00ebb3d20.jpg",
-            "product": "vestido-tricot-aira-dourado"
-          }
-        },
-        "look_aNxaEV": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Thassia_naves_-_aira_marrom.jpg",
-            "product": "vestido-tricot-aira-marrom"
-          }
-        },
-        "look_MHQMiQ": {
-          "type": "look",
-          "settings": {
-            "lifestyle_image": "shopify://shop_images/Cris_Buffara_-_Blanche_Marinho_5_b2f0beb0-7564-4d7d-b509-02d618c3f7a0.jpg",
-            "product": "conjunto-tricot-blanche-azul-marinho"
-          }
         }
       },
       "block_order": [
@@ -281,12 +246,7 @@
         "look_ieyhgr",
         "look_EMay8p",
         "look_eynwap",
-        "look_YNBTXC",
-        "look_39CnpN",
-        "look_cP7Nir",
-        "look_GgaDP7",
-        "look_aNxaEV",
-        "look_MHQMiQ"
+        "look_YNBTXC"
       ],
       "settings": {
         "title": "ESCOLHAS DAS BLOGUEIRAS"
