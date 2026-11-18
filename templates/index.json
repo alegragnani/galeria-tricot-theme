@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_cDmECk": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Rafa-Zambello---Shorts-Tricot-Amora-Azul-Ice-1.jpg",
+            "product": "conjunto-tricot-amora-azul-ice"
+          }
+        },
         "look_TW9D9M": {
           "type": "look",
           "settings": {
@@ -237,6 +244,7 @@
         }
       },
       "block_order": [
+        "look_cDmECk",
         "look_TW9D9M",
         "look_ieyhgr",
         "look_EMay8p",
