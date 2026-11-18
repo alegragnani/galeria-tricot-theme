@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_9mL7Kd": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_Naves_-_dani_off_whirte_fc860214-bb65-452e-89b5-79b85cade975.jpg",
+            "product": "conjunto-tricot-dani-off-white-1"
+          }
+        },
         "look_cDmECk": {
           "type": "look",
           "settings": {
@@ -244,6 +251,7 @@
         }
       },
       "block_order": [
+        "look_9mL7Kd",
         "look_cDmECk",
         "look_TW9D9M",
         "look_ieyhgr",
