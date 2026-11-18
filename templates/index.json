@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_7qhiLc": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/Thassia_Naves_-_Conjunto_ravena_cinza_mescla.jpg",
+            "product": "conjunto-tricot-ravena-cinza-mescla"
+          }
+        },
         "look_9mL7Kd": {
           "type": "look",
           "settings": {
@@ -251,6 +258,7 @@
         }
       },
       "block_order": [
+        "look_7qhiLc",
         "look_9mL7Kd",
         "look_cDmECk",
         "look_TW9D9M",
