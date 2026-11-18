@@ -65,7 +65,7 @@
         "cat1": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/1_86346208-a1a3-4aa1-85d8-3acff7d8dc07.jpg",
+            "image": "shopify://shop_images/1.png",
             "heading": "Conjuntos",
             "link": "/collections/roupas-conjuntos"
           }
@@ -73,7 +73,7 @@
         "cat2": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/3_631b9ed3-ef99-464e-82da-d019f0da9fa7.jpg",
+            "image": "shopify://shop_images/2.png",
             "heading": "Casacos e Blusas",
             "link": "/collections/roupas-blusas"
           }
@@ -81,7 +81,7 @@
         "cat3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/2_d10398b0-7da3-4e0f-ae12-c23177e313b5.jpg",
+            "image": "shopify://shop_images/3.png",
             "heading": "Vestidos",
             "link": "/collections/roupas-vestidos"
           }
