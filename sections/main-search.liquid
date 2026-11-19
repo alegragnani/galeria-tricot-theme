@@ -1,3 +1,22 @@
+{%- comment -%} BUSCA-CATEGORIA (19/11/2026, pedido da Ale): quando a busca e SO a palavra de uma categoria (vestido, calca, blusa...), leva para a vitrine da categoria, que ja e organizada por lancamento/mais vendidos. Qualquer outra busca continua pura do Shopify. Para desligar: apagar este bloco ate FIM BUSCA-CATEGORIA. {%- endcomment -%}
+{%- assign gt_termo = search.terms | downcase | strip | replace: 'Ç', 'c' | replace: 'ç', 'c' | replace: 'Ã', 'a' | replace: 'ã', 'a' | replace: 'Õ', 'o' | replace: 'õ', 'o' -%}
+{%- assign gt_destino = '' -%}
+{%- case gt_termo -%}
+  {%- when 'vestido', 'vestidos' -%}{%- assign gt_destino = 'roupas-vestidos' -%}
+  {%- when 'calca', 'calcas' -%}{%- assign gt_destino = 'roupas-calcas' -%}
+  {%- when 'blusa', 'blusas' -%}{%- assign gt_destino = 'roupas-blusas' -%}
+  {%- when 'casaco', 'casacos' -%}{%- assign gt_destino = 'roupas-casacos' -%}
+  {%- when 'conjunto', 'conjuntos' -%}{%- assign gt_destino = 'roupas-conjuntos' -%}
+  {%- when 'saia', 'saias' -%}{%- assign gt_destino = 'roupas-saias' -%}
+  {%- when 'short', 'shorts' -%}{%- assign gt_destino = 'roupas-shorts' -%}
+  {%- when 'macacao', 'macacoes' -%}{%- assign gt_destino = 'roupas-macacoes' -%}
+  {%- when 'capa', 'capas' -%}{%- assign gt_destino = 'roupas-capas' -%}
+{%- endcase -%}
+{%- if gt_destino != '' and collections[gt_destino].products_count > 0 -%}
+<script>window.location.replace({{ collections[gt_destino].url | json }});</script>
+<style>.search-results { display: none !important; }</style>
+{%- endif -%}
+{%- comment -%} FIM BUSCA-CATEGORIA {%- endcomment -%}
 {%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>/*SEARCHWRAP*/ .search-results__card-wrap[hidden] { display: none !important; } .search-results__empty { text-align: center; padding: 48px 16px; font-size: 16px; color: #666; } /*SEARCHRELEV*/ .search-results__card-wrap { display: contents; } </style>
 <style>
