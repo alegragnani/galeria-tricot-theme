@@ -1,5 +1,5 @@
 {%- comment -%} BUSCA-CATEGORIA (19/11/2026, pedido da Ale): quando a busca e SO a palavra de uma categoria (vestido, calca, blusa...), leva para a vitrine da categoria, que ja e organizada por lancamento/mais vendidos. Qualquer outra busca continua pura do Shopify. Para desligar: apagar este bloco ate FIM BUSCA-CATEGORIA. {%- endcomment -%}
-{%- assign gt_termo = search.terms | downcase | strip | replace: 'Ç', 'c' | replace: 'ç', 'c' | replace: 'Ã', 'a' | replace: 'ã', 'a' | replace: 'Õ', 'o' | replace: 'õ', 'o' -%}
+{%- assign gt_termo = search.terms | replace: 'title:', '' | downcase | strip | replace: 'Ç', 'c' | replace: 'ç', 'c' | replace: 'Ã', 'a' | replace: 'ã', 'a' | replace: 'Õ', 'o' | replace: 'õ', 'o' -%}
 {%- assign gt_destino = '' -%}
 {%- case gt_termo -%}
   {%- when 'vestido', 'vestidos' -%}{%- assign gt_destino = 'roupas-vestidos' -%}
@@ -17,6 +17,43 @@
 <style>.search-results { display: none !important; }</style>
 {%- endif -%}
 {%- comment -%} FIM BUSCA-CATEGORIA {%- endcomment -%}
+{%- comment -%} BUSCA-TITULO (20/11/2026, pedido da Ale: "quero que pare de mostrar resultados apos o fim da busca"): a busca passa a procurar a palavra SO NO NOME do produto (consulta title: do proprio Shopify). Ex.: "zara" mostra so as pecas Zara (com os Conjuntos) e nada depois. Se nao achar nada pelo nome, mostra a busca normal do Shopify (parametro gt=tudo). Para desligar: apagar este bloco ate FIM BUSCA-TITULO e voltar search.terms nos 3 lugares que usam gt_busca_txt. {%- endcomment -%}
+{%- assign gt_busca_txt = search.terms | replace: 'title:', '' | strip -%}
+{%- if search.performed and gt_destino == '' -%}
+<script>
+(function () {
+  try {
+    var p = new URLSearchParams(window.location.search);
+    var q = (p.get('q') || '').trim();
+    if (!q) return;
+    var porTitulo = /(^|\s)title:/.test(q);
+    var tudo = p.get('gt') === 'tudo';
+    var total = {{ search.results_count | default: 0 }};
+    var limpar = function (s) { return s.replace(/title:/g, '').replace(/\s+/g, ' ').trim(); };
+    if (!porTitulo && !tudo) {
+      var palavras = q.split(/\s+/).map(function (w) { return w.replace(/[:"()*]/g, ''); }).filter(function (w) { return w.length > 0; });
+      if (!palavras.length) return;
+      document.documentElement.classList.add('gt-busca-trocando');
+      p.set('q', palavras.map(function (w) { return 'title:' + w; }).join(' ')); p.set('type', 'product'); p.delete('page');
+      window.location.replace('/search?' + p.toString());
+      return;
+    }
+    if (porTitulo && total === 0 && !tudo) {
+      document.documentElement.classList.add('gt-busca-trocando');
+      p.set('q', limpar(q)); p.set('gt', 'tudo'); p.delete('page');
+      window.location.replace('/search?' + p.toString());
+      return;
+    }
+    if (document.title.indexOf('title:') > -1) document.title = limpar(document.title);
+    if (tudo) document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.search-results__pagination a').forEach(function (a) { if (a.href.indexOf('gt=tudo') < 0) a.href += (a.href.indexOf('?') < 0 ? '?' : '&') + 'gt=tudo'; });
+    });
+  } catch (e) {}
+})();
+</script>
+<style>html.gt-busca-trocando .search-results { visibility: hidden !important; }</style>
+{%- endif -%}
+{%- comment -%} FIM BUSCA-TITULO {%- endcomment -%}
 {%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
 <style>/*SEARCHWRAP*/ .search-results__card-wrap[hidden] { display: none !important; } .search-results__empty { text-align: center; padding: 48px 16px; font-size: 16px; color: #666; } /*SEARCHRELEV*/ .search-results__card-wrap { display: contents; } </style>
 <style>
@@ -226,9 +263,9 @@
     <h1 class="search-results__title">
       {% if search.performed %}
         {% if search.results_count > 0 %}
-          Resultados para "{{ search.terms }}"
+          Resultados para "{{ gt_busca_txt }}"
         {% else %}
-          Nenhum resultado para "{{ search.terms }}"
+          Nenhum resultado para "{{ gt_busca_txt }}"
         {% endif %}
       {% else %}
         Buscar
@@ -242,7 +279,7 @@
         <input
           type="text"
           name="q"
-          value="{{ search.terms | escape }}"
+          value="{{ gt_busca_txt | escape }}"
           placeholder="O que você procura?"
           class="search-results__input"
           autocomplete="off"
