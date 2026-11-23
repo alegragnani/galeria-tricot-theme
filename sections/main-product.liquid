@@ -1189,6 +1189,11 @@
                           </button>
                         {% endfor %}
                       </div>
+                      {% comment %} AVISO PRE-VENDA NO CONJUNTO (23/11/2026, Ale): mesmo aviso da peca avulsa, por peca, conforme o tamanho escolhido {% endcomment %}
+                      <div class="pdp__pre-venda conjunto__pre-venda" hidden>
+                        <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+                        <div class="pdp__pre-venda-date">Será enviado dia <span class="conjunto__pre-venda-data"></span></div>
+                      </div>
                     </div>
                   </div>
                 {% endfor %}
@@ -1199,6 +1204,36 @@
               </button>
               <div class="conjunto__installments" id="conjunto-installments" style="display:none;"></div>
             </div>
+            {% comment %} AVISO PRE-VENDA NO CONJUNTO — inicio (23/11/2026). Consulta a mesma fila de prazo da peca avulsa (estoque-prazo). Para desfazer: apagar deste comentario ate "fim" e o bloco conjunto__pre-venda acima. {% endcomment %}
+            <style>.conjunto__pre-venda { margin-top: 8px; }</style>
+            <script>
+              (function(){
+                var cont = document.getElementById('conjunto-section'); if (!cont) return;
+                var pills = Array.prototype.slice.call(cont.querySelectorAll('.conjunto__size-pill[data-variant-id]'));
+                var ids = pills.map(function(p){ return p.getAttribute('data-variant-id'); }).filter(Boolean);
+                if (!ids.length) return;
+                function parse(s){ if (!s) return null; var p = s.slice(0, 10).split('-'); if (p.length < 3) return null; return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)); }
+                function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+                var fila = null;
+                function upd(){
+                  if (!fila) return;
+                  cont.querySelectorAll('.conjunto__item').forEach(function(item){
+                    var box = item.querySelector('.conjunto__pre-venda'); if (!box) return;
+                    var cb = item.querySelector('.conjunto__item-check');
+                    var selp = item.querySelector('.conjunto__size-pill.is-selected');
+                    var q = selp ? fila[selp.getAttribute('data-variant-id')] : null;
+                    var d = q && q.tracked ? parse(q.proximo) : null;
+                    var ativo = !!(d && d > new Date() && (!cb || cb.checked) && !selp.classList.contains('is-soldout'));
+                    box.hidden = !ativo;
+                    if (ativo) { var el = box.querySelector('.conjunto__pre-venda-data'); if (el) el.textContent = fmt(d); }
+                  });
+                }
+                cont.addEventListener('click', function(){ setTimeout(upd, 0); });
+                cont.addEventListener('change', function(){ setTimeout(upd, 0); });
+                fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (!j || j.erro) return; fila = j; window.conjuntoFilaPrazo = j; upd(); }).catch(function(){});
+              })();
+            </script>
+            {% comment %} AVISO PRE-VENDA NO CONJUNTO — fim {% endcomment %}
           {% else %}
             {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
             <div class="conjunto" id="conjunto-section">
