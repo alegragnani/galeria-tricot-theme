@@ -165,6 +165,13 @@
     "escolhas_blogueiras": {
       "type": "shop-the-look",
       "blocks": {
+        "look_PRaGew": {
+          "type": "look",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/juju_norremose_-_cris_azul_po_2_abbc3ce7-182f-4f6d-b2aa-25a43a05cad2.jpg",
+            "product": "conjunto-tricot-cris-azul-po"
+          }
+        },
         "look_hNV7Jk": {
           "type": "look",
           "settings": {
@@ -237,6 +244,7 @@
         }
       },
       "block_order": [
+        "look_PRaGew",
         "look_hNV7Jk",
         "look_tjxEBQ",
         "look_7qhiLc",
