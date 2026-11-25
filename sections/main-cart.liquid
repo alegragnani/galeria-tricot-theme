@@ -398,7 +398,7 @@
           <span id="cart-page-total-final">{{ cart.total_price | money }}</span>
         </div>
 
-        {% assign cart_installment = cart.total_price | divided_by: 500 | times: 100 %}
+        {% assign cart_installment = cart.total_price | plus: 2 | divided_by: 5 %}
         <div class="cart-page__summary-installments">
           ou 5x de {{ cart_installment | money }} sem juros
         </div>
