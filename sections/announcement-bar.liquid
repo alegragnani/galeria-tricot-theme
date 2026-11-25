@@ -95,8 +95,19 @@
   /* TARJA-GT: texto em caixa normal; setas so quando ha mais de uma mensagem */
   .announcement-bar__message, .announcement-bar__message p { text-transform: none !important; letter-spacing: 0.5px; font-size: 14px !important; }
   {% if section.blocks.size <= 1 %}.announcement-bar__button { display: none !important; }{% endif %}
+  /* RELOGIO-TOPO-GT (25/11/2026, Ale): ate o fim do prazo, a tarja mostra so o relogio; depois a mensagem normal volta sozinha */
+  .announcement-bar--relogio [data-announcement-message], .announcement-bar--relogio .announcement-bar__button { display: none !important; }
+  .gt-relogio-topo { opacity: 1 !important; position: relative !important; }
+  .gt-relogio-topo__t { margin-left: 10px; font-variant-numeric: tabular-nums; }
+  .gt-relogio-topo__t b { font-weight: 700; }
+  .gt-relogio-topo__t span { margin-right: 7px; }
+  @media (max-width: 640px) { .gt-relogio-topo, .gt-relogio-topo p { font-size: 13px !important; } .gt-relogio-topo__t { margin-left: 6px; } .gt-relogio-topo__t span { margin-right: 5px; } }
 </style>
-<div class="announcement-bar" data-announcement-bar>
+{%- assign gtr_fim_s = section.settings.relogio_fim | date: '%s' | plus: 0 -%}
+{%- assign gtr_now_s = 'now' | date: '%s' | plus: 0 -%}
+{%- assign gtr_on = false -%}
+{%- if gtr_fim_s > gtr_now_s -%}{%- assign gtr_on = true -%}{%- endif -%}
+<div class="announcement-bar{% if gtr_on %} announcement-bar--relogio{% endif %}" data-announcement-bar>
   <div class="announcement-bar__wrapper">
     <button
       class="announcement-bar__button announcement-bar__button--prev"
@@ -118,6 +129,9 @@
 
     <div class="announcement-bar__content">
       <div class="announcement-bar__messages" data-announcement-messages>
+        {%- if gtr_on -%}
+          <div class="announcement-bar__message gt-relogio-topo" data-gt-relogio-topo data-fim="{{ section.settings.relogio_fim | escape }}"><p>{{ section.settings.relogio_texto | escape }}<span class="gt-relogio-topo__t"><span data-ud><b data-d>00</b>d</span><span><b data-h>00</b>h</span><span><b data-m>00</b>m</span><span><b data-s>00</b>s</span></span></p></div>
+        {%- endif -%}
         {% for block in section.blocks %}
           <div
             class="announcement-bar__message {% if forloop.first %}is-active{% endif %}"
@@ -192,10 +206,40 @@
   });
 </script>
 
+{%- if gtr_on -%}
+<script>
+  /* RELOGIO-TOPO-GT: conta ate o fim do prazo; quando acaba, tira o relogio e a mensagem normal da tarja volta */
+  (function () {
+    var el = document.querySelector('[data-gt-relogio-topo]');
+    if (!el) return;
+    var bar = el.closest('.announcement-bar');
+    var fim = new Date(el.getAttribute('data-fim')).getTime();
+    var timer = null;
+    function acabou() { if (timer) clearInterval(timer); if (bar) bar.classList.remove('announcement-bar--relogio'); if (el.parentNode) el.parentNode.removeChild(el); }
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    function tick() {
+      var s = Math.floor((fim - Date.now()) / 1000);
+      if (isNaN(fim) || s <= 0) { acabou(); return; }
+      var d = Math.floor(s / 86400);
+      el.querySelector('[data-d]').textContent = p(d);
+      el.querySelector('[data-h]').textContent = p(Math.floor((s % 86400) / 3600));
+      el.querySelector('[data-m]').textContent = p(Math.floor((s % 3600) / 60));
+      el.querySelector('[data-s]').textContent = p(s % 60);
+      el.querySelector('[data-ud]').style.display = d === 0 ? 'none' : '';
+    }
+    tick();
+    timer = setInterval(tick, 1000);
+  })();
+</script>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Announcement Bar",
-  "settings": [],
+  "settings": [
+    { "type": "text", "id": "relogio_fim", "label": "Relógio: fim (ano-mês-diaThora). Vazio = sem relógio", "default": "2026-11-29T23:59:59-03:00" },
+    { "type": "text", "id": "relogio_texto", "label": "Relógio: texto antes da contagem", "default": "Black Friday termina em" }
+  ],
   "blocks": [
     {
       "type": "message",
