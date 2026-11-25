@@ -1,0 +1,113 @@
+{%- comment -%}
+  GT-BANNER-COLECAO (25/11/2026, Ale): banner fino + relogio de contagem regressiva no topo de colecoes escolhidas (ex.: BLACK FRIDAY).
+  - So aparece nas colecoes listadas em "handles".
+  - Sem imagem escolhida = o banner nao aparece (o relogio aparece sozinho).
+  - Quando o prazo acaba, relogio e banner somem sozinhos (se "esconder_fim" estiver ligado).
+{%- endcomment -%}
+{%- assign gtb_handles = section.settings.handles | downcase | replace: ' ', '' | split: ',' -%}
+{%- assign gtb_fim_s = section.settings.fim | date: '%s' | plus: 0 -%}
+{%- assign gtb_now_s = 'now' | date: '%s' | plus: 0 -%}
+{%- assign gtb_ativo = false -%}
+{%- if gtb_handles contains collection.handle -%}{%- assign gtb_ativo = true -%}{%- endif -%}
+{%- if section.settings.esconder_fim and gtb_fim_s > 0 and gtb_now_s > gtb_fim_s -%}{%- assign gtb_ativo = false -%}{%- endif -%}
+{%- assign gtb_d = section.settings.img_desktop | default: section.settings.img_mobile -%}
+{%- assign gtb_m = section.settings.img_mobile | default: section.settings.img_desktop -%}
+{%- assign gtb_rel = false -%}
+{%- if section.settings.relogio and gtb_fim_s > 0 -%}{%- assign gtb_rel = true -%}{%- endif -%}
+{%- if gtb_ativo -%}
+{%- if gtb_rel or gtb_d != blank -%}
+<style>
+  .gt-bcol { width: 100%; font-family: 'Raleway', -apple-system, sans-serif; }
+  .gt-bcol__relogio { background: #111111; color: #FAF6F1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 26px; padding: 10px 16px; }
+  .gt-bcol__relogio[hidden] { display: none; }
+  .gt-bcol__txt { font-size: 13px; font-weight: 500; letter-spacing: 1.6px; text-transform: uppercase; }
+  .gt-bcol__tempo { display: inline-flex; align-items: flex-start; gap: 8px; }
+  .gt-bcol__u { display: inline-flex; flex-direction: column; align-items: center; min-width: 34px; }
+  .gt-bcol__u[hidden], .gt-bcol__sep[hidden] { display: none; }
+  .gt-bcol__u b { font-size: 20px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .gt-bcol__u i { font-style: normal; font-size: 10px; letter-spacing: 0.8px; margin-top: 4px; opacity: 0.85; }
+  .gt-bcol__sep { font-size: 18px; font-weight: 600; line-height: 1.1; }
+  .gt-bcol__img { display: block; line-height: 0; }
+  .gt-bcol__img img { display: block; width: 100%; height: auto; }
+  @media (max-width: 749px) {
+    .gt-bcol__relogio { gap: 4px 14px; padding: 8px 10px; }
+    .gt-bcol__txt { font-size: 11px; letter-spacing: 1.2px; }
+    .gt-bcol__tempo { gap: 5px; }
+    .gt-bcol__u { min-width: 30px; }
+    .gt-bcol__u b { font-size: 17px; }
+    .gt-bcol__u i { font-size: 9px; }
+    .gt-bcol__sep { font-size: 15px; }
+  }
+</style>
+<div class="gt-bcol" data-gt-bcol data-fim="{{ section.settings.fim | escape }}" data-esconde="{% if section.settings.esconder_fim %}1{% else %}0{% endif %}">
+  {%- if gtb_rel -%}
+  <div class="gt-bcol__relogio" data-gt-relogio hidden>
+    {%- if section.settings.relogio_texto != blank -%}<span class="gt-bcol__txt">{{ section.settings.relogio_texto | escape }}</span>{%- endif -%}
+    <span class="gt-bcol__tempo" aria-hidden="true">
+      <span class="gt-bcol__u" data-ud><b data-d>00</b><i>dias</i></span><span class="gt-bcol__sep" data-sd>:</span>
+      <span class="gt-bcol__u"><b data-h>00</b><i>horas</i></span><span class="gt-bcol__sep">:</span>
+      <span class="gt-bcol__u"><b data-m>00</b><i>min</i></span><span class="gt-bcol__sep">:</span>
+      <span class="gt-bcol__u"><b data-s>00</b><i>seg</i></span>
+    </span>
+  </div>
+  {%- endif -%}
+  {%- if gtb_d != blank -%}
+    {%- if section.settings.link != blank -%}<a class="gt-bcol__img" href="{{ section.settings.link }}">{%- else -%}<div class="gt-bcol__img">{%- endif -%}
+      <picture>
+        <source media="(max-width: 749px)" srcset="{{ gtb_m | image_url: width: 750 }} 750w, {{ gtb_m | image_url: width: 1080 }} 1080w" sizes="100vw" width="{{ gtb_m.width }}" height="{{ gtb_m.height }}">
+        <img src="{{ gtb_d | image_url: width: 1600 }}" srcset="{{ gtb_d | image_url: width: 1200 }} 1200w, {{ gtb_d | image_url: width: 1600 }} 1600w, {{ gtb_d | image_url: width: 2400 }} 2400w" sizes="100vw" width="{{ gtb_d.width }}" height="{{ gtb_d.height }}" alt="{{ gtb_d.alt | default: collection.title | escape }}" fetchpriority="high">
+      </picture>
+    {%- if section.settings.link != blank -%}</a>{%- else -%}</div>{%- endif -%}
+  {%- endif -%}
+</div>
+<script>
+  (function () {
+    var box = document.querySelector('[data-gt-bcol]');
+    if (!box) return;
+    var fim = new Date(box.getAttribute('data-fim')).getTime();
+    if (isNaN(fim)) return;
+    var rel = box.querySelector('[data-gt-relogio]');
+    var esconde = box.getAttribute('data-esconde') === '1';
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    function q(s) { return rel ? rel.querySelector(s) : null; }
+    var timer = null;
+    function tick() {
+      var s = Math.floor((fim - Date.now()) / 1000);
+      if (s <= 0) {
+        if (rel) rel.hidden = true;
+        if (esconde) box.style.display = 'none';
+        if (timer) clearInterval(timer);
+        return;
+      }
+      if (!rel) return;
+      var d = Math.floor(s / 86400);
+      q('[data-d]').textContent = p(d);
+      q('[data-h]').textContent = p(Math.floor((s % 86400) / 3600));
+      q('[data-m]').textContent = p(Math.floor((s % 3600) / 60));
+      q('[data-s]').textContent = p(s % 60);
+      q('[data-ud]').hidden = d === 0;
+      q('[data-sd]').hidden = d === 0;
+      rel.hidden = false;
+    }
+    tick();
+    timer = setInterval(tick, 1000);
+  })();
+</script>
+{%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Banner fino da coleção",
+  "settings": [
+    { "type": "text", "id": "handles", "label": "Coleções onde aparece (final do link, separados por vírgula)", "default": "black-november" },
+    { "type": "image_picker", "id": "img_desktop", "label": "Banner computador (2400 x 400 px)" },
+    { "type": "image_picker", "id": "img_mobile", "label": "Banner celular (1080 x 400 px)" },
+    { "type": "url", "id": "link", "label": "Link ao clicar no banner (opcional)" },
+    { "type": "checkbox", "id": "relogio", "label": "Mostrar relógio de contagem regressiva", "default": true },
+    { "type": "text", "id": "relogio_texto", "label": "Texto ao lado do relógio", "default": "Black Friday termina em" },
+    { "type": "text", "id": "fim", "label": "Fim da promoção (ano-mês-diaThora, horário de Brasília)", "default": "2026-11-29T23:59:59-03:00" },
+    { "type": "checkbox", "id": "esconder_fim", "label": "Esconder banner e relógio quando o prazo acabar", "default": true }
+  ]
+}
+{% endschema %}
