@@ -1,0 +1,239 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+
+  .announcement-bar {
+    background-color: #4A3222;
+    color: #FAF6F1;
+    padding: 7px 0;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.8px;
+    position: relative;
+    z-index: 101;
+    font-family: 'Raleway', -apple-system, sans-serif;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-bar__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .announcement-bar__button {
+    background: none;
+    border: none;
+    color: #FAF6F1;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .announcement-bar__button:hover {
+    opacity: 0.8;
+  }
+
+  .announcement-bar__content {
+    flex: 1;
+    min-width: 0;
+    min-height: 17px;
+  }
+
+  .announcement-bar__messages {
+    position: relative;
+    height: 17px;
+  }
+
+  .announcement-bar__message {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    position: absolute;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .announcement-bar__message.is-active {
+    opacity: 1;
+    position: relative;
+  }
+
+  .announcement-bar__message p {
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .announcement-bar__wrapper {
+      gap: 12px;
+      padding: 0 12px;
+    }
+
+    .announcement-bar__button {
+      flex-shrink: 0;
+    }
+
+    .announcement-bar__message p {
+      font-size: 12px;
+    }
+  }
+  /* TARJA-GT: texto em caixa normal; setas so quando ha mais de uma mensagem */
+  .announcement-bar__message, .announcement-bar__message p { text-transform: none !important; letter-spacing: 0.5px; font-size: 14px !important; }
+  {% if section.blocks.size <= 1 %}.announcement-bar__button { display: none !important; }{% endif %}
+</style>
+<div class="announcement-bar" data-announcement-bar>
+  <div class="announcement-bar__wrapper">
+    <button
+      class="announcement-bar__button announcement-bar__button--prev"
+      aria-label="Previous announcement"
+      data-announcement-prev
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="20"
+        height="20"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    <div class="announcement-bar__content">
+      <div class="announcement-bar__messages" data-announcement-messages>
+        {% for block in section.blocks %}
+          <div
+            class="announcement-bar__message {% if forloop.first %}is-active{% endif %}"
+            data-announcement-message
+            {{ block.shopify_attributes }}
+          >
+            <p>{{ block.settings.message }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button
+      class="announcement-bar__button announcement-bar__button--next"
+      aria-label="Next announcement"
+      data-announcement-next
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="20"
+        height="20"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</div>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const bar = document.querySelector('[data-announcement-bar]');
+    if (!bar) return;
+
+    const messages = Array.from(bar.querySelectorAll('[data-announcement-message]'));
+    const prevBtn = bar.querySelector('[data-announcement-prev]');
+    const nextBtn = bar.querySelector('[data-announcement-next]');
+    let currentIndex = 0;
+
+    if (messages.length <= 1) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      return;
+    }
+
+    function showMessage(index) {
+      messages.forEach((msg) => msg.classList.remove('is-active'));
+      messages[index].classList.add('is-active');
+      currentIndex = index;
+    }
+
+    prevBtn?.addEventListener('click', () => {
+      const newIndex = currentIndex === 0 ? messages.length - 1 : currentIndex - 1;
+      showMessage(newIndex);
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      const newIndex = currentIndex === messages.length - 1 ? 0 : currentIndex + 1;
+      showMessage(newIndex);
+    });
+
+    // Auto-rotate every 5 seconds
+    setInterval(() => {
+      const newIndex = currentIndex === messages.length - 1 ? 0 : currentIndex + 1;
+      showMessage(newIndex);
+    }, 5000);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "message",
+          "label": "Announcement Message",
+          "default": "FRETE GRÁTIS ACIMA DE R$ 499"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        {
+          "type": "message",
+          "settings": {
+            "message": "FRETE GRÁTIS ACIMA DE R$ 499"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "message": "PARCELE EM ATÉ 6X SEM JUROS"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "message": "TROCA FÁCIL EM ATÉ 30 DIAS"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

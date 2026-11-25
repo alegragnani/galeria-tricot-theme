@@ -9,6 +9,16 @@
  */
 {
   "sections": {
+    "gt_banner": {
+      "type": "gt-banner-colecao",
+      "settings": {
+        "handles": "black-november",
+        "relogio": false,
+        "relogio_texto": "Black Friday termina em",
+        "fim": "2026-11-29T23:59:59-03:00",
+        "esconder_fim": true
+      }
+    },
     "main": {
       "type": "main-collection",
       "settings": {
@@ -17,6 +27,7 @@
     }
   },
   "order": [
+    "gt_banner",
     "main"
   ]
 }
