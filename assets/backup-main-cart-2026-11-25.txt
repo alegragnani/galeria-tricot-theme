@@ -1,0 +1,604 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+  .cart-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 20px 80px;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .cart-page__title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: #121212;
+    margin: 0 0 32px 0;
+  }
+
+  /* ---- Layout 2 colunas ---- */
+  .cart-page__layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* ---- Itens ---- */
+  .cart-page__item {
+    display: flex;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid #f0ede8;
+    position: relative;
+  }
+  .cart-page__item:first-child {
+    border-top: 1px solid #f0ede8;
+  }
+
+  .cart-page__item-img-link {
+    flex-shrink: 0;
+  }
+  .cart-page__item-img {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+  }
+  .cart-page__item-img--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+  }
+
+  .cart-page__item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 4px;
+  }
+  .cart-page__item-title {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #121212;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .cart-page__item-title:hover { opacity: 0.7; }
+
+  .cart-page__item-price {
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    margin-top: 2px;
+  }
+  .cart-page__item-variant {
+    font-size: 12px;
+    font-weight: 400;
+    color: #aaaaaa;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+  }
+  .cart-page__item-qty {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 12px;
+  }
+  .cart-page__qty-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #e0ddd8;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #545454;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Raleway', sans-serif;
+    transition: border-color 0.15s;
+  }
+  .cart-page__qty-btn:hover { border-color: #545454; }
+  .cart-page__qty-val {
+    width: 40px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #121212;
+    border-top: 1px solid #e0ddd8;
+    border-bottom: 1px solid #e0ddd8;
+  }
+  .cart-page__item-remove {
+    position: absolute;
+    top: 24px;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaaaaa;
+    padding: 4px;
+  }
+  .cart-page__item-remove:hover { color: #545454; }
+
+  /* ---- Resumo (sidebar direita) ---- */
+  .cart-page__summary {
+    position: sticky;
+    top: 120px;
+    background: #faf8f5;
+    padding: 28px 24px;
+    border: 1px solid #f0ede8;
+  }
+  .cart-page__summary-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #121212;
+    margin: 0 0 20px 0;
+  }
+  .cart-page__summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #545454;
+  }
+  .cart-page__summary-note {
+    font-size: 13px;
+    color: #aaaaaa;
+  }
+  /* PRAZO-SACOLA */
+  .cart-page__item-entrega { font-size: 12px; color: #6b6b6b; margin-top: 2px; letter-spacing: 0.2px; }
+  .cart-page__item-entrega--pv { color: #4A3222; font-weight: 600; }
+  .cart-frete { margin: 2px 0 6px; }
+  .cart-frete__form { display: flex; gap: 8px; }
+  .cart-frete__input { flex: 1; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid #e0ddd8; background: #fff; font-family: 'Raleway', sans-serif; font-size: 14px; color: #121212; outline: none; }
+  .cart-frete__input:focus { border-color: #4A3222; }
+  .cart-frete__btn { height: 40px; padding: 0 16px; border: 1px solid #4A3222; background: #fff; color: #4A3222; font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .cart-frete__btn:hover { background: #4A3222; color: #fff; }
+  .cart-frete__btn:disabled, .cart-frete__btn.is-loading { background: #B3883D; border-color: #B3883D; color: #fff; cursor: wait; }
+  .cart-frete__out { margin-top: 10px; }
+  .cart-frete__opt { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; border-top: 1px solid #f0ede8; font-size: 13px; color: #545454; }
+  .cart-frete__opt:first-child { border-top: none; }
+  .cart-frete__opt-nome { font-weight: 600; color: #121212; }
+  .cart-frete__opt-prazo { display: block; font-size: 12px; color: #6b6b6b; margin-top: 2px; }
+  .cart-frete__opt-preco { font-weight: 600; color: #121212; white-space: nowrap; }
+  .cart-frete__pv { font-size: 12px; color: #4A3222; margin-top: 6px; }
+  .cart-frete__erro { font-size: 12px; color: #b3261e; }
+  .cart-page__summary-row--total {
+    border-top: 1px solid #e0ddd8;
+    margin-top: 8px;
+    padding-top: 16px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #121212;
+  }
+  .cart-page__summary-installments {
+    font-size: 13px;
+    color: #B3883D;
+    margin: 4px 0 24px 0;
+    text-align: right;
+  }
+  .cart-page__checkout-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: #4A3222;
+    color: #ffffff;
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-bottom: 14px;
+  }
+  .cart-page__checkout-btn:hover { opacity: 0.85; }
+  .cart-page__continue {
+    display: block;
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #545454;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cart-page__continue:hover { opacity: 0.7; }
+
+  /* ---- Empty ---- */
+  .cart-page__empty {
+    text-align: center;
+    padding: 40px 20px 80px;
+  }
+  .cart-page__empty .cart-page__title { margin-bottom: 40px; }
+  .cart-page__empty-text {
+    font-size: 14px;
+    color: #aaaaaa;
+    margin: 0 0 20px 0;
+  }
+  .cart-page__empty-link {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #545454;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 768px) {
+    .cart-page__layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .cart-page__summary {
+      position: static;
+    }
+    .cart-page { padding: 30px 16px 60px; }
+    .cart-page__title { font-size: 28px; margin-bottom: 24px; }
+    .cart-page__item-img { width: 100px; height: 140px; }
+    .cart-page__item { gap: 14px; padding: 18px 0; }
+    .cart-page__item-title { font-size: 13px; }
+    .cart-page__item-remove { top: 18px; }
+  }
+
+  /* ---- Embalagem de presente ---- */
+  .cart-page__gift {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; margin: 16px 0;
+    border: 1px solid #e0ddd8; cursor: pointer;
+    font-family: 'Raleway', sans-serif; font-size: 13px; color: #121212;
+    transition: background 0.2s, opacity 0.2s;
+  }
+  .cart-page__gift input { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #4A3222; }
+  .cart-page__gift-text { flex: 1; letter-spacing: 0.3px; }
+  .cart-page__gift-price { font-weight: 600; white-space: nowrap; }
+  .cart-page__gift.is-loading { background: #f0ede8; opacity: 0.6; pointer-events: none; }
+</style>
+{% comment %}
+  Cart page — Galeria Tricot (estilo BP)
+  2 colunas: itens à esquerda, resumo à direita
+{% endcomment %}
+
+{%- comment -%} EMBALAGEM DE PRESENTE (10/11/2026): caixinha no resumo, 1 por pedido. Produto: embalagem-de-presente {%- endcomment -%}
+{%- assign gift_prod = all_products['embalagem-de-presente'] -%}
+{%- assign gift_vid = gift_prod.selected_or_first_available_variant.id | default: 0 -%}
+{%- assign gift_qty = 0 -%}
+{%- for it in cart.items -%}{%- if it.variant.id == gift_vid -%}{%- assign gift_qty = gift_qty | plus: it.quantity -%}{%- endif -%}{%- endfor -%}
+<div class="cart-page">
+  {% if cart.item_count > 0 %}
+    <h1 class="cart-page__title">Minha sacola</h1>
+
+    <div class="cart-page__layout">
+      <!-- COLUNA ESQUERDA: Itens -->
+      <div class="cart-page__items-col">
+        <div class="cart-page__items" id="cart-page-items">
+          {% for item in cart.items %}{% if gift_vid != 0 and item.variant.id == gift_vid %}{% continue %}{% endif %}
+            <div class="cart-page__item" data-line="{{ forloop.index }}" data-key="{{ item.key }}">
+              <a href="{{ item.url }}" class="cart-page__item-img-link">
+                {% if item.image %}
+                  <img src="{{ item.image | img_url: '280x' }}" alt="{{ item.title }}" class="cart-page__item-img">
+                {% else %}
+                  <div class="cart-page__item-img cart-page__item-img--placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                {% endif %}
+              </a>
+
+              <div class="cart-page__item-details">
+                <a href="{{ item.url }}" class="cart-page__item-title">{{ item.product.title }}</a>
+                <span class="cart-page__item-price">{{ item.price | money }}</span>
+                {% if item.variant.title != blank and item.variant.title != 'Default Title' %}
+                  <span class="cart-page__item-variant">TAMANHO: {{ item.variant.title }}</span>
+                {% endif %}
+                {%- comment -%} PRAZO-SACOLA: pré-venda por tamanho (metafield custom.pre_venda_data, sincronizado da VTEX) {%- endcomment -%}
+                {%- assign it_pv = '' -%}
+                {%- if item.variant.metafields.custom.pre_venda_data.value != blank -%}
+                  {%- assign it_ts = item.variant.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 -%}
+                  {%- assign hoje_ts = 'now' | date: '%s' | plus: 0 -%}
+                  {%- if it_ts > hoje_ts -%}{%- assign it_pv = item.variant.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' -%}{%- endif -%}
+                {%- endif -%}
+                <span class="cart-page__item-entrega{% if it_pv != '' %} cart-page__item-entrega--pv{% endif %}" data-variant-id="{{ item.variant.id }}" data-qty="{{ item.quantity }}" data-prevenda-data="{{ it_pv }}">{% if it_pv != '' %}Pré-venda · envio a partir de {{ it_pv | date: '%d/%m' }}{% else %}Pronta entrega{% endif %}</span>
+
+                <div class="cart-page__item-qty">
+                  <button class="cart-page__qty-btn" data-action="decrease" aria-label="Diminuir">−</button>
+                  <span class="cart-page__qty-val">{{ item.quantity }}</span>
+                  <button class="cart-page__qty-btn" data-action="increase" aria-label="Aumentar">+</button>
+                </div>
+              </div>
+
+              <button class="cart-page__item-remove" data-key="{{ item.key }}" aria-label="Remover">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <script>
+        // FILA DE PRAZO (21/09/2026, Ale): prazo de cada item da sacola ao vivo por local (pronta entrega -> Estoque Pre-Venda -> Estoque Pre-Venda 2), pela quantidade.
+        (function(){
+          var els = Array.prototype.slice.call(document.querySelectorAll('.cart-page__item-entrega[data-variant-id]'));
+          var ids = els.map(function(e){ return e.getAttribute('data-variant-id'); }).filter(Boolean);
+          if (!ids.length) return;
+          fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+            if (!j || j.erro) return;
+            els.forEach(function(el){
+              var q = j[el.getAttribute('data-variant-id')]; if (!q || !q.tracked || !q.fila) return;
+              var need = parseInt(el.getAttribute('data-qty') || '1', 10) || 1, data = null, f = q.fila;
+              for (var i = 0; i < f.length; i++) { if (need <= f[i][0]) { data = f[i][1]; break; } need -= f[i][0]; if (i === f.length - 1) data = f[i][1] || (f[1] && f[1][1]) || null; }
+              el.setAttribute('data-prevenda-data', data || '');
+              if (data) el.classList.add('cart-page__item-entrega--pv'); else el.classList.remove('cart-page__item-entrega--pv');
+              el.textContent = data ? ('Pré-venda · envio a partir de ' + data.slice(8, 10) + '/' + data.slice(5, 7)) : 'Pronta entrega';
+            });
+          }).catch(function(){});
+        })();
+      </script>
+      <!-- COLUNA DIREITA: Resumo -->
+      <aside class="cart-page__summary">
+        <h2 class="cart-page__summary-title">RESUMO DO PEDIDO</h2>
+
+        <div class="cart-page__summary-row">
+          <span>Subtotal</span>
+          <span id="cart-page-total">{{ cart.total_price | money }}</span>
+        </div>
+
+        <div class="cart-page__summary-row">
+          <span>Frete e prazo</span>
+          <span class="cart-page__summary-note" id="cart-frete-note">Calcule pelo CEP</span>
+        </div>
+        {%- comment -%} PRAZO-SACOLA: calculadora de frete/prazo do PEDIDO (peça de prazo mais longo) — mesma tabela do produto e do checkout {%- endcomment -%}
+        <div class="cart-frete" id="cart-frete">
+          <div class="cart-frete__form">
+            <input type="text" id="cart-frete-cep" class="cart-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
+            <button type="button" id="cart-frete-btn" class="cart-frete__btn">Calcular</button>
+          </div>
+          <div class="cart-frete__out" id="cart-frete-out"></div>
+        </div>
+
+        <div class="cart-page__summary-row cart-page__summary-row--total">
+          <span>Total</span>
+          <span id="cart-page-total-final">{{ cart.total_price | money }}</span>
+        </div>
+
+        {% assign cart_installment = cart.total_price | divided_by: 500 | times: 100 %}
+        <div class="cart-page__summary-installments">
+          ou 5x de {{ cart_installment | money }} sem juros
+        </div>
+
+        {%- if gift_vid != 0 -%}
+        <label class="cart-page__gift" id="cart-page-gift-row">
+          <input type="checkbox" id="cart-page-gift-check"{% if gift_qty > 0 %} checked{% endif %}>
+          <span class="cart-page__gift-text">Adicionar embalagem de presente</span>
+          <span class="cart-page__gift-price">{{ gift_prod.price | money }}</span>
+        </label>
+        {%- endif -%}
+        <a href="/checkout" class="cart-page__checkout-btn">FINALIZAR COMPRA</a>
+        <a href="/collections/all" class="cart-page__continue">Continuar comprando</a>
+      </aside>
+    </div>
+
+  {% else %}
+    <div class="cart-page__empty">
+      <h1 class="cart-page__title">Minha sacola</h1>
+      <p class="cart-page__empty-text">Sua sacola está vazia</p>
+      <a href="/collections/all" class="cart-page__empty-link">Continuar comprando</a>
+    </div>
+  {% endif %}
+</div>
+
+
+
+<script>
+(function() {
+  var container = document.getElementById('cart-page-items');
+  var totalEl = document.getElementById('cart-page-total');
+  var totalFinalEl = document.getElementById('cart-page-total-final');
+  if (!container) return;
+
+  function fmt(cents) {
+    return 'R$ ' + (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }
+
+  /* Embalagem de presente: nunca fica sozinha na sacola */
+  var GT_GIFT = {{ gift_vid }};
+  function gtSoEmbalagem(cart) {
+    return !!GT_GIFT && cart.item_count > 0 && cart.items.every(function(it) { return it.variant_id === GT_GIFT; });
+  }
+  function gtRecarrega(cart) {
+    if (cart && gtSoEmbalagem(cart)) {
+      fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: String(GT_GIFT), quantity: 0 }) })
+        .then(function() { location.reload(); }).catch(function() { location.reload(); });
+    } else { location.reload(); }
+  }
+
+  function updateItem(key, qty) {
+    var row = container.querySelector('[data-key="' + key + '"]');
+    if (row) row.style.opacity = '0.5';
+
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: key, quantity: qty })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(cart) {
+      if (cart.item_count === 0 || gtSoEmbalagem(cart)) {
+        gtRecarrega(cart);
+        return;
+      }
+      if (totalEl) totalEl.textContent = fmt(cart.total_price);
+      if (totalFinalEl) totalFinalEl.textContent = fmt(cart.total_price);
+
+      /* Atualizar parcelamento */
+      var instEl = document.querySelector('.cart-page__summary-installments');
+      if (instEl) instEl.textContent = 'ou 5x de ' + fmt(Math.round(cart.total_price / 5)) + ' sem juros';
+
+      /* Badge do header */
+      var badges = document.querySelectorAll('.cart-count, [data-cart-count]');
+      badges.forEach(function(el) {
+        el.textContent = cart.item_count;
+        el.style.display = cart.item_count > 0 ? '' : 'none';
+      });
+
+      if (qty === 0 && row) {
+        row.remove();
+        if (window.cartFreteRecalc) window.cartFreteRecalc();
+      } else if (row) {
+        row.style.opacity = '1';
+        var valEl = row.querySelector('.cart-page__qty-val');
+        if (valEl) valEl.textContent = qty;
+        var matchedItem = cart.items.find(function(it) { return it.key === key; });
+        if (matchedItem) {
+          var priceEl = row.querySelector('.cart-page__item-price');
+          if (priceEl) priceEl.textContent = fmt(matchedItem.final_line_price);
+        }
+      }
+    })
+    .catch(function() {
+      if (row) row.style.opacity = '1';
+    });
+  }
+
+  container.addEventListener('click', function(e) {
+    var btn = e.target.closest('.cart-page__qty-btn');
+    var removeBtn = e.target.closest('.cart-page__item-remove');
+
+    if (btn) {
+      var item = btn.closest('.cart-page__item');
+      var key = item.getAttribute('data-key');
+      var valEl = item.querySelector('.cart-page__qty-val');
+      var currentQty = parseInt(valEl.textContent);
+      var action = btn.getAttribute('data-action');
+      var newQty = action === 'increase' ? currentQty + 1 : Math.max(0, currentQty - 1);
+      updateItem(key, newQty);
+    }
+
+    if (removeBtn) {
+      var key2 = removeBtn.getAttribute('data-key');
+      updateItem(key2, 0);
+    }
+  });
+})();
+</script>
+
+<script>
+/* PRAZO-SACOLA: frete + DATA de entrega do pedido = prazo do estado + dias úteis até a maior data de pré-venda da sacola (igual ao checkout) */
+(function() {
+  var input = document.getElementById('cart-frete-cep');
+  var btn = document.getElementById('cart-frete-btn');
+  var out = document.getElementById('cart-frete-out');
+  var note = document.getElementById('cart-frete-note');
+  if (!input || !btn || !out) return;
+  var faixas = [
+    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
+    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
+    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
+    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
+    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
+    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
+    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
+    [88000,89999,'SC'],[90000,99999,'RS']
+  ];
+  var zonas = [
+    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
+    { ufs:['GO'], eco:34.10, exp:47.74 },
+    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
+    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
+    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
+    { ufs:['AC'], eco:73.04, exp:96.03 }
+  ];
+  /* prazos por estado (dias úteis) copiados da simulação da VTEX em 09/09/2026: [econômico, expresso] */
+  var prazos = { SP:[7,3], RJ:[9,4], MG:[7,3], ES:[9,5], PR:[11,3], SC:[10,3], RS:[13,3], DF:[9,4], GO:[9,5], MT:[14,5], MS:[11,5], BA:[12,5], SE:[13,5], PE:[12,5], AL:[13,5], PB:[13,5], RN:[14,5], CE:[12,5], PI:[10,5], MA:[13,5], PA:[11,5], AP:[24,4], AM:[25,5], RR:[28,5], AC:[21,11], RO:[20,6], TO:[10,5] };
+  function hoje(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+  function parse(s){ if(!s) return null; var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function addUteis(from, n){ var d = new Date(from.getTime()); var c = 0; while (c < n) { d.setDate(d.getDate()+1); var w = d.getDay(); if (w !== 0 && w !== 6) c++; } return d; }
+  function uteisAte(from, ate){ var d = new Date(from.getTime()); var n = 0; while (d < ate) { d.setDate(d.getDate()+1); var w = d.getDay(); if (w !== 0 && w !== 6) n++; } return n; }
+  function dd(d){ return ('0'+d.getDate()).slice(-2) + '/' + ('0'+(d.getMonth()+1)).slice(-2); }
+  function ddaa(d){ return dd(d) + '/' + d.getFullYear(); }
+  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
+  function maiorPreVenda(){ var m = null; document.querySelectorAll('.cart-page__item-entrega[data-prevenda-data]').forEach(function(el){ var d = parse(el.getAttribute('data-prevenda-data')); if (d && (!m || d > m)) m = d; }); return m; }
+  input.addEventListener('input', function(){ var d = input.value.replace(/\D/g,'').slice(0,8); input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d; });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } });
+  function calcular(){
+    var d = input.value.replace(/\D/g,'');
+    if (d.length !== 8) { out.innerHTML = '<span class="cart-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
+    if (btn.disabled) return;
+    btn.disabled = true; btn.classList.add('is-loading'); var txt = btn.textContent; btn.textContent = 'Calculando...';
+    setTimeout(function(){
+      var n = parseInt(d.slice(0,5),10), uf = null;
+      for (var i=0;i<faixas.length;i++){ if (n>=faixas[i][0] && n<=faixas[i][1]) { uf = faixas[i][2]; break; } }
+      var z = null; if (uf) for (var j=0;j<zonas.length;j++){ if (zonas[j].ufs.indexOf(uf)>-1) { z = zonas[j]; break; } }
+      if (!z) { out.innerHTML = '<span class="cart-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
+      else {
+        var h = hoje(), pvData = maiorPreVenda();
+        var extra = (pvData && pvData > h) ? uteisAte(h, pvData) : 0;
+        var base = extra ? pvData : h;
+        var pz = prazos[uf] || [12,5];
+        var eco = addUteis(base, pz[0]), exp = addUteis(base, pz[1]);
+        out.innerHTML =
+          '<div class="cart-frete__opt"><span><span class="cart-frete__opt-nome">Frete Econômico</span><span class="cart-frete__opt-prazo">Entrega até ' + ddaa(eco) + ' (em até ' + (pz[0]+extra) + ' dias úteis)</span></span><span class="cart-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+          '<div class="cart-frete__opt"><span><span class="cart-frete__opt-nome">Frete Expresso</span><span class="cart-frete__opt-prazo">Entrega até ' + ddaa(exp) + ' (em até ' + (pz[1]+extra) + ' dias úteis)</span></span><span class="cart-frete__opt-preco">' + brl(z.exp) + '</span></div>' +
+          (extra ? '<div class="cart-frete__pv">Sua sacola tem peça em pré-venda: o pedido é enviado junto a partir de ' + dd(pvData) + '.</div>' : '');
+        if (note) note.textContent = uf + ' · CEP ' + input.value;
+        try { sessionStorage.setItem('gt_cep', d); } catch (e) {}
+      }
+      btn.disabled = false; btn.classList.remove('is-loading'); btn.textContent = txt;
+    }, 350);
+  }
+  btn.addEventListener('click', calcular);
+  window.cartFreteRecalc = function(){ if (out.innerHTML && input.value.replace(/\D/g,'').length === 8) calcular(); };
+  try { var s = sessionStorage.getItem('gt_cep'); if (s && s.length === 8) { input.value = s.slice(0,5) + '-' + s.slice(5); calcular(); } } catch (e) {}
+})();
+</script>
+
+<script>
+/* EMBALAGEM DE PRESENTE: marca/desmarca a caixinha do resumo (1 por pedido) */
+(function() {
+  var GIFT = {{ gift_vid }}, GQ = {{ gift_qty }}, TOT = {{ cart.item_count }};
+  var cb = document.getElementById('cart-page-gift-check'), row = document.getElementById('cart-page-gift-row');
+  function post(url, body) { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  if (!GIFT) return;
+  if (GQ > 0 && (GQ > 1 || TOT === GQ)) {
+    var feito = false; try { feito = sessionStorage.getItem('gt_gift_fix') === '1'; sessionStorage.setItem('gt_gift_fix', '1'); } catch (e) {}
+    if (!feito) { post('/cart/change.js', { id: String(GIFT), quantity: TOT === GQ ? 0 : 1 }).then(function() { location.reload(); }); return; }
+  } else { try { sessionStorage.removeItem('gt_gift_fix'); } catch (e) {} }
+  if (!cb) return;
+  cb.addEventListener('change', function() {
+    var want = cb.checked;
+    cb.disabled = true; if (row) row.classList.add('is-loading');
+    var p = want ? post('/cart/add.js', { items: [{ id: GIFT, quantity: 1 }] }) : post('/cart/change.js', { id: String(GIFT), quantity: 0 });
+    p.then(function(r) { if (!r.ok) throw new Error('gift'); location.reload(); })
+     .catch(function() { cb.checked = !want; cb.disabled = false; if (row) row.classList.remove('is-loading'); });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Cart"
+}
+{% endschema %}

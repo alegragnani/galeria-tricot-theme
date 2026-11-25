@@ -177,6 +177,11 @@
   .cart-frete__opt-preco { font-weight: 600; color: #121212; white-space: nowrap; }
   .cart-frete__pv { font-size: 12px; color: #4A3222; margin-top: 6px; }
   .cart-frete__erro { font-size: 12px; color: #b3261e; }
+  .cart-page__item-de { color: #999; font-weight: 400; margin-right: 6px; }
+  .cart-page__item-por { white-space: nowrap; }
+  .cart-page__item-promo { display: block; font-size: 12px; letter-spacing: .04em; color: #a0522d; margin-top: 2px; }
+  .cart-page__item-promo:empty { display: none; }
+  .cart-page__summary-row--desc { color: #a0522d; }
   .cart-page__summary-row--total {
     border-top: 1px solid #e0ddd8;
     margin-top: 8px;
@@ -294,7 +299,7 @@
       <div class="cart-page__items-col">
         <div class="cart-page__items" id="cart-page-items">
           {% for item in cart.items %}{% if gift_vid != 0 and item.variant.id == gift_vid %}{% continue %}{% endif %}
-            <div class="cart-page__item" data-line="{{ forloop.index }}" data-key="{{ item.key }}">
+            <div class="cart-page__item" data-line="{{ forloop.index }}" data-key="{{ item.key }}" data-vid="{{ item.variant.id }}">
               <a href="{{ item.url }}" class="cart-page__item-img-link">
                 {% if item.image %}
                   <img src="{{ item.image | img_url: '280x' }}" alt="{{ item.title }}" class="cart-page__item-img">
@@ -307,7 +312,11 @@
 
               <div class="cart-page__item-details">
                 <a href="{{ item.url }}" class="cart-page__item-title">{{ item.product.title }}</a>
-                <span class="cart-page__item-price">{{ item.price | money }}</span>
+                {%- comment -%} DE-POR NA SACOLA (25/11/2026, Ale): "De" = preco cheio (compare_at) riscado; "Por" = preco unitario final, ja com promocao automatica {%- endcomment -%}
+                {%- assign it_de = item.variant.compare_at_price | default: 0 -%}
+                {%- if item.original_price > it_de -%}{%- assign it_de = item.original_price -%}{%- endif -%}
+                <span class="cart-page__item-price" data-de="{{ it_de }}">{% if it_de > item.final_price %}<s class="cart-page__item-de">{{ it_de | money }}</s> {% endif %}<span class="cart-page__item-por">{{ item.final_price | money }}</span></span>
+                <span class="cart-page__item-promo">{% for al in item.line_level_discount_allocations %}{{ al.discount_application.title }}{% unless forloop.last %} · {% endunless %}{% endfor %}</span>
                 {% if item.variant.title != blank and item.variant.title != 'Default Title' %}
                   <span class="cart-page__item-variant">TAMANHO: {{ item.variant.title }}</span>
                 {% endif %}
@@ -363,7 +372,12 @@
 
         <div class="cart-page__summary-row">
           <span>Subtotal</span>
-          <span id="cart-page-total">{{ cart.total_price | money }}</span>
+          <span id="cart-page-total">{{ cart.original_total_price | money }}</span>
+        </div>
+        {%- comment -%} DESCONTO NA SACOLA (25/11/2026): promocao automatica (ex.: Black Friday progressiva) aparece como linha propria {%- endcomment -%}
+        <div class="cart-page__summary-row cart-page__summary-row--desc" id="cart-page-desc-row"{% if cart.total_discount == 0 %} style="display:none"{% endif %}>
+          <span id="cart-page-desc-nome">{{ cart.discount_applications.first.title | default: 'Desconto' }}</span>
+          <span id="cart-page-desc">&minus; {{ cart.total_discount | money }}</span>
         </div>
 
         <div class="cart-page__summary-row">
@@ -435,51 +449,73 @@
     } else { location.reload(); }
   }
 
-  function updateItem(key, qty) {
-    var row = container.querySelector('[data-key="' + key + '"]');
+  /* SACOLA v2 (25/11/2026): a chave da linha muda quando um desconto automatico entra ou sai (ex.: Black Friday progressiva),
+     entao a alteracao vai pelo id da VARIANTE e, na volta, todas as linhas e o resumo sao redesenhados a partir do carrinho. */
+  function gtDe(it, row) {
+    var de = parseInt(row.querySelector('.cart-page__item-price').getAttribute('data-de') || '0', 10) || 0;
+    return Math.max(de, it.original_price || 0);
+  }
+  function gtRedesenha(cart) {
+    var subEl = document.getElementById('cart-page-total');
+    if (subEl) subEl.textContent = fmt(cart.original_total_price);
+    if (totalFinalEl) totalFinalEl.textContent = fmt(cart.total_price);
+    var dRow = document.getElementById('cart-page-desc-row');
+    if (dRow) {
+      if (cart.total_discount > 0) {
+        var nome = '';
+        cart.items.forEach(function(it) { (it.line_level_discount_allocations || []).forEach(function(al) { if (!nome && al.discount_application) nome = al.discount_application.title; }); });
+        if (!nome && cart.cart_level_discount_applications && cart.cart_level_discount_applications.length) nome = cart.cart_level_discount_applications[0].title;
+        document.getElementById('cart-page-desc-nome').textContent = nome || 'Desconto';
+        document.getElementById('cart-page-desc').textContent = '− ' + fmt(cart.total_discount);
+        dRow.style.display = '';
+      } else { dRow.style.display = 'none'; }
+    }
+    var instEl = document.querySelector('.cart-page__summary-installments');
+    if (instEl) instEl.textContent = 'ou 5x de ' + fmt(Math.round(cart.total_price / 5)) + ' sem juros';
+    var badges = document.querySelectorAll('.cart-count, [data-cart-count]');
+    badges.forEach(function(el) { el.textContent = cart.item_count; el.style.display = cart.item_count > 0 ? '' : 'none'; });
+    var rows = container.querySelectorAll('.cart-page__item');
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i], vid = row.getAttribute('data-vid');
+      var it = null;
+      for (var j = 0; j < cart.items.length; j++) { if (String(cart.items[j].variant_id) === vid) { it = cart.items[j]; break; } }
+      if (!it) { row.remove(); continue; }
+      row.style.opacity = '1';
+      row.setAttribute('data-key', it.key);
+      var rm = row.querySelector('.cart-page__item-remove'); if (rm) rm.setAttribute('data-key', it.key);
+      var valEl = row.querySelector('.cart-page__qty-val'); if (valEl) valEl.textContent = it.quantity;
+      var priceEl = row.querySelector('.cart-page__item-price');
+      if (priceEl) {
+        var de = gtDe(it, row);
+        priceEl.innerHTML = (de > it.final_price ? '<s class="cart-page__item-de">' + fmt(de) + '</s> ' : '') + '<span class="cart-page__item-por">' + fmt(it.final_price) + '</span>';
+      }
+      var promoEl = row.querySelector('.cart-page__item-promo');
+      if (promoEl) promoEl.textContent = (it.line_level_discount_allocations || []).map(function(al) { return al.discount_application ? al.discount_application.title : ''; }).filter(Boolean).join(' · ');
+    }
+  }
+
+  function updateItem(vid, qty) {
+    var row = container.querySelector('[data-vid="' + vid + '"]');
     if (row) row.style.opacity = '0.5';
 
     fetch('/cart/change.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: key, quantity: qty })
+      body: JSON.stringify({ id: String(vid), quantity: qty })
     })
     .then(function(r) { return r.json(); })
     .then(function(cart) {
+      /* resposta de erro (sem estoque para aumentar, linha nao encontrada...): recarrega em vez de mostrar valor quebrado */
+      if (!cart || !cart.items || typeof cart.total_price !== 'number') { location.reload(); return; }
       if (cart.item_count === 0 || gtSoEmbalagem(cart)) {
         gtRecarrega(cart);
         return;
       }
-      if (totalEl) totalEl.textContent = fmt(cart.total_price);
-      if (totalFinalEl) totalFinalEl.textContent = fmt(cart.total_price);
-
-      /* Atualizar parcelamento */
-      var instEl = document.querySelector('.cart-page__summary-installments');
-      if (instEl) instEl.textContent = 'ou 5x de ' + fmt(Math.round(cart.total_price / 5)) + ' sem juros';
-
-      /* Badge do header */
-      var badges = document.querySelectorAll('.cart-count, [data-cart-count]');
-      badges.forEach(function(el) {
-        el.textContent = cart.item_count;
-        el.style.display = cart.item_count > 0 ? '' : 'none';
-      });
-
-      if (qty === 0 && row) {
-        row.remove();
-        if (window.cartFreteRecalc) window.cartFreteRecalc();
-      } else if (row) {
-        row.style.opacity = '1';
-        var valEl = row.querySelector('.cart-page__qty-val');
-        if (valEl) valEl.textContent = qty;
-        var matchedItem = cart.items.find(function(it) { return it.key === key; });
-        if (matchedItem) {
-          var priceEl = row.querySelector('.cart-page__item-price');
-          if (priceEl) priceEl.textContent = fmt(matchedItem.final_line_price);
-        }
-      }
+      gtRedesenha(cart);
+      if (qty === 0 && window.cartFreteRecalc) window.cartFreteRecalc();
     })
     .catch(function() {
-      if (row) row.style.opacity = '1';
+      location.reload();
     });
   }
 
@@ -489,7 +525,7 @@
 
     if (btn) {
       var item = btn.closest('.cart-page__item');
-      var key = item.getAttribute('data-key');
+      var key = item.getAttribute('data-vid');
       var valEl = item.querySelector('.cart-page__qty-val');
       var currentQty = parseInt(valEl.textContent);
       var action = btn.getAttribute('data-action');
@@ -498,8 +534,9 @@
     }
 
     if (removeBtn) {
-      var key2 = removeBtn.getAttribute('data-key');
-      updateItem(key2, 0);
+      var rowRm = removeBtn.closest('.cart-page__item');
+      var key2 = rowRm ? rowRm.getAttribute('data-vid') : null;
+      if (key2) updateItem(key2, 0);
     }
   });
 })();
