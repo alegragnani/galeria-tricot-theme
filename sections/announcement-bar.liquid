@@ -104,6 +104,8 @@
   .announcement-bar--relogio { background-color: var(--gt-rt-cor, #603024); padding: 11px 16px; height: auto; overflow: visible; }
   .announcement-bar--relogio .announcement-bar__wrapper { display: none !important; }
   .gt-rt { display: flex; align-items: center; justify-content: center; gap: 30px; color: #FAF6F1; font-family: 'Raleway', -apple-system, sans-serif; }
+  .gt-rt__rel { display: inline-flex; align-items: flex-start; gap: 14px; }
+  .gt-rt__acaba { font-size: 12px; font-weight: 400; letter-spacing: 0.5px; line-height: 23px; white-space: nowrap; opacity: 0.95; }
   .gt-rt__tempo { display: inline-flex; align-items: flex-start; gap: 9px; }
   .gt-rt__u { display: inline-flex; flex-direction: column; align-items: center; min-width: 36px; }
   .gt-rt__u b { font-size: 23px; font-weight: 600; line-height: 1; letter-spacing: 0.5px; font-variant-numeric: tabular-nums lining-nums; }
@@ -117,6 +119,8 @@
   @media (max-width: 640px) {
     .announcement-bar--relogio { padding: 9px 8px; }
     .gt-rt { gap: 11px; }
+    .gt-rt__rel { flex-direction: column; align-items: center; gap: 3px; }
+    .gt-rt__acaba { font-size: 9.5px; line-height: 1; }
     .gt-rt__tempo { gap: 4px; }
     .gt-rt__u { min-width: 27px; }
     .gt-rt__u b { font-size: 18px; }
@@ -136,7 +140,7 @@
 <div class="announcement-bar{% if gtr_on %} announcement-bar--relogio{% endif %}" data-announcement-bar{% if gtr_on %} style="--gt-rt-cor: {{ section.settings.relogio_cor }};"{% endif %}>
   {%- if gtr_on -%}
   <div class="gt-rt" data-gt-relogio-topo data-fim="{{ section.settings.relogio_fim | escape }}">
-    <span class="gt-rt__tempo" aria-hidden="true"><span class="gt-rt__u" data-ud><b data-d>00</b><i>dias</i></span><span class="gt-rt__sep" data-sd>:</span><span class="gt-rt__u"><b data-h>00</b><i>horas</i></span><span class="gt-rt__sep">:</span><span class="gt-rt__u"><b data-m>00</b><i>min</i></span><span class="gt-rt__sep">:</span><span class="gt-rt__u"><b data-s>00</b><i>seg</i></span></span>
+    <span class="gt-rt__rel">{%- if section.settings.relogio_prefixo != blank -%}<span class="gt-rt__acaba">{{ section.settings.relogio_prefixo | escape }}</span>{%- endif -%}<span class="gt-rt__tempo" aria-hidden="true"><span class="gt-rt__u" data-ud><b data-d>00</b><i>dias</i></span><span class="gt-rt__sep" data-sd>:</span><span class="gt-rt__u"><b data-h>00</b><i>horas</i></span><span class="gt-rt__sep">:</span><span class="gt-rt__u"><b data-m>00</b><i>min</i></span><span class="gt-rt__sep">:</span><span class="gt-rt__u"><b data-s>00</b><i>seg</i></span></span></span>
     <span class="gt-rt__div"></span>
     <a class="gt-rt__txt" href="{{ section.settings.relogio_link | default: '/collections/black-november' }}"><span class="gt-rt__l1">{{ section.settings.relogio_titulo | escape }}</span><span class="gt-rt__l2">{{ section.settings.relogio_linha2 | escape }}</span><span class="gt-rt__l3">{{ section.settings.relogio_linha3 | escape }}</span></a>
   </div>
@@ -269,6 +273,7 @@
   "name": "Announcement Bar",
   "settings": [
     { "type": "text", "id": "relogio_fim", "label": "Relógio: fim (ano-mês-diaThora). Vazio = sem relógio", "default": "2026-11-29T23:59:59-03:00" },
+    { "type": "text", "id": "relogio_prefixo", "label": "Relógio: texto pequeno antes da contagem", "default": "Acaba em:" },
     { "type": "color", "id": "relogio_cor", "label": "Relógio: cor da faixa", "default": "#603024" },
     { "type": "text", "id": "relogio_titulo", "label": "Relógio: título", "default": "BLACK FRIDAY" },
     { "type": "text", "id": "relogio_linha2", "label": "Relógio: segunda linha", "default": "Até 80% OFF + 15% extra" },
