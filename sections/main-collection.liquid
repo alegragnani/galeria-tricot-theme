@@ -372,6 +372,13 @@
     border-top: 1px solid #E0DCD4;
   }
 
+  /* MAIOR-DESCONTO-GT (25/11/2026): ordenacao por desconto na colecao inteira */
+  .gt-desconto-aviso { text-align: center; padding: 14px 0; font-size: 13px; letter-spacing: 1px; color: #777; }
+  .collection-page--desconto .collection-page__pagination,
+  .collection-page--desconto .collection-page__pagination-mobile,
+  .collection-page--desconto .gt-infinite-more,
+  .collection-page--desconto .gt-infinite-loading { display: none !important; }
+
   /* ============ TABLET ============ */
   @media (max-width: 1024px) {
     .collection-page {
@@ -701,10 +708,25 @@
       var form = document.getElementById('filter-form');
       var sortRadio = form.querySelector('input[name="sort_by"]:checked');
 
-      // "Maior desconto" é client-side — reordena os cards por % de desconto
+      // "Maior desconto": ordena a colecao INTEIRA (todas as paginas), respeitando os filtros marcados
       if (sortRadio && sortRadio.value === 'discount') {
+        var alvo = new URL(window.location.pathname, window.location.origin);
+        form.querySelectorAll('input[type="checkbox"]:checked').forEach(function(cb) { alvo.searchParams.append(cb.name, cb.value); });
+        form.querySelectorAll('.filter-price-input').forEach(function(inp) {
+          if (inp.value && inp.name) { var cents = Math.round(parseFloat(inp.value) * 100); if (!isNaN(cents) && cents > 0) alvo.searchParams.set(inp.name, cents); }
+        });
+        var atual = new URL(window.location.href);
+        atual.searchParams.delete('ordem'); atual.searchParams.delete('page'); atual.searchParams.delete('sort_by');
+        alvo.searchParams.sort(); atual.searchParams.sort();
+        var mesmosFiltros = alvo.searchParams.toString() === atual.searchParams.toString();
+        alvo.searchParams.set('ordem', 'desconto');
         closeFilter();
-        sortByDiscount();
+        if (mesmosFiltros) {
+          try { history.replaceState(null, '', alvo.toString()); } catch (e) {}
+          ordenarPorDesconto();
+        } else {
+          window.location.href = alvo.toString();
+        }
         return;
       }
 
@@ -730,28 +752,114 @@
       window.location.href = url.toString();
     });
 
-    // Ordenação por desconto — reordena visualmente os cards pelo % de desconto
-    function sortByDiscount() {
+    // MAIOR-DESCONTO-GT (25/11/2026, Ale): ordena a colecao INTEIRA por % de desconto (antes so reordenava os 48 cards da tela).
+    // Busca todas as paginas (com os filtros da URL), ordena tudo e mostra de 48 em 48.
+    function gtNumPreco(t) { return parseFloat(String(t || '').replace(/[^0-9,]/g, '').replace(',', '.')); }
+    function gtDescontoDoItem(el) {
+      var c = el.querySelector('.product-card__price--compare'), p = el.querySelector('.product-card__price--sale');
+      if (c && p) {
+        var cv = gtNumPreco(c.textContent), pv = gtNumPreco(p.textContent);
+        if (cv && pv && cv > pv) return (cv - pv) / cv * 100;
+      }
+      var b = el.querySelector('.product-card__badge--sale');
+      var m = b ? b.textContent.match(/([0-9]{1,2}) *%/) : null;
+      return m ? parseInt(m[1], 10) : 0;
+    }
+    var gtDescontoRodando = false;
+    function ordenarPorDesconto() {
+      var pageEl = document.querySelector('.collection-page');
       var grid = document.querySelector('.collection-page__grid');
-      if (!grid) return;
-      var items = Array.from(grid.querySelectorAll('.collection-page__item'));
-      items.sort(function(a, b) {
-        var discA = getDiscountPercent(a);
-        var discB = getDiscountPercent(b);
-        return discB - discA; // maior desconto primeiro
-      });
-      items.forEach(function(item) { grid.appendChild(item); });
+      if (!pageEl || !grid || gtDescontoRodando || pageEl.getAttribute('data-desconto-pronto') === '1') return;
+      gtDescontoRodando = true;
+      pageEl.classList.add('collection-page--desconto');
+      var sel = document.querySelector('.pagination-m__select');
+      var total = sel ? sel.options.length : 1;
+      var aviso = document.createElement('div');
+      aviso.className = 'gt-desconto-aviso';
+      aviso.textContent = 'ORDENANDO POR MAIOR DESCONTO...';
+      grid.parentNode.insertBefore(aviso, grid);
+      grid.style.opacity = '0.35';
+      var base = new URL(window.location.href);
+      base.searchParams.delete('ordem'); base.searchParams.delete('page'); base.searchParams.delete('sort_by');
+      var paginas = new Array(total), proxima = 1, ativos = 0, feitas = 0;
+
+      function mostrar(lista) {
+        var POR_VEZ = 48, pos = 0, autoCount = 0, autoMax = window.matchMedia('(max-width: 768px)').matches ? 2 : 4, btn = null, io = null;
+        var sent = document.createElement('div'); sent.style.height = '1px';
+        grid.innerHTML = '';
+        grid.parentNode.insertBefore(sent, grid.nextSibling);
+        function mais() {
+          var fim = Math.min(pos + POR_VEZ, lista.length);
+          for (; pos < fim; pos++) grid.appendChild(lista[pos].el);
+          try { document.dispatchEvent(new Event('gt:cards')); } catch (e) {}
+          if (pos >= lista.length) { if (io) io.disconnect(); if (btn) btn.hidden = true; }
+        }
+        mais();
+        if (pos >= lista.length) return;
+        if (!('IntersectionObserver' in window)) { while (pos < lista.length && pos < 480) mais(); return; }
+        io = new IntersectionObserver(function (entries) {
+          for (var i = 0; i < entries.length; i++) if (entries[i].isIntersecting && pos < lista.length) {
+            mais(); autoCount++;
+            if (pos < lista.length && autoCount >= autoMax) {
+              io.disconnect();
+              btn = document.createElement('button'); btn.type = 'button'; btn.className = 'gt-desconto-mais'; btn.textContent = 'VER MAIS PRODUTOS';
+              btn.style.cssText = 'display:block;margin:24px auto;padding:14px 32px;background:#fff;border:1px solid #545454;color:#545454;font-family:Raleway,sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;';
+              btn.addEventListener('click', function () { mais(); });
+              sent.parentNode.insertBefore(btn, sent);
+            }
+          }
+        }, { rootMargin: '900px 0px' });
+        io.observe(sent);
+      }
+
+      function fim() {
+        var lista = [], ordem = 0;
+        for (var i = 0; i < paginas.length; i++) for (var j = 0; j < (paginas[i] || []).length; j++) lista.push({ el: paginas[i][j], d: gtDescontoDoItem(paginas[i][j]), o: ordem++ });
+        if (!lista.length) {
+          /* nao conseguiu buscar: ordena pelo menos o que esta na tela */
+          var naTela = grid.querySelectorAll('.collection-page__item');
+          for (var k = 0; k < naTela.length; k++) lista.push({ el: naTela[k], d: gtDescontoDoItem(naTela[k]), o: ordem++ });
+        }
+        lista.sort(function (a, b) { return (b.d - a.d) || (a.o - b.o); });
+        mostrar(lista);
+        if (aviso.parentNode) aviso.parentNode.removeChild(aviso);
+        grid.style.opacity = '';
+        gtDescontoRodando = false;
+        pageEl.setAttribute('data-desconto-pronto', '1');
+        try { var topo = grid.getBoundingClientRect().top + window.scrollY - 180; if (window.scrollY > topo) window.scrollTo(0, Math.max(0, topo)); } catch (e) {}
+      }
+
+      function buscar() {
+        while (ativos < 4 && proxima <= total) {
+          (function (n) {
+            ativos++;
+            var u = new URL(base.toString()); u.searchParams.set('page', n);
+            fetch(u.toString(), { credentials: 'same-origin' })
+              .then(function (r) { if (!r.ok) throw new Error('http'); return r.text(); })
+              .then(function (html) {
+                var doc = new DOMParser().parseFromString(html, 'text/html');
+                paginas[n - 1] = Array.prototype.slice.call(doc.querySelectorAll('.collection-page__grid > .collection-page__item'));
+              })
+              .catch(function () { paginas[n - 1] = []; })
+              .then(function () {
+                ativos--; feitas++;
+                aviso.textContent = 'ORDENANDO POR MAIOR DESCONTO... ' + Math.round(feitas / total * 100) + '%';
+                if (feitas >= total) fim(); else buscar();
+              });
+          })(proxima++);
+        }
+      }
+      buscar();
     }
 
-    function getDiscountPercent(el) {
-      var compareEl = el.querySelector('.product-card__price--compare');
-      var priceEl = el.querySelector('.product-card__price--sale');
-      if (!compareEl || !priceEl) return 0;
-      var compare = parseFloat(compareEl.textContent.replace(/[^\d,\.]/g, '').replace(',', '.'));
-      var price = parseFloat(priceEl.textContent.replace(/[^\d,\.]/g, '').replace(',', '.'));
-      if (!compare || !price || compare <= price) return 0;
-      return Math.round(((compare - price) / compare) * 100);
-    }
+    // Link com ?ordem=desconto (ex.: depois de aplicar filtro + maior desconto) ja abre ordenado
+    try {
+      if (new URLSearchParams(window.location.search).get('ordem') === 'desconto') {
+        var rdDesc = document.getElementById('sort-discount');
+        if (rdDesc) rdDesc.checked = true;
+        ordenarPorDesconto();
+      }
+    } catch (e) {}
   });
 </script>
 
@@ -783,9 +891,10 @@
     msg.className = 'gt-infinite-loading'; msg.textContent = 'CARREGANDO...'; msg.hidden = true;
     sentinel.parentNode.insertBefore(msg, sentinel);
     function load() {
-      if (loading || !next) return;
+      if (loading || !next || page.classList.contains('collection-page--desconto')) return;
       loading = true; msg.hidden = false;
       fetch(next, { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (html) {
+        if (page.classList.contains('collection-page--desconto')) { loading = false; msg.hidden = true; return; }
         var doc = new DOMParser().parseFromString(html, 'text/html');
         var items = doc.querySelectorAll('.collection-page__grid > .collection-page__item');
         for (var i = 0; i < items.length; i++) grid.appendChild(items[i]);
