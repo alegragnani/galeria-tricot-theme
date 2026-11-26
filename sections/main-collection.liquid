@@ -766,14 +766,14 @@
       return m ? parseInt(m[1], 10) : 0;
     }
     var gtDescontoRodando = false;
+    /* v2 (26/11/2026): no iPhone as fotos quebravam - a v1 buscava as 19 paginas inteiras e segurava tudo na memoria.
+       Agora busca a lista crua (?view=cards, 250 por pagina = 4 pedidos na Black) e guarda de cada produto so o texto do card e o %. */
     function ordenarPorDesconto() {
       var pageEl = document.querySelector('.collection-page');
       var grid = document.querySelector('.collection-page__grid');
       if (!pageEl || !grid || gtDescontoRodando || pageEl.getAttribute('data-desconto-pronto') === '1') return;
       gtDescontoRodando = true;
       pageEl.classList.add('collection-page--desconto');
-      var sel = document.querySelector('.pagination-m__select');
-      var total = sel ? sel.options.length : 1;
       var aviso = document.createElement('div');
       aviso.className = 'gt-desconto-aviso';
       aviso.textContent = 'ORDENANDO POR MAIOR DESCONTO...';
@@ -781,16 +781,56 @@
       grid.style.opacity = '0.35';
       var base = new URL(window.location.href);
       base.searchParams.delete('ordem'); base.searchParams.delete('page'); base.searchParams.delete('sort_by');
-      var paginas = new Array(total), proxima = 1, ativos = 0, feitas = 0;
+      var lista = [], estiloCss = '', total = 1, feitas = 0, modoLista = true;
 
-      function mostrar(lista) {
+      function guardar(doc, n) {
+        var raiz = doc.querySelector('.gt-cards-lista');
+        var itens = raiz ? raiz.children : doc.querySelectorAll('.collection-page__grid > .collection-page__item');
+        for (var i = 0; i < itens.length; i++) {
+          var it = itens[i], h = '';
+          for (var c = 0; c < it.children.length; c++) {
+            var f = it.children[c];
+            if (f.tagName === 'STYLE') { if (!estiloCss) estiloCss = f.textContent; }
+            else if (f.tagName !== 'SCRIPT') h += f.outerHTML;
+          }
+          var d;
+          if (it.hasAttribute('data-de')) {
+            var de = parseInt(it.getAttribute('data-de') || '0', 10), por = parseInt(it.getAttribute('data-por') || '0', 10);
+            d = (de > por && por > 0) ? (de - por) / de * 100 : 0;
+          } else {
+            d = gtDescontoDoItem(it);
+          }
+          lista.push({ h: h, d: d, o: n * 1000 + i });
+        }
+        return raiz;
+      }
+
+      function pagina(n) {
+        var u = new URL(base.toString()); u.searchParams.set('page', n);
+        if (modoLista) u.searchParams.set('view', 'cards');
+        return fetch(u.toString(), { credentials: 'same-origin' })
+          .then(function (r) { if (!r.ok) throw new Error('http'); return r.text(); })
+          .then(function (html) { return new DOMParser().parseFromString(html, 'text/html'); });
+      }
+      function progresso() {
+        feitas++;
+        aviso.textContent = 'ORDENANDO POR MAIOR DESCONTO... ' + Math.min(99, Math.round(feitas / total * 100)) + '%';
+      }
+
+      function mostrar() {
         var POR_VEZ = 48, pos = 0, autoCount = 0, autoMax = window.matchMedia('(max-width: 768px)').matches ? 2 : 4, btn = null, io = null;
         var sent = document.createElement('div'); sent.style.height = '1px';
         grid.innerHTML = '';
         grid.parentNode.insertBefore(sent, grid.nextSibling);
         function mais() {
-          var fim = Math.min(pos + POR_VEZ, lista.length);
-          for (; pos < fim; pos++) grid.appendChild(lista[pos].el);
+          var ate = Math.min(pos + POR_VEZ, lista.length), frag = document.createDocumentFragment();
+          for (; pos < ate; pos++) {
+            var div = document.createElement('div');
+            div.className = 'collection-page__item';
+            div.innerHTML = lista[pos].h; lista[pos].h = '';
+            frag.appendChild(div);
+          }
+          grid.appendChild(frag);
           try { document.dispatchEvent(new Event('gt:cards')); } catch (e) {}
           if (pos >= lista.length) { if (io) io.disconnect(); if (btn) btn.hidden = true; }
         }
@@ -813,43 +853,53 @@
       }
 
       function fim() {
-        var lista = [], ordem = 0;
-        for (var i = 0; i < paginas.length; i++) for (var j = 0; j < (paginas[i] || []).length; j++) lista.push({ el: paginas[i][j], d: gtDescontoDoItem(paginas[i][j]), o: ordem++ });
-        if (!lista.length) {
-          /* nao conseguiu buscar: ordena pelo menos o que esta na tela */
-          var naTela = grid.querySelectorAll('.collection-page__item');
-          for (var k = 0; k < naTela.length; k++) lista.push({ el: naTela[k], d: gtDescontoDoItem(naTela[k]), o: ordem++ });
-        }
-        lista.sort(function (a, b) { return (b.d - a.d) || (a.o - b.o); });
-        mostrar(lista);
         if (aviso.parentNode) aviso.parentNode.removeChild(aviso);
         grid.style.opacity = '';
         gtDescontoRodando = false;
+        if (!lista.length) {
+          /* nao conseguiu buscar nada: deixa a vitrine como estava */
+          pageEl.classList.remove('collection-page--desconto');
+          return;
+        }
+        lista.sort(function (a, b) { return (b.d - a.d) || (a.o - b.o); });
+        /* o CSS do card vem repetido dentro de cada card: deixa UMA copia fora da grade antes de limpar a grade */
+        if (!document.getElementById('gt-desconto-css')) {
+          var css = estiloCss || ((grid.querySelector('style') || {}).textContent || '');
+          if (css) { var st = document.createElement('style'); st.id = 'gt-desconto-css'; st.textContent = css; grid.parentNode.insertBefore(st, grid); }
+        }
+        mostrar();
         pageEl.setAttribute('data-desconto-pronto', '1');
         try { var topo = grid.getBoundingClientRect().top + window.scrollY - 180; if (window.scrollY > topo) window.scrollTo(0, Math.max(0, topo)); } catch (e) {}
       }
 
-      function buscar() {
-        while (ativos < 4 && proxima <= total) {
-          (function (n) {
-            ativos++;
-            var u = new URL(base.toString()); u.searchParams.set('page', n);
-            fetch(u.toString(), { credentials: 'same-origin' })
-              .then(function (r) { if (!r.ok) throw new Error('http'); return r.text(); })
-              .then(function (html) {
-                var doc = new DOMParser().parseFromString(html, 'text/html');
-                paginas[n - 1] = Array.prototype.slice.call(doc.querySelectorAll('.collection-page__grid > .collection-page__item'));
-              })
-              .catch(function () { paginas[n - 1] = []; })
-              .then(function () {
-                ativos--; feitas++;
-                aviso.textContent = 'ORDENANDO POR MAIOR DESCONTO... ' + Math.round(feitas / total * 100) + '%';
+      function resto() {
+        var proxima = 2, ativos = 0;
+        if (total < 2) { fim(); return; }
+        (function buscar() {
+          while (ativos < 3 && proxima <= total) {
+            (function (n) {
+              ativos++;
+              pagina(n).then(function (doc) { guardar(doc, n); }).catch(function () {}).then(function () {
+                ativos--; progresso();
                 if (feitas >= total) fim(); else buscar();
               });
-          })(proxima++);
-        }
+            })(proxima++);
+          }
+        })();
       }
-      buscar();
+
+      pagina(1).then(function (doc) { return guardar(doc, 1); }, function () { return null; }).then(function (raiz) {
+        if (raiz) {
+          total = parseInt(raiz.getAttribute('data-paginas') || '1', 10) || 1;
+          progresso(); resto();
+          return;
+        }
+        /* plano B: a lista crua nao respondeu - usa as paginas normais da vitrine (48 por pagina) */
+        modoLista = false; lista = []; feitas = 0;
+        var sel = document.querySelector('.pagination-m__select');
+        total = sel ? sel.options.length : 1;
+        pagina(1).then(function (doc) { guardar(doc, 1); }).catch(function () {}).then(function () { progresso(); resto(); });
+      });
     }
 
     // Link com ?ordem=desconto (ex.: depois de aplicar filtro + maior desconto) ja abre ordenado
