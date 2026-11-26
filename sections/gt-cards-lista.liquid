@@ -1,0 +1,14 @@
+{%- comment -%}
+  GT-CARDS-LISTA (26/11/2026, Ale): lista crua de cards, 250 por pagina, usada SO pela ordenacao "Maior desconto"
+  (sections/main-collection.liquid busca /collections/x?view=cards&page=n). Nao e pagina para cliente.
+{%- endcomment -%}
+{%- paginate collection.products by 250 -%}
+<div class="gt-cards-lista" data-paginas="{{ paginate.pages }}" data-total="{{ paginate.items }}">
+  {%- for product in collection.products -%}
+  <div class="collection-page__item" data-de="{{ product.compare_at_price | default: 0 }}" data-por="{{ product.price | default: 0 }}">{% render 'product-card', product: product %}</div>
+  {%- endfor -%}
+</div>
+{%- endpaginate -%}
+{% schema %}
+{ "name": "Lista de cards (interno)" }
+{% endschema %}
