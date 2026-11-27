@@ -2032,7 +2032,14 @@
       // Busca por "tipo modelo" (ex: "casaco Eva") pra restringir resultados
       // — a API suggest retorna máx 10 e "Eva" sozinho trazia blusas/calças/regatas
       //   empurrando o casaco Off White pra fora do limite.
-      const results = await buscarProdutos(tipo + ' ' + modelo);
+      /* 27/11/2026 (Ale: "as cores do Ivana estao erradas"): busca primeiro pela FRASE EXATA do titulo sem a cor
+         (ex.: "Calça Tricot Ivana"). A busca solta "calça Ivana" devolvia calças Ana/Nani (so vem 10 resultados) e as
+         cores certas ficavam de fora. Se a frase exata nao trouxer nada, cai na busca antiga. */
+      const palavrasTitulo = title.trim().split(/\s+/);
+      const nCor = cor ? cor.split(/\s+/).length : 0;
+      const frase = palavrasTitulo.slice(0, palavrasTitulo.length - nCor).join(' ');
+      let results = frase ? await buscarProdutos('"' + frase + '"') : [];
+      if (!results.length) results = await buscarProdutos(tipo + ' ' + modelo);
       const coresVistas = new Set([cor.toLowerCase()]);
       const siblings = results.filter(p => {
         if (p.url === window.location.pathname) return false;
