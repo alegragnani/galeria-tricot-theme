@@ -1,0 +1,2329 @@
+{%- comment -%} CSS no topo para evitar flash sem estilo (FOUC) {%- endcomment -%}
+<style>
+                .pdp-frete__row { display:flex; gap:8px; }
+                .pdp-frete__input { flex:1; min-width:0; padding:10px 12px; border:1px solid #E0DCD4; font-family:inherit; font-size:14px; outline:none; }
+                .pdp-frete__input:focus { border-color:#4A3222; }
+                .pdp-frete__btn { padding:10px 18px; background:#2B1810; color:#fff; border:none; font-family:inherit; font-size:13px; letter-spacing:.6px; cursor:pointer; transition:background .2s; }
+                .pdp-frete__btn:hover { background:#1a0f09; }
+                .pdp-frete__btn:disabled { background:#B7AFA3; cursor:wait; }
+                .pdp-frete__result { margin-top:10px; font-size:14px; }
+                .pdp-frete__opt { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #F0EDE7; }
+                .pdp-frete__opt:last-child { border-bottom:none; }
+                .pdp-frete__opt-nome { color:#545454; }
+                .pdp-frete__opt-prazo { color:#999; font-size:12px; }
+                .pdp-frete__opt-preco { font-weight:600; color:#2B1810; white-space:nowrap; }
+                .pdp-frete__erro { color:#B3261E; font-size:13px; }
+                .pdp-frete__nota { margin-top:12px; font-size:13px; color:#999; }
+              </style>
+<style>
+  /* ========================================
+     PDP – Página de Produto (estilo BP)
+     Medidas conferidas via getComputedStyle
+     ======================================== */
+
+  .pdp {
+    background: #ffffff;
+    padding: 0;
+  }
+
+  /* --- Breadcrumb --- BP: max-width 1600, alinhado com container --- */
+  .pdp__breadcrumb {
+    display: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    padding: 12px 50px;
+    letter-spacing: 0.6px;
+    max-width: 1600px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .pdp__breadcrumb a {
+    color: rgba(84, 84, 84, 0.5);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    transition: color 0.2s;
+  }
+  .pdp__breadcrumb a:hover {
+    color: #545454;
+    text-decoration: none;
+  }
+  .pdp__breadcrumb-sep {
+    margin: 0 8px;
+    color: rgba(84, 84, 84, 0.5);
+  }
+  @media (max-width: 768px) {
+    .pdp__breadcrumb { display: none; }
+  }
+
+  /* --- Container principal: 50/50 flex --- BP: max-width 1600px, padding 0 50px --- */
+  .pdp__container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 50px;
+    box-sizing: border-box;
+  }
+
+  /* --- Galeria (esquerda 50%) — carrossel horizontal como BP --- */
+  .pdp__gallery {
+    width: 50%;
+    flex: 0 0 50%;
+    position: relative;
+  }
+  .pdp__gallery-track {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    overflow-anchor: none;
+  }
+  .pdp__gallery-track::-webkit-scrollbar {
+    display: none;
+  }
+  .pdp__gallery-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+  .pdp__gallery-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain !important; /* proporcao real vem do style inline de cada <img> (reserva o espaco antes da foto carregar) */
+  }
+  /* Desktop estilo Revolve: 2 fotos por vez (andando de 1 em 1), texto mais a direita */
+  @media (min-width: 750px) {
+    .pdp__gallery {
+      width: 60%;
+      flex: 0 0 60%;
+    }
+    .pdp__info-wrapper {
+      width: 40%;
+      flex: 0 0 40%;
+    }
+    .pdp__gallery-item {
+      flex: 0 0 50%;
+    }
+  }
+  /* Setas */
+  .pdp__gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #B3883D;
+    transition: background 0.2s;
+    border-radius: 0;
+  }
+  .pdp__gallery-arrow:hover {
+    background: #ffffff;
+  }
+  .pdp__gallery-arrow--prev { left: 12px; }
+  .pdp__gallery-arrow--next { right: 12px; }
+  /* Dots */
+  /* Tracinhos de progresso (estilo NV): o tracinho escuro anda pra direita conforme as fotos */
+  .pdp__gallery-dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 14px 0;
+    width: min(70%, 300px);
+    margin: 0 auto;
+  }
+  .pdp__gallery-dot {
+    flex: 1 1 auto;
+    min-width: 8px;
+    height: 2px;
+    border-radius: 0;
+    border: none;
+    background: rgba(84, 84, 84, 0.2);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+  .pdp__gallery-dot.is-active {
+    background: #2B1810;
+  }
+
+  /* --- Info (direita 50%, sticky) --- */
+  .pdp__info-wrapper {
+    width: 40%;
+    flex: 0 0 40%;
+    position: relative;
+  }
+  .pdp__info {
+    position: sticky;
+    top: 90px; /* abaixo do header fixo (~80px) + margem */
+    padding: 30px 50px 60px 50px;
+    max-height: calc(100vh - 50px);
+    overflow-y: auto;
+  }
+  /* Esconder scrollbar do info quando rola */
+  .pdp__info::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+
+  /* --- Vendor --- */
+  .pdp__vendor {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 8px;
+  }
+
+  /* --- Título --- Raleway 20px, 400, uppercase, 0.6px, #545454 --- */
+  .pdp__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+  }
+
+  /* --- Preço --- BP: Raleway 16px, 400, #545454 --- */
+  .pdp__price {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .pdp__price-current {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #545454;
+  }
+  .pdp__price-current--sale {
+    color: #c0392b;
+  }
+  .pdp__price-original {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  /* --- Parcelamento --- BP: 16px --- */
+  .pdp__installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 28px;
+  }
+
+  /* --- Formulário --- */
+  .pdp__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* --- Option label --- */
+  .pdp__option {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+  .pdp__option-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    color: #545454;
+    margin-bottom: 12px;
+    display: block;
+    text-transform: uppercase;
+  }
+  .pdp__option-value {
+    font-weight: 400;
+    text-transform: none;
+  }
+
+  /* --- Color swatches (variantes dentro do mesmo produto, se houver) --- */
+  .pdp__color-swatches {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .pdp__color-swatch {
+    cursor: pointer;
+    display: block;
+    position: relative;
+  }
+  .pdp__color-swatch input { display: none; }
+  .pdp__color-swatch-img {
+    display: block;
+    width: 60px;
+    height: 78px;
+    object-fit: cover;
+    border: 1.5px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s;
+  }
+  .pdp__color-swatch input:checked + .pdp__color-swatch-img { border-color: #545454; }
+  .pdp__color-swatch:hover .pdp__color-swatch-img { border-color: rgba(84, 84, 84, 0.5); }
+  .pdp__color-swatch-fallback {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s;
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+  .pdp__color-swatch input:checked + .pdp__color-swatch-fallback { border-color: #545454; }
+  .pdp__color-swatch:hover .pdp__color-swatch-fallback { border-color: rgba(84, 84, 84, 0.5); }
+
+  /* --- Sibling colors (mini foto do produto — cada cor é produto separado) --- */
+  .pdp__siblings {
+    margin-bottom: 24px;
+  }
+  .pdp__sibling-swatches {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .pdp__sibling-link {
+    display: block;
+    width: 52px;
+    height: 68px;
+    border: 1.5px solid rgba(84, 84, 84, 0.15);
+    transition: border-color 0.25s;
+    text-decoration: none;
+    overflow: hidden;
+  }
+  .pdp__sibling-link.is-current {
+    border-color: #545454;
+  }
+  .pdp__sibling-link:hover {
+    border-color: rgba(84, 84, 84, 0.5);
+  }
+  .pdp__sibling-link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* --- Size pills --- BP: clean pill style --- */
+  .pdp__sizes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pdp__size-pill {
+    cursor: pointer;
+    display: block;
+  }
+  .pdp__size-pill input {
+    display: none;
+  }
+  .pdp__size-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(84, 84, 84, 0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    background: #ffffff;
+  }
+  .pdp__size-pill input:checked + .pdp__size-label {
+    border-color: #4A3222;
+    background: #4A3222;
+    color: #ffffff;
+  }
+  .pdp__size-label:hover {
+    border-color: #4A3222;
+  }
+  /* Tamanho esgotado — riscado */
+  .pdp__size-pill--soldout,
+  .pdp__size-pill--soldout .pdp__size-label {
+    cursor: default;
+  }
+  .pdp__size-pill--soldout .pdp__size-label {
+    color: #c0c0c0;
+    text-decoration: line-through;
+    border-color: rgba(84, 84, 84, 0.12);
+    background: #ffffff;
+  }
+  .pdp__size-pill--soldout .pdp__size-label:hover {
+    border-color: rgba(84, 84, 84, 0.12);
+  }
+
+  /* --- Select (outras opções) --- */
+  .pdp__select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(84, 84, 84, 0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #545454;
+    background: #ffffff;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  /* --- Aviso de pré-venda --- */
+  .pdp__pre-venda {
+    background: #FAF6F1;
+    border: 1px solid rgba(179, 136, 61, 0.3);
+    padding: 6px 16px;
+    text-align: center;
+  }
+  .pdp__pre-venda-badge {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #B3883D;
+    margin-bottom: 1px;
+  }
+  .pdp__pre-venda-date {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #545454;
+    line-height: 1.4;
+  }
+
+  /* --- Botão Adicionar à Sacola --- BP: bg rgb(217,200,158), cor #545454, 47px, 80% da coluna --- */
+  .pdp__add-to-cart {
+    width: 80%;
+    height: 47px;
+    background: #4A3222;
+    color: #ffffff;
+    border: none;
+    border-radius: 0;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .pdp__add-to-cart:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+  .pdp__add-to-cart:disabled {
+    background: #e0dcd4;
+    color: #999;
+    cursor: default;
+  }
+
+  /* --- Links auxiliares --- */
+  .pdp__aux-links {
+    padding: 16px 0;
+  }
+  .pdp__aux-link {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #545454;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .pdp__aux-link:hover {
+    color: #333;
+  }
+
+  /* --- Acordeões --- BP: borda top rgba(84,84,84,0.2), summary 16px Raleway --- */
+  .pdp__accordions {
+    margin-top: 24px;
+  }
+  .pdp__accordion {
+    border-top: 1px solid rgba(84, 84, 84, 0.2);
+  }
+  .pdp__accordion:last-child {
+    border-bottom: 1px solid rgba(84, 84, 84, 0.2);
+  }
+  .pdp__accordion-trigger {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    color: #545454;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .pdp__accordion-trigger::-webkit-details-marker {
+    display: none;
+  }
+  .pdp__accordion-trigger::after {
+    content: '+';
+    font-size: 20px;
+    font-weight: 300;
+    color: #545454;
+    transition: transform 0.25s;
+  }
+  details[open] > .pdp__accordion-trigger::after {
+    content: '−';
+  }
+  .pdp__accordion-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #545454;
+    padding: 0 0 20px 0;
+  }
+
+  /* --- Personal Shopper (WhatsApp) — estilo BP --- */
+  .pdp__personal-shopper {
+    margin: 24px 0 0;
+    text-align: center;
+  }
+  .pdp__ps-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #545454;
+    margin: 0 0 14px 0;
+  }
+  .pdp__ps-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 80%;
+    height: 47px;
+    border: 1px solid #9E885E;
+    background: #ffffff;
+    color: #9E885E;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+    box-sizing: border-box;
+  }
+  .pdp__ps-btn:hover {
+    background: #faf8f4;
+  }
+  .pdp__ps-btn svg {
+    flex-shrink: 0;
+  }
+
+  /* --- Compartilhar --- */
+  .pdp__share {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  .pdp__share-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.3px;
+  }
+  .pdp__share-btn:hover {
+    color: #333;
+  }
+
+  /* ===== CONJUNTO (bundle) ===== */
+  .conjunto { margin-top: 8px; }
+  .conjunto__header {
+    margin-bottom: 20px;
+  }
+  .conjunto__total-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .conjunto__header-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 28px;
+  }
+  .conjunto__items { display: flex; flex-direction: column; }
+  .conjunto__item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid #f0ede8;
+    align-items: flex-start;
+  }
+  .conjunto__item:last-child { border-bottom: 1px solid #f0ede8; }
+  .conjunto__item-check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 4px;
+    accent-color: #4A3222;
+    cursor: pointer;
+  }
+  .conjunto__item-img {
+    flex-shrink: 0;
+    width: 100px;
+    height: 130px;
+    object-fit: cover;
+  }
+  .conjunto__item-info { flex: 1; min-width: 0; }
+  .conjunto__item-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .conjunto__item-name a { color: inherit; text-decoration: none; }
+  .conjunto__item-name a:hover { text-decoration: underline; }
+  .conjunto__item-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    color: #545454;
+    margin-bottom: 4px;
+  }
+  .conjunto__item-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3883D;
+    margin-bottom: 10px;
+  }
+  .conjunto__item-sizes-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #545454;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .conjunto__item-sizes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .conjunto__size-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid rgba(84,84,84,0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #545454;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .conjunto__size-pill:hover:not(.is-soldout) { border-color: #4A3222; }
+  .conjunto__size-pill.is-selected {
+    background: #4A3222;
+    color: #fff;
+    border-color: #4A3222;
+  }
+  .conjunto__size-pill.is-soldout {
+    opacity: 0.35;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+  .conjunto__add-btn {
+    width: 100%;
+    padding: 16px 0;
+    margin-top: 20px;
+    background: #4A3222;
+    color: #fff;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .conjunto__add-btn:hover:not(:disabled) { opacity: 0.85; }
+  .conjunto__add-btn:disabled { opacity: 0.5; cursor: default; }
+  .conjunto__installments {
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3883D;
+    margin-top: 8px;
+  }
+  .conjunto__loading {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: rgba(84,84,84,0.5);
+    padding: 20px 0;
+  }
+
+  /* --- Compre o Look --- */
+  .pdp__look {
+    padding: 60px 40px;
+    background: #ffffff;
+  }
+  .pdp__look-title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #B3883D;
+    margin: 0 0 40px 0;
+    line-height: 1.3;
+  }
+  .pdp__look-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .pdp__look-products {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+  }
+  .pdp__look-item {
+    flex: 0 1 320px;
+    min-width: 220px;
+    max-width: 320px;
+  }
+  .pdp__look-img-wrap {
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pdp__look-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .pdp__look-sizes {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .pdp__look-size {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid rgba(84,84,84,0.25);
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #545454;
+    background: #fff;
+  }
+  .pdp__look-item-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .pdp__look-item-price {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #545454;
+  }
+  .pdp__look-plus {
+    font-family: 'Raleway', sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: #545454;
+    padding: 0 24px;
+    align-self: center;
+    margin-top: -80px;
+  }
+  .pdp__look-summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: 10px;
+  }
+  .pdp__look-equals {
+    font-family: 'Raleway', sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: #545454;
+  }
+  .pdp__look-summary-inner {
+    text-align: center;
+  }
+  .pdp__look-summary-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 8px;
+  }
+  .pdp__look-summary-total {
+    font-family: 'Raleway', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #545454;
+    margin-bottom: 6px;
+  }
+  .pdp__look-summary-installments {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #B3883D;
+    margin-bottom: 16px;
+  }
+  .pdp__look-sizes {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.92);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .pdp__look-sizes-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: #545454;
+    letter-spacing: 0.4px;
+    margin-bottom: 0;
+    width: min-content;
+    line-height: 1.3;
+  }
+  .pdp__look-sizes-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pdp__look-size-opt {
+    background: none;
+    border: none;
+    padding: 0;
+    min-width: 35px;
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #2B1810;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+  }
+  .pdp__look-size-opt:hover {
+    background: #4A3222;
+    color: #ffffff;
+  }
+  .pdp__look-size-opt--esgotado {
+    color: #C9C4BB;
+    cursor: default;
+  }
+  .pdp__look-size-opt--esgotado:hover {
+    background: none;
+    color: #C9C4BB;
+  }
+  .pdp__look-size-opt--sel,
+  .pdp__look-size-opt--sel:hover {
+    background: #4A3222;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .pdp__look-sizes--erro .pdp__look-sizes-label {
+    color: #B3261E;
+  }
+
+  .pdp__look-buy-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    background: #4A3222;
+    color: #ffffff;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .pdp__look-buy-btn:hover {
+    opacity: 0.85;
+  }
+  .pdp__look-aviso {
+    margin-top: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: #B3261E;
+    text-align: center;
+  }
+
+  @media (max-width: 1024px) {
+    .pdp__look-container {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .pdp__look-products {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pdp__look-plus {
+      margin-top: 0;
+      padding: 0 12px;
+    }
+    .pdp__look-summary {
+      margin-left: 0;
+      flex-direction: row;
+    }
+  }
+
+  /* Mobile: look em grade 2 colunas, sem "+" solto, resumo embaixo */
+  @media (max-width: 749px) {
+    /* foto do produto cabe inteira na tela, sem cortar */
+    .pdp__gallery-img {
+      width: 100%;
+      max-width: 100%;
+      max-height: 80vh;
+      height: auto;
+      margin: 0 auto;
+    }
+    .pdp__look-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .pdp__look-products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 8px;
+      width: 100%;
+    }
+    .pdp__look-plus { display: none; }
+    .pdp__look-item {
+      flex: none;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+    }
+    .pdp__look-sizes-label { display: none; }
+    .pdp__look-sizes { justify-content: center; padding: 6px 2px; gap: 4px; }
+    .pdp__look-size-opt { min-width: 30px; height: 28px; line-height: 28px; font-size: 13px; }
+    .pdp__look-equals { display: none; }
+    .pdp__look-summary { width: 100%; justify-content: center; }
+  }
+
+  @media (max-width: 480px) {
+    .pdp__look {
+      padding: 40px 16px;
+    }
+    .pdp__look-title {
+      font-size: 26px;
+    }
+    /* 13/09/2026 (Ale: look bagunçado no celular): o item já é uma coluna da grade 2x2;
+       o max-width 45% encolhia cada card para ~22% da tela. */
+    .pdp__look-item {
+      max-width: none;
+    }
+  }
+
+  /* --- Recomendações --- */
+  .pdp__recommendations {
+    padding: 60px 40px;
+    background: #ffffff;
+  }
+  .pdp__recommendations-title {
+    font-family: 'Italiana', 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #B3883D;
+    margin: 0 0 40px 0;
+    line-height: 1.3;
+  }
+  .pdp__recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px 12px;
+  }
+
+  /* ===========================
+     MOBILE / TABLET
+     =========================== */
+
+  @media (max-width: 1024px) {
+    .pdp__container {
+      flex-direction: column;
+      padding: 0;
+    }
+    .pdp__gallery {
+      width: 100%;
+      flex: none;
+    }
+    .pdp__gallery-track {
+      /* Já é carrossel no mobile por padrão */
+    }
+    .pdp__gallery-item {
+      flex: 0 0 100%;
+    }
+    .pdp__gallery-arrow {
+      width: 36px;
+      height: 36px;
+    }
+    .pdp__info-wrapper {
+      width: 100%;
+      flex: none;
+    }
+    .pdp__info {
+      position: static;
+      padding: 24px 20px 40px;
+      max-height: none;
+      overflow-y: visible;
+    }
+    .pdp__add-to-cart,
+    .pdp__ps-btn {
+      width: 100%;
+    }
+    .pdp__recommendations-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 8px;
+    }
+    .pdp__recommendations {
+      padding: 40px 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pdp__breadcrumb {
+      padding: 10px 16px;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+    .pdp__breadcrumb a {
+      font-size: 12px;
+    }
+    .pdp__info {
+      padding: 20px 16px 40px;
+    }
+    .pdp__recommendations-title {
+      font-size: 26px;
+    }
+  }
+</style>
+{% comment %}
+  Product page (PDP) – estilo BP
+  Layout: galeria à esquerda (scroll vertical de imagens grandes) + info à direita (sticky)
+  Medidas conferidas na BP via getComputedStyle em 22/abr/2026
+{% endcomment %}
+
+<div class="pdp">
+  {% comment %} Breadcrumb {% endcomment %}
+  <nav class="pdp__breadcrumb" aria-label="breadcrumb">
+    <a href="/">Início</a>
+    <span class="pdp__breadcrumb-sep">›</span>
+    {% if collection %}
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+      <span class="pdp__breadcrumb-sep">›</span>
+    {% endif %}
+    <span>{{ product.title }}</span>
+  </nav>
+
+  <div class="pdp__container">
+    {% comment %} ===== GALERIA (esquerda, 50%) — carrossel horizontal como BP ===== {% endcomment %}
+    <div class="pdp__gallery">
+      <div class="pdp__gallery-track" id="gallery-track">
+        {% for image in product.images %}
+          <div class="pdp__gallery-item" data-index="{{ forloop.index0 }}">
+            <img
+              src="{{ image | image_url: width: 1200 }}"
+              alt="{{ image.alt | default: product.title }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              class="pdp__gallery-img"
+              width="{{ image.width }}" height="{{ image.height }}"
+              style="aspect-ratio: {{ image.width }} / {{ image.height }};"
+            />
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        {% comment %} Setas de navegação {% endcomment %}
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--prev" id="gallery-prev" aria-label="Imagem anterior">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L7 10L13 16"/></svg>
+        </button>
+        <button class="pdp__gallery-arrow pdp__gallery-arrow--next" id="gallery-next" aria-label="Próxima imagem">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4L13 10L7 16"/></svg>
+        </button>
+
+        {% comment %} Dots {% endcomment %}
+        <div class="pdp__gallery-dots" id="gallery-dots">
+          {% assign img_count = product.images.size %}
+          {% if img_count > 10 %}{% assign dot_count = 10 %}{% else %}{% assign dot_count = img_count %}{% endif %}
+          {% assign last_dot = dot_count | minus: 1 %}
+          {% for j in (0..last_dot) %}
+            <button class="pdp__gallery-dot {% if j == 0 %}is-active{% endif %}" data-index="{{ j }}" aria-label="Imagem {{ j | plus: 1 }}"></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Detectar se é Conjunto {% endcomment %}
+    {% assign is_conjunto = false %}
+    {% assign title_first_word = product.title | split: ' ' | first | downcase %}
+    {% if title_first_word == 'conjunto' %}
+      {% assign is_conjunto = true %}
+    {% endif %}
+
+    {% comment %} ===== INFO DO PRODUTO (direita, 50%, sticky) ===== {% endcomment %}
+    <div class="pdp__info-wrapper">
+      <div class="pdp__info">
+
+        {% comment %} Vendor — oculto, todo o site é Galeria Tricot {% endcomment %}
+
+        {% comment %} Título {% endcomment %}
+        <h1 class="pdp__title">{{ product.title }}</h1>
+
+        {% if is_conjunto %}
+          {% comment %} ===== MODO CONJUNTO — layout bundle (server-side via metafield) ===== {% endcomment %}
+          {% assign conjunto_pecas = product.metafields.custom.conjunto_pecas.value %}
+
+          {% if conjunto_pecas and conjunto_pecas.size > 0 %}
+            {% comment %} Calcular total das pecas {% endcomment %}
+            {% assign conjunto_total = 0 %}
+            {% for peca in conjunto_pecas %}
+              {% assign conjunto_total = conjunto_total | plus: peca.price %}
+            {% endfor %}
+
+            <div class="conjunto" id="conjunto-section">
+              <div class="conjunto__header">
+                <div class="conjunto__total-price" id="conjunto-total">{{ conjunto_total | money }}</div>
+                {% assign inst_total_header = conjunto_total | divided_by: 500 | times: 100 %}
+                <div class="conjunto__header-installments">ou 5x de {{ inst_total_header | money }} sem juros</div>
+              </div>
+
+              <div class="conjunto__items" id="conjunto-items">
+                {% for peca in conjunto_pecas %}
+                  {% assign peca_variant = peca.selected_or_first_available_variant %}
+                  {% assign peca_price = peca_variant.price %}
+                  {% assign peca_installment = peca_price | divided_by: 500 | times: 100 %}
+                  <div class="conjunto__item" data-product-id="{{ peca.id }}" data-handle="{{ peca.handle }}">
+                    <input type="checkbox" class="conjunto__item-check" data-idx="{{ forloop.index0 }}" checked>
+                    <a href="/products/{{ peca.handle }}">
+                      {% if peca.featured_image %}
+                        <img src="{{ peca.featured_image | image_url: width: 200 }}" alt="{{ peca.title }}" class="conjunto__item-img">
+                      {% else %}
+                        <div class="conjunto__item-img conjunto__item-img--placeholder">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                      {% endif %}
+                    </a>
+                    <div class="conjunto__item-info">
+                      <div class="conjunto__item-name">
+                        <a href="/products/{{ peca.handle }}">{{ peca.title }}</a>
+                      </div>
+                      <div class="conjunto__item-price">{{ peca_price | money }}</div>
+                      <div class="conjunto__item-installments">ou 5x de {{ peca_installment | money }}</div>
+                      <div class="conjunto__item-sizes-label">Tamanho</div>
+                      <div class="conjunto__item-sizes">
+                        {% for variant in peca.variants %}
+                          <button type="button"
+                            class="conjunto__size-pill {% if variant == peca_variant %}is-selected{% endif %} {% unless variant.available %}is-soldout{% endunless %}"
+                            data-variant-id="{{ variant.id }}"
+                            data-price="{{ variant.price }}"
+                            data-available="{{ variant.available }}"
+                            {% unless variant.available %}disabled{% endunless %}>
+                            {{ variant.title | split: ' / ' | last }}
+                          </button>
+                        {% endfor %}
+                      </div>
+                      {% comment %} AVISO PRE-VENDA NO CONJUNTO (23/11/2026, Ale): mesmo aviso da peca avulsa, por peca, conforme o tamanho escolhido {% endcomment %}
+                      <div class="pdp__pre-venda conjunto__pre-venda" hidden>
+                        <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+                        <div class="pdp__pre-venda-date">Será enviado dia <span class="conjunto__pre-venda-data"></span></div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <button class="conjunto__add-btn" id="conjunto-add-btn" type="button">
+                ADICIONAR CONJUNTO À SACOLA
+              </button>
+              <div class="conjunto__installments" id="conjunto-installments" style="display:none;"></div>
+            </div>
+            {% comment %} AVISO PRE-VENDA NO CONJUNTO — inicio (23/11/2026). Consulta a mesma fila de prazo da peca avulsa (estoque-prazo). Para desfazer: apagar deste comentario ate "fim" e o bloco conjunto__pre-venda acima. {% endcomment %}
+            <style>.conjunto__pre-venda { margin-top: 8px; }</style>
+            <script>
+              (function(){
+                var cont = document.getElementById('conjunto-section'); if (!cont) return;
+                var pills = Array.prototype.slice.call(cont.querySelectorAll('.conjunto__size-pill[data-variant-id]'));
+                var ids = pills.map(function(p){ return p.getAttribute('data-variant-id'); }).filter(Boolean);
+                if (!ids.length) return;
+                function parse(s){ if (!s) return null; var p = s.slice(0, 10).split('-'); if (p.length < 3) return null; return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)); }
+                function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+                var fila = null;
+                function upd(){
+                  if (!fila) return;
+                  cont.querySelectorAll('.conjunto__item').forEach(function(item){
+                    var box = item.querySelector('.conjunto__pre-venda'); if (!box) return;
+                    var cb = item.querySelector('.conjunto__item-check');
+                    var selp = item.querySelector('.conjunto__size-pill.is-selected');
+                    var q = selp ? fila[selp.getAttribute('data-variant-id')] : null;
+                    var d = q && q.tracked ? parse(q.proximo) : null;
+                    var ativo = !!(d && d > new Date() && (!cb || cb.checked) && !selp.classList.contains('is-soldout'));
+                    box.hidden = !ativo;
+                    if (ativo) { var el = box.querySelector('.conjunto__pre-venda-data'); if (el) el.textContent = fmt(d); }
+                  });
+                }
+                cont.addEventListener('click', function(){ setTimeout(upd, 0); });
+                cont.addEventListener('change', function(){ setTimeout(upd, 0); });
+                fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (!j || j.erro) return; fila = j; window.conjuntoFilaPrazo = j; upd(); }).catch(function(){});
+              })();
+            </script>
+            {% comment %} AVISO PRE-VENDA NO CONJUNTO — fim {% endcomment %}
+          {% else %}
+            {% comment %} Metafield ainda nao configurado — fallback {% endcomment %}
+            <div class="conjunto" id="conjunto-section">
+              <p class="conjunto__loading">Este conjunto ainda não tem peças associadas. Entre em contato.</p>
+            </div>
+          {% endif %}
+        {% else %}
+          {% comment %} ===== MODO NORMAL ===== {% endcomment %}
+
+          {% comment %} Cores (produtos irmãos — mesmo nome, cores diferentes) {% endcomment %}
+          {% comment %} Sempre mostra a cor atual; JS adiciona as outras cores se existirem {% endcomment %}
+          {% assign cor_atual = '' %}
+          {% for option in product.options_with_values %}
+            {% assign opt_down = option.name | downcase %}
+            {% if opt_down == 'cor' or opt_down == 'color' %}
+              {% assign cor_atual = option.selected_value | default: option.values.first %}
+            {% endif %}
+          {% endfor %}
+          <div class="pdp__siblings" id="color-siblings">
+            <div class="pdp__option-label">COR: <span class="pdp__option-value" id="current-color-name">{{ cor_atual }}</span></div>
+            <div class="pdp__sibling-swatches" id="sibling-swatches">
+              {% comment %} Swatch do produto atual renderizado server-side; JS adiciona irmãos {% endcomment %}
+            </div>
+          </div>
+
+          {% comment %} Preço {% endcomment %}
+          <div class="pdp__price">
+            {% assign variant = product.selected_or_first_available_variant %}
+            {% if variant.compare_at_price > variant.price %}
+              <span class="pdp__price-original">{{ variant.compare_at_price | money }}</span>
+            {% endif %}
+            <span class="pdp__price-current {% if variant.compare_at_price > variant.price %}pdp__price-current--sale{% endif %}">
+              {{ variant.price | money }}
+            </span>
+          </div>
+
+          {% comment %} Parcelamento {% endcomment %}
+          {% assign installment_value = variant.price | divided_by: 5 %}
+          <div class="pdp__installments">
+            ou 5x de {{ installment_value | money }} sem juros
+          </div>
+        {% endif %}
+
+        {% unless is_conjunto %}
+        {% comment %} Formulário de variantes (só produto normal, não conjunto) {% endcomment %}
+        <form class="pdp__form" id="product-form" action="/cart/add" method="post">
+          <input type="hidden" name="id" id="variant-id" value="{{ variant.id }}" />
+
+          {% for option in product.options_with_values %}
+            {% assign option_name_down = option.name | downcase %}
+
+            {% if option_name_down == 'cor' or option_name_down == 'color' %}
+              {% comment %} Cor — NÃO mostra swatches aqui (a seção siblings já cuida)
+                   Apenas mantém hidden input pro formulário funcionar {% endcomment %}
+              <input type="hidden" name="options[{{ option.name }}]" value="{{ option.selected_value | default: option.values.first }}" />
+
+            {% elsif option_name_down == 'tamanho' or option_name_down == 'size' %}
+              {% comment %} Tamanho – pills {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <div class="pdp__sizes">
+                  {% for value in option.values %}
+                    {% assign opt_idx = option.position | minus: 1 %}
+                    {% assign val_avail = false %}
+                    {% assign val_pv = false %}
+                    {% assign val_pv_data = '' %}
+                    {% assign pv_hoje_ts = 'now' | date: '%s' | plus: 0 %}{% assign val_vid = '' %}
+                    {% for var in product.variants %}
+                      {% if var.options[opt_idx] == value and var.available %}{% assign val_avail = true %}{% assign val_vid = var.id %}{% assign pvd_ts = var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}{% if var.metafields.custom.pre_venda_data.value != blank and pvd_ts > pv_hoje_ts %}{% assign val_pv = true %}{% assign val_pv_data = var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}{% endif %}
+                    {% endfor %}
+                    <label class="pdp__size-pill{% unless val_avail %} pdp__size-pill--soldout{% endunless %}">
+                      <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" data-variant-id="{{ val_vid }}" data-prevenda="{{ val_pv }}" data-prevenda-data="{{ val_pv_data }}" {% if value == option.selected_value %}checked{% endif %} {% unless val_avail %}disabled{% endunless %} />
+                      <span class="pdp__size-label">{{ value }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+
+            {% else %}
+              {% comment %} Outras opções – select {% endcomment %}
+              <fieldset class="pdp__option">
+                <legend class="pdp__option-label">{{ option.name }}</legend>
+                <select name="options[{{ option.name }}]" class="pdp__select">
+                  {% for value in option.values %}
+                    <option value="{{ value }}" {% if value == option.selected_value %}selected{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </fieldset>
+            {% endif %}
+          {% endfor %}
+
+          {% comment %} PREVENDA-SIZE: pré-venda por TAMANHO, igual à VTEX = o SKU tem 'data prevista de chegada' futura (metafield custom.pre_venda_data, sincronizado da VTEX). O prazo de entrega soma os dias úteis até essa data. {% endcomment %}
+          {% assign sel_pv = false %}
+          {% assign sel_pv_data = '' %}
+          {% assign sel_var = product.selected_or_first_available_variant %}
+          {% assign sel_hoje_ts = 'now' | date: '%s' | plus: 0 %}
+          {% assign sel_pvd_ts = sel_var.metafields.custom.pre_venda_data.value | date: '%s' | plus: 0 %}
+          {% if sel_var.metafields.custom.pre_venda_data.value != blank and sel_pvd_ts > sel_hoje_ts %}{% assign sel_pv = true %}{% assign sel_pv_data = sel_var.metafields.custom.pre_venda_data.value | date: '%Y-%m-%d' %}{% endif %}
+          <div class="pdp__pre-venda" id="pdp-pre-venda" data-prevenda-data="{{ sel_pv_data }}" {% unless sel_pv %}hidden{% endunless %}>
+            <div class="pdp__pre-venda-badge">PRODUTO EM PRÉ-VENDA</div>
+            <div class="pdp__pre-venda-date">Será enviado dia <span id="pdp-pre-venda-data"></span></div>
+          </div>
+          <script>
+            (function(){
+              var box = document.getElementById('pdp-pre-venda'); if (!box) return;
+              var el = document.getElementById('pdp-pre-venda-data');
+              var temPills = !!document.querySelector('.pdp__sizes');
+              function parse(s){ if (!s) return null; var p = s.slice(0, 10).split('-'); if (p.length < 3) return null; return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)); }
+              function fmt(d){ var p = function(x){ return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+              function diasUteis(ate){ var d = new Date(); d.setHours(0,0,0,0); var n = 0; while (d < ate) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w !== 0 && w !== 6) n++; } return n; }
+              function sel(){ if (!temPills) return { pv: !box.hidden, data: box.getAttribute('data-prevenda-data') }; var r = document.querySelector('.pdp__sizes input[type=radio]:checked'); return r ? { pv: r.getAttribute('data-prevenda') === 'true', data: r.getAttribute('data-prevenda-data') } : { pv: false, data: '' }; }
+              window.pdpPreVendaDias = function(){ var s = sel(); if (!s.pv) return 0; var d = parse(s.data); return d && d > new Date() ? diasUteis(d) : 0; };
+              function upd(){ var s = sel(); var d = parse(s.data); var ativo = s.pv && d && d > new Date(); box.hidden = !ativo; if (ativo && el) el.textContent = fmt(d); }
+              document.querySelectorAll('.pdp__sizes input[type=radio]').forEach(function(r){ r.addEventListener('change', upd); });
+              // FILA DE PRAZO (21/09/2026, Ale): consulta ao vivo por local (pronta entrega -> Estoque Pre-Venda -> Estoque Pre-Venda 2) e corrige o aviso por tamanho.
+              try {
+                var radios = Array.prototype.slice.call(document.querySelectorAll('.pdp__sizes input[type=radio][data-variant-id]'));
+                var ids = radios.map(function(r){ return r.getAttribute('data-variant-id'); }).filter(Boolean);
+                var hid = document.getElementById('variant-id'); if (!temPills && hid && hid.value) ids.push(hid.value);
+                if (ids.length) fetch('https://qherrkxzkxopoprglybj.supabase.co/functions/v1/estoque-prazo?v=' + ids.join(','), { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+                  if (!j || j.erro) return;
+                  function aplica(el, vid){ var q = j[vid]; if (!q || !q.tracked) return; el.setAttribute('data-prevenda', q.proximo ? 'true' : 'false'); el.setAttribute('data-prevenda-data', q.proximo || ''); }
+                  radios.forEach(function(r){ aplica(r, r.getAttribute('data-variant-id')); });
+                  if (!temPills && hid) { var q0 = j[hid.value]; if (q0 && q0.tracked) { box.setAttribute('data-prevenda-data', q0.proximo || ''); box.hidden = !q0.proximo; } }
+                  window.pdpFilaPrazo = j; upd();
+                }).catch(function(){});
+              } catch (e) {}
+              upd();
+            })();
+          </script>
+
+          {% comment %} Botão comprar {% endcomment %}
+          <button type="submit" class="pdp__add-to-cart" id="add-to-cart-btn"
+            {% unless product.available %}disabled{% endunless %}>
+            {% if product.available %}
+              ADICIONAR À SACOLA
+            {% else %}
+              ESGOTADO
+            {% endif %}
+          </button>
+        </form>
+
+        {% endunless %}
+
+        {% comment %} Acordeões {% endcomment %}
+        {% comment %} Separar descrição e composição — muitos produtos têm "COMPOSIÇÃO:" dentro do body {% endcomment %}
+        {% assign desc_full = product.description %}
+        {% assign desc_only = desc_full %}
+        {% assign comp_from_desc = '' %}
+        {% if desc_full contains 'COMPOSIÇÃO:' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'COMPOSIÇÃO :' %}
+          {% assign desc_parts = desc_full | split: 'COMPOSIÇÃO :' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% elsif desc_full contains 'Composição:' %}
+          {% assign desc_parts = desc_full | split: 'Composição:' %}
+          {% assign desc_only = desc_parts[0] %}
+          {% assign comp_from_desc = desc_parts[1] %}
+        {% endif %}
+
+        <div class="pdp__accordions">
+          {% comment %} Guia de tamanhos {% endcomment %}
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Como escolher seu tamanho</summary>
+            <div class="pdp__accordion-body">
+              <p><strong>PARA ESCOLHER SEU TAMANHO, CONSIDERE:</strong></p>
+              <p>PP = 36<br>P = 38<br>M = 40<br>G = 42 a 44</p>
+              <p><strong>AO ESCOLHER SEU TAMANHO CONFORME ACIMA:</strong></p>
+              <p>Vestidos longos ficam rente ao chão para altura da cliente de 1,70m<br>
+              Vestidos midi ficam abaixo do joelho para altura da cliente de 1,70m<br>
+              Vestidos curtos ficam no meio da coxa para altura da cliente de 1,70m</p>
+              <p>Se você tem entre 1,70m e 1,75m recomendamos escolher um tamanho acima do seu (o vestido não fica largo pois, sobrando dos lados, estica para baixo)</p>
+              <p>Se você tem entre 1,75m e 1,80m recomendamos escolher 2 tamanhos acima do seu.</p>
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Calcular frete e prazo</summary>
+            <div class="pdp__accordion-body">
+              <div class="pdp-frete">
+                <div class="pdp-frete__row">
+                  <input type="text" id="pdp-frete-cep" class="pdp-frete__input" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9" autocomplete="postal-code">
+                  <button type="button" id="pdp-frete-btn" class="pdp-frete__btn">Calcular</button>
+                </div>
+                <div id="pdp-frete-result" class="pdp-frete__result" aria-live="polite"></div>
+                
+              </div>
+
+              
+
+              <script>
+                (function() {
+                  var faixas = [
+                    [1000,19999,'SP'],[20000,28999,'RJ'],[29000,29999,'ES'],[30000,39999,'MG'],
+                    [40000,48999,'BA'],[49000,49999,'SE'],[50000,56999,'PE'],[57000,57999,'AL'],
+                    [58000,58999,'PB'],[59000,59999,'RN'],[60000,63999,'CE'],[64000,64999,'PI'],
+                    [65000,65999,'MA'],[66000,68899,'PA'],[68900,68999,'AP'],[69000,69299,'AM'],
+                    [69300,69399,'RR'],[69400,69899,'AM'],[69900,69999,'AC'],[70000,72799,'DF'],
+                    [72800,72999,'GO'],[73000,73699,'DF'],[73700,76799,'GO'],[76800,76999,'RO'],
+                    [77000,77999,'TO'],[78000,78899,'MT'],[79000,79999,'MS'],[80000,87999,'PR'],
+                    [88000,89999,'SC'],[90000,99999,'RS']
+                  ];
+                  var zonas = [
+                    { ufs:['SP','RJ','MG','ES','DF','PR','SC','RS','MS','MT','BA'], eco:34.10, exp:36.85 },
+                    { ufs:['GO'], eco:34.10, exp:47.74 },
+                    { ufs:['CE','PE','AL','PB','RN','SE','MA','PA','TO','RO'], eco:36.85, exp:42.35 },
+                    { ufs:['AM','RR'], eco:36.85, exp:55.11 },
+                    { ufs:['PI','AP'], eco:62.15, exp:81.73 },
+                    { ufs:['AC'], eco:73.04, exp:96.03 }
+                  ];
+                  var input = document.getElementById('pdp-frete-cep');
+                  var btn = document.getElementById('pdp-frete-btn');
+                  var out = document.getElementById('pdp-frete-result');
+                  if (!input || !btn) return;
+                  input.addEventListener('input', function() {
+                    var d = input.value.replace(/\D/g,'').slice(0,8);
+                    input.value = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d;
+                  });
+                  input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+                  function brl(v){ return 'R$ ' + v.toFixed(2).replace('.',','); }
+                  btn.addEventListener('click', function() {
+                    var d = input.value.replace(/\D/g,'');
+                    if (d.length !== 8) { out.innerHTML = '<span class="pdp-frete__erro">Digite um CEP válido com 8 números.</span>'; return; }
+                    btn.disabled = true; var txt = btn.textContent; btn.textContent = 'Calculando...';
+                    setTimeout(function() {
+                      var n = parseInt(d.slice(0,5),10), uf = null;
+                      for (var i=0;i<faixas.length;i++){ if(n>=faixas[i][0]&&n<=faixas[i][1]){ uf=faixas[i][2]; break; } }
+                      var z = null;
+                      if (uf) for (var j=0;j<zonas.length;j++){ if(zonas[j].ufs.indexOf(uf)>-1){ z=zonas[j]; break; } }
+                      if (!z) { out.innerHTML = '<span class="pdp-frete__erro">Não encontramos esse CEP. Confira e tente de novo.</span>'; }
+                      else {
+                        var pv = (window.pdpPreVendaDias ? window.pdpPreVendaDias() : 0); /* pré-venda: soma os dias úteis até a data de chegada do SKU, igual à VTEX */
+                        var pvTxt = pv ? ' (inclui ' + pv + ' dias úteis da pré-venda)' : '';
+                        /* prazos por estado (dias úteis) copiados da simulação da VTEX em 09/09/2026: [econômico, expresso] */
+                        var prazos = { SP:[7,3], RJ:[9,4], MG:[7,3], ES:[9,5], PR:[11,3], SC:[10,3], RS:[13,3], DF:[9,4], GO:[9,5], MT:[14,5], MS:[11,5], BA:[12,5], SE:[13,5], PE:[12,5], AL:[13,5], PB:[13,5], RN:[14,5], CE:[12,5], PI:[10,5], MA:[13,5], PA:[11,5], AP:[24,4], AM:[25,5], RR:[28,5], AC:[21,11], RO:[20,6], TO:[10,5] };
+                        var pz = prazos[uf] || [12,5];
+                        out.innerHTML =
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Econômico</span><br><span class="pdp-frete__opt-prazo">Em até ' + (pz[0] + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.eco) + '</span></div>' +
+                          '<div class="pdp-frete__opt"><span><span class="pdp-frete__opt-nome">Frete Expresso</span><br><span class="pdp-frete__opt-prazo">Em até ' + (pz[1] + pv) + ' dias úteis' + pvTxt + '</span></span><span class="pdp-frete__opt-preco">' + brl(z.exp) + '</span></div>';
+                      }
+                      btn.disabled = false; btn.textContent = txt;
+                    }, 400);
+                  });
+                })();
+              </script>
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Composição</summary>
+            <div class="pdp__accordion-body">
+              {% if comp_from_desc != blank %}
+                {% assign comp_text = comp_from_desc | strip %}
+                {% comment %} Separar composição de peças diferentes em linhas {% endcomment %}
+                {% assign comp_text = comp_text | replace: 'Calça', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Calca', '<br><strong>Calça</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Blusa', '<br><strong>Blusa</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Saia', '<br><strong>Saia</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Shorts', '<br><strong>Shorts</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Regata', '<br><strong>Regata</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Casaco', '<br><strong>Casaco</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Vestido', '<br><strong>Vestido</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Colete', '<br><strong>Colete</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Top', '<br><strong>Top</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Body', '<br><strong>Body</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Macacão', '<br><strong>Macacão</strong>' %}
+                {% assign comp_text = comp_text | replace: 'Bermuda', '<br><strong>Bermuda</strong>' %}
+                {{ comp_text }}
+              {% elsif product.metafields.custom.composition %}
+                {{ product.metafields.custom.composition }}
+              {% else %}
+                Consulte a descrição do produto.
+              {% endif %}
+            </div>
+          </details>
+
+          <details class="pdp__accordion">
+            <summary class="pdp__accordion-trigger">Sobre a peça</summary>
+            <div class="pdp__accordion-body">
+              {% assign desc_clean = desc_only | replace: '<details', '<div' | replace: '</details>', '</div>' | replace: '<summary', '<div hidden' | replace: '</summary>', '</div>' %}
+              {{ desc_clean }}
+            </div>
+          </details>
+
+
+        </div>
+
+        {% comment %} WhatsApp Personal Shopper — estilo BP {% endcomment %}
+        <div class="pdp__personal-shopper">
+          <h2 class="pdp__ps-title">PRECISA DE AJUDA?</h2>
+          <a href="https://wa.me/553598543079?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20produto%3A%20{{ product.title | url_encode }}" target="_blank" rel="noopener" class="pdp__ps-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8.01 12.27C8.14 12.44 9.76 14.94 12.25 16.08C14.28 16.99 14.74 16.82 15.18 16.77C15.62 16.72 16.62 16.1 16.83 15.45C17.04 14.81 17.04 14.26 16.97 14.14C16.9 14.02 16.73 13.96 16.48 13.83C16.23 13.71 15.01 13.11 14.78 13.03C14.56 12.95 14.39 12.91 14.23 13.16C14.07 13.41 13.57 13.96 13.43 14.14C13.29 14.31 13.15 14.33 12.9 14.21C12.65 14.08 11.87 13.83 10.95 13.01C10.22 12.35 9.72 11.54 9.58 11.29C9.44 11.04 9.57 10.91 9.69 10.78C9.8 10.67 9.94 10.49 10.07 10.35C10.19 10.21 10.24 10.11 10.32 9.94C10.4 9.77 10.36 9.63 10.29 9.5C10.23 9.38 9.73 8.15 9.53 7.65C9.33 7.18 9.13 7.23 8.98 7.23C8.84 7.22 8.68 7.33 8.53 7.33Z"/>
+            </svg>
+            <span>PERSONAL SHOPPER</span>
+          </a>
+        </div>
+
+        {% comment %} Compartilhar {% endcomment %}
+        <div class="pdp__share">
+          <button class="pdp__share-btn" id="share-btn" aria-label="Compartilhar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            <span>Compartilhar</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {% comment %} ===== COMPRE O LOOK (carregado via JS — busca API Shopify) ===== {% endcomment %}
+  <section class="pdp__look" id="look-section" style="display:none;">
+    <h2 class="pdp__look-title">COMPRE O LOOK COMPLETO</h2>
+    <div class="pdp__look-container" id="look-container"></div>
+  </section>
+
+  {% comment %} Recomendações {% endcomment %}
+  <section class="pdp__recommendations">
+    <h2 class="pdp__recommendations-title">VOCÊ TAMBÉM VAI AMAR</h2>
+    <div class="pdp__recommendations-grid">
+      {% comment %} Regra: peça da Sale → mesma aba da Sale; peça de coleção → mesma coleção; senão, geral {% endcomment %}
+      {% assign rec_collection = blank %}
+      {% assign sale_abas = 'sale-blusas,sale-calcas,sale-casacos,sale-conjuntos,sale-saias,sale-shorts,sale-vestidos,outlet-blusas,outlet-calcas,outlet-casacos,outlet-conjuntos,outlet-saias,outlet-shorts,outlet-vestidos,conjuntos-outlet' | split: ',' %}
+      {% for c in product.collections %}
+        {% if sale_abas contains c.handle %}
+          {% assign rec_collection = c %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle contains 'sale' or c.handle contains 'outlet' or c.handle contains 'off-tricot' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}
+        {% for c in product.collections %}
+          {% if c.handle == 'novidades' or c.handle == 'aerolooks' or c.handle == 'mom-edit' or c.handle == 'snow-trip-collab' or c.handle == 'euro-summer' %}
+            {% assign rec_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if rec_collection == blank %}{% assign rec_collection = collections['all'] %}{% endif %}
+      {% assign rec_shown = 0 %}
+      {% for p in rec_collection.products limit: 12 %}
+        {% if p.id != product.id and rec_shown < 8 %}
+          {% render 'product-card', product: p %}
+          {% assign rec_shown = rec_shown | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    /* ---- Variant selection logic ---- */
+    const productJson = {{ product | json }};
+    const variantIdInput = document.getElementById('variant-id');
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const form = document.getElementById('product-form');
+
+    function getSelectedOptions() {
+      const opts = {};
+      if (!form) return opts;
+      form.querySelectorAll('input[type="radio"]:checked, select').forEach(el => {
+        const name = el.name.replace('options[', '').replace(']', '');
+        opts[name] = el.value;
+      });
+      return opts;
+    }
+
+    function findVariant(opts) {
+      return productJson.variants.find(v => {
+        return productJson.options.every((optName, i) => {
+          return v.options[i] === opts[optName];
+        });
+      });
+    }
+
+    function updateVariant() {
+      const opts = getSelectedOptions();
+      const variant = findVariant(opts);
+      if (variant) {
+        variantIdInput.value = variant.id;
+        // Update price
+        const priceEl = document.querySelector('.pdp__price-current');
+        if (priceEl) {
+          priceEl.textContent = (variant.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+        // Update compare price
+        const origEl = document.querySelector('.pdp__price-original');
+        if (origEl) {
+          if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+            origEl.textContent = (variant.compare_at_price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            origEl.style.display = '';
+          } else {
+            origEl.style.display = 'none';
+          }
+        }
+        // Update installments
+        const instEl = document.querySelector('.pdp__installments');
+        if (instEl) {
+          const instVal = (variant.price / 100 / 5).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          instEl.textContent = 'ou 5x de ' + instVal + ' sem juros';
+        }
+        // Button state
+        if (variant.available) {
+          addBtn.disabled = false;
+          addBtn.textContent = 'ADICIONAR À SACOLA';
+        } else {
+          addBtn.disabled = true;
+          addBtn.textContent = 'ESGOTADO';
+        }
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('variant', variant.id);
+        window.history.replaceState({}, '', url);
+      }
+    }
+
+    // Listen to option changes (form pode ser null em conjuntos)
+    if (form) form.querySelectorAll('input[type="radio"], select').forEach(el => {
+      el.addEventListener('change', function() {
+        updateVariant();
+        // Update option value display
+        if (this.type === 'radio') {
+          const legend = this.closest('fieldset').querySelector('.pdp__option-value');
+          if (legend) legend.textContent = this.value;
+        }
+        // Se trocou cor, rolar galeria até a imagem da variante
+        if (this.closest('.pdp__color-swatches')) {
+          const opts = getSelectedOptions();
+          const variant = findVariant(opts);
+          if (variant && variant.featured_image) {
+            const galleryImgs = document.querySelectorAll('.pdp__gallery-img');
+            galleryImgs.forEach((img, idx) => {
+              // Comparar pelo src (ambos terão parte do filename)
+              if (img.src.includes(variant.featured_image.id) ||
+                  img.alt === variant.featured_image.alt) {
+                const item = img.closest('.pdp__gallery-item');
+                if (item) item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            });
+          }
+        }
+      });
+    });
+
+    /* ---- Add to cart ---- */
+    if (form) form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      addBtn.disabled = true;
+      addBtn.textContent = 'ADICIONANDO...';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: [{ id: parseInt(variantIdInput.value), quantity: 1 }]
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Erro');
+        return res.json();
+      })
+      .then(() => {
+        addBtn.textContent = 'ADICIONADO ✓';
+        if (typeof openCartDrawer === 'function') openCartDrawer();
+        setTimeout(() => {
+          addBtn.disabled = false;
+          addBtn.textContent = 'ADICIONAR À SACOLA';
+        }, 2000);
+      })
+      .catch(() => {
+        addBtn.disabled = false;
+        addBtn.textContent = 'ADICIONAR À SACOLA';
+        alert('Erro ao adicionar ao carrinho. Tente novamente.');
+      });
+    });
+
+    /* ---- Gallery Carousel ---- */
+    const track = document.getElementById('gallery-track');
+    const prevBtn = document.getElementById('gallery-prev');
+    const nextBtn = document.getElementById('gallery-next');
+    const dots = document.querySelectorAll('.pdp__gallery-dot');
+    let currentSlide = 0;
+    const totalSlides = document.querySelectorAll('.pdp__gallery-item').length;
+
+    function setActiveDot(cur) {
+      if (!dots.length) return;
+      var pos = ((cur % dots.length) + dots.length) % dots.length;
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === pos));
+    }
+    function goToSlide(idx) {
+      if (idx < 0) idx = totalSlides - 1;
+      if (idx >= totalSlides) idx = 0;
+      currentSlide = idx;
+      if (track) {
+        const item = track.children[idx];
+        if (item) {
+          track.scrollTo({ left: item.offsetLeft, behavior: 'smooth' });
+        }
+      }
+      setActiveDot(currentSlide);
+    }
+
+    prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => goToSlide(parseInt(dot.dataset.index)));
+    });
+
+    // Sync dots on manual scroll
+    if (track) {
+      let scrollTimeout;
+      track.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const scrollLeft = track.scrollLeft;
+          const itemWidth = track.children[0]?.offsetWidth || 1;
+          const newIndex = Math.round(scrollLeft / itemWidth);
+          if (newIndex !== currentSlide && newIndex >= 0 && newIndex < totalSlides) {
+            currentSlide = newIndex;
+            setActiveDot(currentSlide);
+          }
+        }, 80);
+      });
+    }
+
+    // Sempre abrir na 1a foto (30/09/2026): no celular (Safari iOS) o navegador restaura a posicao do carrossel
+    // ao voltar/recarregar/abrir de novo e a pagina abria na ultima foto. Zera a galeria ao carregar, sem animacao.
+    if (track) {
+      let galeriaTocada = false;
+      track.addEventListener('touchstart', () => { galeriaTocada = true; }, { passive: true });
+      track.addEventListener('pointerdown', () => { galeriaTocada = true; }, { passive: true });
+      const galeriaInicio = () => {
+        if (galeriaTocada) return;
+        track.style.scrollBehavior = 'auto';
+        track.scrollLeft = 0;
+        track.style.scrollBehavior = '';
+        currentSlide = 0;
+        setActiveDot(0);
+      };
+      // iPhone (Safari e Chrome usam o mesmo motor WebKit): o "snap" do carrossel pulava para a ultima foto enquanto as imagens
+      // carregavam. Snap desligado ate a pagina terminar de carregar; as imagens tem width/height fixos para o layout nao mudar.
+      track.style.scrollSnapType = 'none';
+      galeriaInicio();
+      window.addEventListener('pageshow', galeriaInicio);
+      window.addEventListener('load', () => { galeriaInicio(); track.style.scrollSnapType = ''; });
+    }
+
+    /* ---- Share ---- */
+    document.getElementById('share-btn')?.addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({ title: productJson.title, url: window.location.href });
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const span = this.querySelector('span');
+          span.textContent = 'Link copiado!';
+          setTimeout(() => { span.textContent = 'Compartilhar'; }, 2000);
+        });
+      }
+    });
+
+    /* ====================================================
+       CORES IRMÃS + COMPRE O LOOK — via Shopify Search API
+       Cada cor da Galeria Tricot é um produto separado.
+       Ex: "Blusa Tricot Adelina Cobre" e "Blusa Tricot Adelina Preto"
+       ==================================================== */
+
+    const TIPOS_PECA = ['blusa','saia','calca','calça','shorts','short','vestido','casaco','cardigan',
+      'jaqueta','top','cropped','regata','body','macacao','macacão','conjunto','bolsa','cinto',
+      'cachecol','gorro','luva','meia','pantufa','kimono','poncho','colete','camisa','blazer',
+      'sobretudo','bermuda','capa','pashmina','saída','polaina','biquíni','biquini','maiô','twin',
+      'kaftan','túnica','camiseta','moletom','t-shirt','pullover','maxpull','cachequer','corselet',
+      'suéter','embalagem','vale'];
+
+    /* Cores compostas (2 palavras) — checar ANTES de assumir cor = última palavra */
+    const CORES_COMPOSTAS = [
+      'off white', 'dark brown', 'dark blue', 'dark green', 'dark grey',
+      'cinza mescla', 'cinza claro', 'cinza escuro', 'cinza chumbo',
+      'azul claro', 'azul escuro', 'azul marinho', 'azul celeste', 'azul royal',
+      'verde claro', 'verde escuro', 'verde militar', 'verde musgo', 'verde oliva', 'verde pistache',
+      'rosa claro', 'rosa escuro', 'rosa pink', 'rosa blush', 'rosa chiclete',
+      'marrom claro', 'marrom escuro', 'marrom cafe',
+      'vermelho escuro', 'vermelho vivo',
+      'amarelo claro', 'amarelo ouro',
+      'bege claro', 'bege escuro',
+      'nude rose', 'old rose',
+      'new off', 'light pink', 'light blue', 'light grey',
+      'marsala dark', 'vinho dark', 'bordo dark', 'cobre dark', 'nude dark',
+      'bege dark', 'caramelo dark', 'chocolate dark', 'terracota dark',
+      'preto mescla', 'marinho mescla', 'azul mescla',
+      'coral dark', 'areia dark', 'ferrugem dark'
+    ];
+
+    function extrairNomeBase(title) {
+      const words = title.trim().split(/\s+/);
+      const SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+',
+        'curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','new','gola','alta','pantalona']);
+
+      /* Se tem "+" no meio, pode ser 2 formatos:
+         A) "Conjunto Colete + Saia Curta Celina Marinho" (tipo+tipo antes do nome)
+         B) "Conjunto Tricot Bertha Casaco + Bermuda Preto" (nome antes do +)
+         Pra B: pegar tudo DEPOIS do último "+" e filtrar tipos, o resto é nome+cor
+         Pra A: pular tipos do inicio ate achar nome */
+      var plusIdx = words.lastIndexOf('+');
+      var remaining;
+
+      if (plusIdx > 1) {
+        /* Tem "+": tentar extrair do trecho DEPOIS do "+" */
+        var afterPlus = words.slice(plusIdx + 1);
+        /* Pular tipos/modificadores depois do + */
+        var s = 0;
+        while (s < afterPlus.length && SKIP.has(afterPlus[s].toLowerCase())) s++;
+        var namePart = afterPlus.slice(s);
+
+        if (namePart.length >= 2) {
+          remaining = namePart;
+        } else {
+          /* Formato B: nome está ANTES do "+", cor está DEPOIS */
+          var beforePlus = words.slice(0, plusIdx);
+          var sb = 0;
+          while (sb < beforePlus.length && SKIP.has(beforePlus[sb].toLowerCase())) sb++;
+          var eb = beforePlus.length;
+          while (eb > sb && SKIP.has(beforePlus[eb - 1].toLowerCase())) eb--;
+          var nameBeforePlus = beforePlus.slice(sb, eb);
+          var corWord = afterPlus.length > 0 ? afterPlus[afterPlus.length - 1] : '';
+          remaining = nameBeforePlus.concat([corWord]);
+        }
+      } else {
+        /* Sem "+": pular tipos/tricot do inicio */
+        var start = 0;
+        while (start < words.length && SKIP.has(words[start].toLowerCase())) start++;
+        remaining = words.slice(start);
+      }
+
+      /* Remover modificadores que ficam no meio do nome (ex: "Ana Manga Longa Off White" → base "Ana") */
+      remaining = remaining.filter(function(w){ return !SKIP.has(w.toLowerCase()); });
+
+      /* Checar se as últimas 2 palavras formam uma cor composta (ex: "Off White", "Dark Brown") */
+      var corWords = 1;
+      if (remaining.length >= 3) {
+        var last2 = (remaining[remaining.length - 2] + ' ' + remaining[remaining.length - 1]).toLowerCase();
+        if (CORES_COMPOSTAS.includes(last2)) corWords = 2;
+      }
+
+      var base = remaining.slice(0, remaining.length - corWords).join(' ');
+      var cor = remaining.slice(remaining.length - corWords).join(' ');
+      return { base: base, cor: cor, tipo: words[0].toLowerCase() };
+    }
+
+    async function buscarProdutos(query) {
+      try {
+        const resp = await fetch('/search/suggest.json?q=' + encodeURIComponent(query) + '&resources[type]=product&resources[limit]=50');
+        const data = await resp.json();
+        return data.resources?.results?.products || [];
+      } catch(e) { return []; }
+    }
+
+    // Mapa de cores em português → código CSS
+    const MAPA_CORES = {
+      'preto': '#1a1a1a', 'black': '#1a1a1a',
+      'branco': '#ffffff', 'white': '#ffffff',
+      'off': '#f5f0e8', 'off-white': '#f5f0e8', 'offwhite': '#f5f0e8',
+      'cru': '#f5f0e8', 'natural': '#f0ead6',
+      'bege': '#d4b896', 'nude': '#d4b896', 'areia': '#d4b896',
+      'cobre': '#b87333', 'caramelo': '#c68e4e', 'ferrugem': '#b7410e',
+      'marrom': '#6b3a2a', 'chocolate': '#5c3317', 'cacau': '#6b3a2a', 'cafe': '#6b3a2a',
+      'cinza': '#999999', 'mescla': '#b0b0b0', 'chumbo': '#666666', 'grafite': '#4a4a4a',
+      'azul': '#3a6ea5', 'marinho': '#1b2a4a', 'navy': '#1b2a4a', 'royal': '#2850a8',
+      'celeste': '#87ceeb', 'baby': '#89cff0', 'turquesa': '#40e0d0',
+      'verde': '#2e7d32', 'militar': '#4a5d23', 'musgo': '#6b705c', 'oliva': '#808000',
+      'pistache': '#93c572', 'menta': '#98fb98', 'esmeralda': '#046307',
+      'vermelho': '#c41e3a', 'rubi': '#9b111e', 'cereja': '#de3163',
+      'vinho': '#722f37', 'burgundy': '#722f37', 'marsala': '#8e4a49', 'bordo': '#722f37',
+      'rosa': '#f4a7bb', 'pink': '#ff69b4', 'blush': '#f0c8c8', 'chiclete': '#ff66b2',
+      'magenta': '#c20078', 'fuchsia': '#ff00ff',
+      'coral': '#ff7f50', 'salmon': '#fa8072', 'salmao': '#fa8072',
+      'laranja': '#e67e22', 'tangerina': '#ff9944', 'terracota': '#cc5533',
+      'amarelo': '#f1c40f', 'mostarda': '#c7a93e', 'ouro': '#c7a93e', 'dourado': '#c7a93e',
+      'lilas': '#c8a2c8', 'lavanda': '#b57edc', 'roxo': '#6a0dad', 'uva': '#6a0040',
+      'violeta': '#7f00ff', 'ameixa': '#673147',
+      'prata': '#c0c0c0', 'silver': '#c0c0c0',
+      'neon': '#39ff14', 'limao': '#bfff00', 'lima': '#bfff00',
+      'rost': '#b7410e', 'tijolo': '#cb4154',
+      'darkbrown': '#4a2c17', 'dark brown': '#4a2c17',
+      'darkblue': '#1b2a4a', 'dark blue': '#1b2a4a',
+      'marsaladark': '#6b3040', 'marsala dark': '#6b3040',
+      'cinzamescla': '#b0b0b0', 'cinza mescla': '#b0b0b0',
+      'offwhite': '#f5f0e8', 'off white': '#f5f0e8',
+      'multicolor': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+      'colorido': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+      'estampado': 'conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+    };
+
+    function corParaCSS(nomeCor) {
+      const lowerSpaced = nomeCor.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const lower = lowerSpaced.replace(/\s+/g, '');
+      // Tentar match direto (com e sem espaço)
+      if (MAPA_CORES[lower]) return MAPA_CORES[lower];
+      if (MAPA_CORES[lowerSpaced.trim()]) return MAPA_CORES[lowerSpaced.trim()];
+      // Tentar match parcial (ex: "Cinza Mescla" → "cinza")
+      for (const [key, val] of Object.entries(MAPA_CORES)) {
+        if (lower.includes(key) || key.includes(lower)) return val;
+      }
+      // Fallback: cinza neutro
+      return '#cccccc';
+    }
+
+    /* ---- Extrair modelo + cor DIRETO do título (sem depender de lista de cores) ----
+       Lógica: tipo e "tricot" e modificadores ficam no início.
+       A PRIMEIRA palavra significativa = nome do modelo (Raquel, Eva, Adelina...).
+       TUDO depois do modelo = cor (1, 2 ou 3 palavras — não importa).
+       Ex: "Calça Tricot Raquel Marsala Dark" → modelo=Raquel, cor=Marsala Dark
+       Ex: "Blusa Tricot Adelina Cobre" → modelo=Adelina, cor=Cobre
+    */
+    function extrairModeloCor(title) {
+      const words = title.trim().split(/\s+/);
+      const TIPO_SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+']);
+      const MODS = new Set(['curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','gola','alta','new','pantalona']);
+      let i = 0;
+      /* pular tipo/tricot do início */
+      while (i < words.length && TIPO_SKIP.has(words[i].toLowerCase())) i++;
+      /* modelo = modificadores antes do nome + nome + modificadores depois do nome
+         Ex: "Camisa Tricot Leda Manga Longa Cacau" → modelo "Leda Manga Longa", cor "Cacau"
+         Ex: "Vestido Tricot Midi Clarice Azul Marinho" → modelo "Midi Clarice", cor "Azul Marinho" */
+      var modeloParts = [];
+      while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
+      if (i < words.length) { modeloParts.push(words[i]); i++; }
+      /* nomes compostos conhecidos (2 palavras), ex: Leila Eva */
+      const SEGUNDA_PALAVRA_NOME = new Set(['eva','ski','star']);
+      if (i < words.length && SEGUNDA_PALAVRA_NOME.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
+      while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
+      const modelo = modeloParts.join(' ');
+      const cor = words.slice(i).join(' ');
+      return { modelo: modelo, cor: cor, tipo: words[0] ? words[0].toLowerCase() : '' };
+    }
+
+    async function carregarCoresIrmas() {
+      const title = productJson.title;
+      const { modelo, cor, tipo } = extrairModeloCor(title);
+      if (!modelo || modelo.length < 2) return;
+
+      const container = document.getElementById('sibling-swatches');
+      const colorLabel = document.getElementById('current-color-name');
+
+      // Gerar URL menor para thumbnail (300px de largura)
+      function thumbUrl(src) {
+        if (!src) return '';
+        return src.replace(/(\.\w+)(\?|$)/, '_300x$1$2');
+      }
+
+      // Não precisa mais buscar imagens extras — usa a featured_image da busca
+
+      // Produto atual: usar primeira foto (principal)
+      const currentImg = productJson.featured_image || (productJson.images && productJson.images[0]) || '';
+      const currentImgSrc = typeof currentImg === 'string' ? currentImg : (currentImg.src || '');
+
+      let html = '<a class="pdp__sibling-link is-current" href="' + window.location.pathname + '" title="' + cor + '">' +
+        '<img src="' + thumbUrl(currentImgSrc) + '" alt="' + cor + '" loading="lazy" />' +
+        '</a>';
+
+      // Buscar produtos irmãos: mesmo modelo + mesmo tipo, cor diferente
+      // Busca por "tipo modelo" (ex: "casaco Eva") pra restringir resultados
+      // — a API suggest retorna máx 10 e "Eva" sozinho trazia blusas/calças/regatas
+      //   empurrando o casaco Off White pra fora do limite.
+      const results = await buscarProdutos(tipo + ' ' + modelo);
+      const coresVistas = new Set([cor.toLowerCase()]);
+      const siblings = results.filter(p => {
+        if (p.url === window.location.pathname) return false;
+        const { modelo: pModelo, cor: pCor, tipo: pTipo } = extrairModeloCor(p.title);
+        if (pTipo !== tipo) return false;
+        if (pModelo.toLowerCase() !== modelo.toLowerCase()) return false;
+        const pCorLower = (pCor || '').toLowerCase();
+        if (!pCorLower || coresVistas.has(pCorLower)) return false;
+        coresVistas.add(pCorLower);
+        return true;
+      });
+
+      // Usar foto principal (featured) de cada irmão
+      const siblingData = siblings.map(p => {
+        const { cor: pCor } = extrairModeloCor(p.title);
+        const pImg = (p.featured_image && p.featured_image.url) || p.image || '';
+        return { url: p.url, cor: pCor, img: pImg };
+      });
+
+      siblingData.forEach(s => {
+        html += '<a class="pdp__sibling-link" href="' + s.url + '" title="' + s.cor + '">' +
+          '<img src="' + thumbUrl(s.img) + '" alt="' + s.cor + '" loading="lazy" />' +
+          '</a>';
+      });
+
+      container.innerHTML = html;
+      if (colorLabel) colorLabel.textContent = cor;
+    }
+
+    async function carregarCompreOLook() {
+      /* Look MANUAL: metafield "Compre o Look" preenchido pela equipe no admin do produto.
+         Se tiver peças escolhidas ali, usa elas; senão monta automático por nome+cor. */
+      var lookManual = [
+        {% assign look_manual = product.metafields.custom.compre_o_look.value %}
+        {% for lp in look_manual %}
+        { url: {{ lp.url | json }}, title: {{ lp.title | json }}, price: {{ lp.price | divided_by: 100.0 }}, featured_image: { url: {{ lp.featured_image | image_url: width: 600 | json }} } }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ];
+
+      var lookItems;
+      if (lookManual.length > 0) {
+        lookItems = lookManual.filter(function(p){ return p.url.split('?')[0] !== window.location.pathname; });
+      } else {
+        const title = productJson.title;
+        const { base, cor, tipo } = extrairNomeBase(title);
+        if (!base || base.length < 2) return;
+
+        // Buscar pelo nome base + cor (ex: "Melissa Azul") para achar peças complementares
+        const query = base + ' ' + cor;
+        const results = await buscarProdutos(query);
+
+        // Filtrar: mesmo base+cor, tipo DIFERENTE, sem conjuntos (conjunto é o bundle, nao peca avulsa)
+        lookItems = results.filter(p => {
+          if (p.url === window.location.pathname) return false;
+          const { base: pBase, cor: pCor, tipo: pTipo } = extrairNomeBase(p.title);
+          if (pTipo === 'conjunto' || pTipo === 'twin') return false;
+          return pBase === base && pCor === cor && pTipo !== tipo;
+        });
+      }
+
+      if (lookItems.length === 0) return;
+
+      // Buscar variantes (tamanhos) de cada peça complementar
+      const lookDetalhes = await Promise.all(lookItems.map(function(p) {
+        return fetch(p.url.split('?')[0] + '.js').then(function(r){ return r.json(); }).catch(function(){ return null; });
+      }));
+
+      // Loja pode ter a mesma peça duplicada (versão antiga + nova): manter só 1 por tipo, preferindo a com estoque
+      // (só no modo automático — look manual respeita a escolha da equipe)
+      if (lookManual.length === 0) (function() {
+        var porTipo = {};
+        lookItems.forEach(function(p, i) {
+          var t = extrairNomeBase(p.title).tipo;
+          var det = lookDetalhes[i];
+          var temEstoque = !!(det && det.variants && det.variants.some(function(vv){ return vv.available; }));
+          if (!(t in porTipo)) { porTipo[t] = { i: i, ok: temEstoque }; }
+          else if (temEstoque && !porTipo[t].ok) { porTipo[t] = { i: i, ok: true }; }
+        });
+        var keep = Object.keys(porTipo).map(function(k){ return porTipo[k].i; }).sort(function(a,b){ return a-b; });
+        var newItems = keep.map(function(i){ return lookItems[i]; });
+        var newDet = keep.map(function(i){ return lookDetalhes[i]; });
+        lookItems.length = 0; Array.prototype.push.apply(lookItems, newItems);
+        lookDetalhes.length = 0; Array.prototype.push.apply(lookDetalhes, newDet);
+      })();
+
+      const montarSeletor = function(variants) {
+        var btns = '';
+        (variants || []).forEach(function(vv) {
+          var dispo = (vv.available === undefined) ? true : vv.available;
+          if (dispo) {
+            btns += '<button type="button" class="pdp__look-size-opt" data-vid="' + vv.id + '">' + vv.title + '</button>';
+          } else {
+            btns += '<span class="pdp__look-size-opt pdp__look-size-opt--esgotado">' + vv.title + '</span>';
+          }
+        });
+        return '<div class="pdp__look-sizes"><div class="pdp__look-sizes-label">Selecionar tamanho</div><div class="pdp__look-sizes-row">' + btns + '</div></div>';
+      };
+
+      const section = document.getElementById('look-section');
+      const container = document.getElementById('look-container');
+
+      // Calcular total
+      const currentPrice = productJson.price / 100;
+      let totalPrice = currentPrice;
+      lookItems.forEach(p => { totalPrice += parseFloat(p.price) || 0; });
+
+      const fmt = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      let html = '<div class="pdp__look-products">';
+      // Produto atual
+      html += '<div class="pdp__look-item">' +
+        '<div class="pdp__look-img-wrap"><a href="' + window.location.pathname + '">' +
+        '<img src="' + productJson.featured_image + '" alt="' + productJson.title + '" class="pdp__look-img" />' +
+        '</a>' + montarSeletor(productJson.variants) + '</div>' +
+        '<div class="pdp__look-item-name">' + productJson.title + '</div>' +
+        '<div class="pdp__look-item-price">' + fmt(currentPrice) + '</div>' + '</div>';
+
+      // Complementares
+      lookItems.forEach((p, lookIdx) => {
+        const imgSrc = p.featured_image?.url || p.image || '';
+        const price = parseFloat(p.price) || 0;
+        html += '<div class="pdp__look-plus">+</div>' +
+          '<div class="pdp__look-item">' +
+          '<div class="pdp__look-img-wrap"><a href="' + p.url + '">' +
+          '<img src="' + imgSrc + '" alt="' + p.title + '" class="pdp__look-img" />' +
+          '</a>' + montarSeletor((lookDetalhes[lookIdx] || {}).variants) + '</div>' +
+          '<div class="pdp__look-item-name">' + p.title + '</div>' +
+          '<div class="pdp__look-item-price">' + fmt(price) + '</div>' + '</div>';
+      });
+
+      html += '</div>'; // fim look-products
+
+      // Resumo
+      const totalQtd = lookItems.length + 1;
+      const parcela = totalPrice / 5;
+      html += '<div class="pdp__look-summary">' +
+        '<div class="pdp__look-equals">=</div>' +
+        '<div class="pdp__look-summary-inner">' +
+        '<div class="pdp__look-summary-label">Compre os ' + totalQtd + ' produtos</div>' +
+        '<div class="pdp__look-summary-total">' + fmt(totalPrice) + '</div>' +
+        '<div class="pdp__look-summary-installments">Em até 5x de ' + fmt(parcela) + '</div>' +
+        '<button class="pdp__look-buy-btn" id="look-buy-btn">COMPRAR LOOK</button>' +
+        '<div class="pdp__look-aviso" id="look-aviso" style="display:none;">Escolha seu tamanho</div>' +
+        '</div></div>';
+
+      container.innerHTML = html;
+      section.style.display = '';
+
+      container.querySelectorAll('.pdp__look-size-opt[data-vid]').forEach(function(b) {
+        b.addEventListener('click', function() {
+          var row = b.closest('.pdp__look-sizes');
+          row.classList.remove('pdp__look-sizes--erro');
+          row.querySelectorAll('.pdp__look-size-opt--sel').forEach(function(x){ x.classList.remove('pdp__look-size-opt--sel'); });
+          b.classList.add('pdp__look-size-opt--sel');
+          var av = document.getElementById('look-aviso');
+          if (av && !container.querySelector('.pdp__look-sizes--erro')) av.style.display = 'none';
+        });
+      });
+
+      // Botão comprar look — adiciona todos ao carrinho
+      document.getElementById('look-buy-btn')?.addEventListener('click', async function() {
+        var grupos = container.querySelectorAll('.pdp__look-sizes');
+        var items = [];
+        var faltou = false;
+        grupos.forEach(function(g) {
+          g.classList.remove('pdp__look-sizes--erro');
+          var sel = g.querySelector('.pdp__look-size-opt--sel');
+          if (!sel) { faltou = true; g.classList.add('pdp__look-sizes--erro'); }
+          else items.push({ id: parseInt(sel.getAttribute('data-vid'), 10), quantity: 1 });
+        });
+        var aviso = document.getElementById('look-aviso');
+        if (faltou) { if (aviso) aviso.style.display = ''; return; }
+        if (aviso) aviso.style.display = 'none';
+        this.disabled = true;
+        this.textContent = 'ADICIONANDO...';
+        try {
+          await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+          });
+          // Redirecionar para carrinho
+          window.location.href = '/cart';
+        } catch(e) {
+          this.disabled = false;
+          this.textContent = 'COMPRAR LOOK';
+        }
+      });
+    }
+
+    /* ====================================================
+       CONJUNTO (bundle) — interacao (checkbox, tamanho, add to cart)
+       As pecas ja vem renderizadas server-side via metafield.
+       ==================================================== */
+
+    const isConjunto = productJson.title.toLowerCase().startsWith('conjunto');
+
+    function iniciarConjunto() {
+      const container = document.getElementById('conjunto-items');
+      const totalEl = document.getElementById('conjunto-total');
+      const addBtn = document.getElementById('conjunto-add-btn');
+      const instEl = document.getElementById('conjunto-installments');
+      const headerInstEl = document.querySelector('.conjunto__header-installments');
+      if (!container || !addBtn) return;
+
+      var fmt = function(v) { return (v / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
+
+      function atualizarTotal() {
+        var total = 0;
+        container.querySelectorAll('.conjunto__item').forEach(function(item) {
+          var cb = item.querySelector('.conjunto__item-check');
+          if (!cb || !cb.checked) return;
+          var selected = item.querySelector('.conjunto__size-pill.is-selected');
+          if (selected) total += parseInt(selected.getAttribute('data-price') || '0');
+        });
+        if (totalEl) totalEl.textContent = fmt(total);
+        var instText = total > 0 ? 'ou 5x de ' + fmt(Math.round(total / 5)) + ' sem juros' : '';
+        if (instEl) instEl.textContent = instText;
+        if (headerInstEl) headerInstEl.textContent = instText;
+
+        var anyChecked = container.querySelector('.conjunto__item-check:checked');
+        addBtn.disabled = !anyChecked;
+      }
+
+      // Eventos: checkboxes
+      container.querySelectorAll('.conjunto__item-check').forEach(function(cb) {
+        cb.addEventListener('change', atualizarTotal);
+      });
+
+      // Eventos: tamanhos
+      container.querySelectorAll('.conjunto__size-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          if (this.classList.contains('is-soldout')) return;
+          // Desmarcar pills do mesmo item
+          this.closest('.conjunto__item-sizes').querySelectorAll('.conjunto__size-pill').forEach(function(p) {
+            p.classList.remove('is-selected');
+          });
+          this.classList.add('is-selected');
+          // Atualizar preco do item
+          var priceEl = this.closest('.conjunto__item').querySelector('.conjunto__item-price');
+          if (priceEl) priceEl.textContent = fmt(parseInt(this.getAttribute('data-price') || '0'));
+          atualizarTotal();
+        });
+      });
+
+      // Botao adicionar conjunto ao carrinho
+      addBtn.addEventListener('click', async function() {
+        addBtn.disabled = true;
+        addBtn.textContent = 'ADICIONANDO...';
+
+        var items = [];
+        container.querySelectorAll('.conjunto__item').forEach(function(item) {
+          var cb = item.querySelector('.conjunto__item-check');
+          if (!cb || !cb.checked) return;
+          var selected = item.querySelector('.conjunto__size-pill.is-selected');
+          if (selected && selected.getAttribute('data-available') === 'true') {
+            items.push({ id: parseInt(selected.getAttribute('data-variant-id')), quantity: 1 });
+          }
+        });
+
+        if (items.length === 0) {
+          addBtn.textContent = 'SELECIONE PELO MENOS 1 ITEM';
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO A SACOLA'; addBtn.disabled = false; }, 2000);
+          return;
+        }
+
+        try {
+          await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: items })
+          });
+          addBtn.textContent = 'ADICIONADO!';
+          if (typeof openCartDrawer === 'function') openCartDrawer();
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO À SACOLA'; addBtn.disabled = false; }, 2000);
+        } catch(e) {
+          addBtn.textContent = 'ERRO - TENTE NOVAMENTE';
+          setTimeout(function() { addBtn.textContent = 'ADICIONAR CONJUNTO A SACOLA'; addBtn.disabled = false; }, 2000);
+        }
+      });
+    }
+
+    // Executar conforme tipo de produto
+    if (isConjunto) {
+      iniciarConjunto();
+    } else {
+      carregarCoresIrmas();
+      carregarCompreOLook();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Mostrar breadcrumb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recommendations",
+      "label": "Mostrar recomendações",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

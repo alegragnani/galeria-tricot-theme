@@ -1969,13 +1969,30 @@
       const words = title.trim().split(/\s+/);
       const TIPO_SKIP = new Set([...TIPOS_PECA, 'tricot', 'set', '+']);
       const MODS = new Set(['curta','curto','longa','longo','midi','mini','maxi','ampla','amplo','manga','gola','alta','new','pantalona']);
+      const tipo = words[0] ? words[0].toLowerCase() : '';
       let i = 0;
-      /* pular tipo/tricot do início */
-      while (i < words.length && TIPO_SKIP.has(words[i].toLowerCase())) i++;
+      var modeloParts = [];
+      /* 27/11/2026 (Ale: "as cores do Ivana estao erradas"): quando ha um qualificador ANTES de "Tricot"
+         (Calça LEGGING Tricot Ivana, Pullover DRESS Tricot Antonela, Casaco BOMBER Tricot Cintia, MACAQUINHO Tricot Ana),
+         o nome do modelo vem DEPOIS de "Tricot" e o qualificador faz parte do modelo. Antes o modelo virava "Legging"
+         e a cor "Tricot Ivana Terracota", juntando leggings de modelos diferentes como se fossem cores. */
+      var it = -1;
+      for (var k = 1; k < words.length; k++) { if (words[k].toLowerCase() === 'tricot') { it = k; break; } }
+      if (it > 0) {
+        for (var q = 1; q < it; q++) { if (!TIPO_SKIP.has(words[q].toLowerCase())) modeloParts.push(words[q]); }
+        i = it + 1;
+        /* produto sem nome de modelo, so a cor depois de "Tricot" (Bandana Tricot Off White, Pashmina Tricot Preto) */
+        var resto = words.slice(i).join(' ').toLowerCase();
+        if (modeloParts.length === 0 && resto && (CORES_COMPOSTAS.includes(resto) || (words.length - i === 1 && MAPA_CORES[resto]))) {
+          return { modelo: words[0], cor: words.slice(i).join(' '), tipo: tipo };
+        }
+      } else {
+        /* pular tipo/tricot do início */
+        while (i < words.length && TIPO_SKIP.has(words[i].toLowerCase())) i++;
+      }
       /* modelo = modificadores antes do nome + nome + modificadores depois do nome
          Ex: "Camisa Tricot Leda Manga Longa Cacau" → modelo "Leda Manga Longa", cor "Cacau"
          Ex: "Vestido Tricot Midi Clarice Azul Marinho" → modelo "Midi Clarice", cor "Azul Marinho" */
-      var modeloParts = [];
       while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
       if (i < words.length) { modeloParts.push(words[i]); i++; }
       /* nomes compostos conhecidos (2 palavras), ex: Leila Eva */
@@ -1984,7 +2001,7 @@
       while (i < words.length && MODS.has(words[i].toLowerCase())) { modeloParts.push(words[i]); i++; }
       const modelo = modeloParts.join(' ');
       const cor = words.slice(i).join(' ');
-      return { modelo: modelo, cor: cor, tipo: words[0] ? words[0].toLowerCase() : '' };
+      return { modelo: modelo, cor: cor, tipo: tipo };
     }
 
     async function carregarCoresIrmas() {
